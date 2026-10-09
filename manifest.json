@@ -1,0 +1,80 @@
+{
+  "manifest_version": 3,
+  "name": "知乎论文助手",
+  "version": "0.1.0",
+  "description": "在论文页面识别当前论文，并连接知乎上的相关讨论。",
+  "permissions": [
+    "storage",
+    "sidePanel",
+    "tabs",
+    "cookies",
+    "clipboardWrite"
+  ],
+  "host_permissions": [
+    "https://arxiv.org/*",
+    "https://www.sciencedirect.com/*",
+    "https://link.springer.com/*",
+    "https://onlinelibrary.wiley.com/*",
+    "https://pubsonline.informs.org/*",
+    "https://*.zhihu.com/*",
+    "https://developer.zhihu.com/*",
+    "https://api.crossref.org/*"
+  ],
+  "background": {
+    "service_worker": "src/background/service_worker.js",
+    "type": "module"
+  },
+  "side_panel": {
+    "default_path": "src/panel/panel.html"
+  },
+  "action": {
+    "default_title": "知乎论文助手"
+  },
+  "options_page": "src/options/options.html",
+  "content_scripts": [
+    {
+      "matches": [
+        "https://arxiv.org/abs/*",
+        "https://www.sciencedirect.com/science/article/*",
+        "https://link.springer.com/article/*",
+        "https://link.springer.com/chapter/*",
+        "https://*.onlinelibrary.wiley.com/doi/*",
+        "https://pubsonline.informs.org/doi/*",
+        "https://papers.ssrn.com/sol3/papers.cfm*",
+        "https://www.nber.org/papers/*",
+        "https://www.jstor.org/stable/*",
+        "https://www.aeaweb.org/articles*",
+        "https://academic.oup.com/*",
+        "https://ieeexplore.ieee.org/document/*",
+        "https://www.science.org/doi/*",
+        "https://www.pnas.org/doi/*",
+        "https://dl.acm.org/doi/*",
+        "https://www.journals.uchicago.edu/doi/*",
+        "https://journals.sagepub.com/doi/*",
+        "https://www.tandfonline.com/doi/*",
+        "https://pubmed.ncbi.nlm.nih.gov/*",
+        "https://www.nature.com/articles/*",
+        "https://www.cell.com/*/fulltext/*",
+        "https://www.biorxiv.org/content/*",
+        "https://www.medrxiv.org/content/*",
+        "https://journals.plos.org/*/article*"
+      ],
+      "js": [
+        "src/content/extract.js",
+        "src/content/badge.js",
+        "src/content/compose.js"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://www.zhihu.com/*",
+        "https://zhuanlan.zhihu.com/*"
+      ],
+      "js": [
+        "src/content/ask.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}

@@ -1,0 +1,2610 @@
+{
+  "_note": "Questions, answers, articles and vote counts are REAL, harvested from the Zhihu open platform. Author profiles (nickname, label, url_token) are REAL, read from www.zhihu.com/api/v4/members. Paper metadata from Crossref and arXiv; author publication lists from ORCID, INSPIRE-HEP and the researchers' own pages. Only paper_card and user_paper_link are synthesized — the two tables Zhihu would add.",
+  "_edge_cases": {
+    "arxiv:math/0211159": "pre-2007 arXiv id scheme, which a naive /\\d{4}\\.\\d{4,5}/ regex misses entirely",
+    "doi:10.1371/journal.pone.0310348": "real preprint/published pair with 10.1101/2024.09.01.610707 — same title, same authors, two DOIs. Verified via Crossref relation. Seeded with no discussion because none exists; it demonstrates the alias table, not a match.",
+    "arXiv DOIs": "10.48550/arXiv.X is arXiv's own DataCite DOI for X. Deterministic, so aliased automatically.",
+    "doi:10.1287/mnsc.2022.4522": "No user_paper_link row. The author is found only through ORCID: Crossref lists 0000-0003-0541-6673 on the paper, and richard-xu-25 has bound that ORCID."
+  },
+  "paper": [
+    {
+      "id": "arxiv:2503.01800",
+      "doi": "",
+      "arxiv_id": "2503.01800",
+      "title": "Hilbert's sixth problem: derivation of fluid equations via Boltzmann's kinetic theory",
+      "authors": [
+        "Yu Deng",
+        "Zaher Hani",
+        "Xiao Ma"
+      ],
+      "venue": "arXiv",
+      "year": "2025"
+    },
+    {
+      "id": "arxiv:math/0211159",
+      "doi": "",
+      "arxiv_id": "math/0211159",
+      "title": "The entropy formula for the Ricci flow and its geometric applications",
+      "authors": [
+        "Grisha Perelman"
+      ],
+      "venue": "arXiv",
+      "year": "2002"
+    },
+    {
+      "id": "doi:10.1287/mnsc.2022.4522",
+      "doi": "10.1287/mnsc.2022.4522",
+      "arxiv_id": "",
+      "title": "Marketplace Scalability and Strategic Use of Platform Investment",
+      "authors": [
+        "Jin Li",
+        "Gary Pisano",
+        "Yejia Xu",
+        "Feng Zhu"
+      ],
+      "venue": "Management Science",
+      "year": "2023"
+    },
+    {
+      "id": "doi:10.1371/journal.pone.0310348",
+      "doi": "10.1371/journal.pone.0310348",
+      "arxiv_id": "",
+      "title": "Automatic diagnostics of electroencephalography pathology based on multi-domain feature fusion",
+      "authors": [
+        "Shimiao Chen",
+        "Dong Huang",
+        "Xinyue Liu"
+      ],
+      "venue": "PLOS One",
+      "year": "2025"
+    },
+    {
+      "id": "doi:10.1093/braincomms/fcag361",
+      "doi": "10.1093/braincomms/fcag361",
+      "arxiv_id": "",
+      "title": "A cognitive architecture for Long COVID: the interplay of brain fog, fatigue, attention and memory",
+      "authors": [
+        "Darragh Higgins",
+        "Sijia Zhao",
+        "Masud Husain",
+        "Peter Denno",
+        "Peter J Hellyer",
+        "William Trender",
+        "Christina J Atchison",
+        "Bethan Davies",
+        "Emily Cooper",
+        "Joshua Elliott",
+        "Matthew Whitaker",
+        "Chiara Di Gravio",
+        "Marc Chadeau-Hyam",
+        "Paul Elliott",
+        "Helen Ward",
+        "Adam Hampshire"
+      ],
+      "venue": "Brain Communications",
+      "year": "2026"
+    },
+    {
+      "id": "doi:10.1136/jnnp-2025-337245",
+      "doi": "10.1136/jnnp-2025-337245",
+      "arxiv_id": "",
+      "title": "On the relationships between apathy, depression and anhedonia",
+      "authors": [
+        "Sijia Zhao",
+        "Rong Ye",
+        "Aayushi Sen",
+        "Jacqueline Scholl",
+        "Patricia Lockwood",
+        "Meijia Li",
+        "Kübra Fethiye Karataş",
+        "Yuen-Siang Ang",
+        "Simon J Little",
+        "Catherine J Harmer",
+        "Kongliang He",
+        "Qianqian Li",
+        "Kai Wang",
+        "Matthew A J Apps",
+        "Sanjay Manohar",
+        "Masud Husain"
+      ],
+      "venue": "Journal of Neurology, Neurosurgery & Psychiatry",
+      "year": "2026"
+    },
+    {
+      "id": "doi:10.31234/osf.io/n9dzb_v1",
+      "doi": "10.31234/osf.io/n9dzb_v1",
+      "arxiv_id": "",
+      "title": "The risks of conflating anhedonia with apathy",
+      "authors": [
+        "Sijia Zhao",
+        "Mercè Correa",
+        "John Salamone",
+        "Masud Husain"
+      ],
+      "venue": "Center for Open Science",
+      "year": "2026"
+    },
+    {
+      "id": "doi:10.64898/2026.06.17.732833",
+      "doi": "10.64898/2026.06.17.732833",
+      "arxiv_id": "",
+      "title": "A hippocampal neuroimaging signature of neurovascular insulin signalling links metabolism to mood",
+      "authors": [
+        "Antoine Cherix",
+        "Beata R Godlewska",
+        "Alberto Lazari",
+        "Sijia Zhao",
+        "Gabrielle Dugan",
+        "Mohamed Tachrount",
+        "Maria Greco",
+        "Sean Smart",
+        "William T Clarke",
+        "David Bannerman",
+        "Charlotte J Stagg",
+        "Masud Husain",
+        "Phil Cowen",
+        "Jason P Lerch"
+      ],
+      "venue": "bioRxiv",
+      "year": "2026"
+    },
+    {
+      "id": "doi:10.1212/wnl.0000000000214985",
+      "doi": "10.1212/wnl.0000000000214985",
+      "arxiv_id": "",
+      "title": "The Relationship Between Sleep, Cognition, and Dementia Risk in People With Focal Epilepsy",
+      "authors": [
+        "Xin You Tai",
+        "Sijia Zhao",
+        "Bernard Liem",
+        "Marian Galovic",
+        "Masud Husain",
+        "Arjune Sen",
+        "Sanjay Manohar"
+      ],
+      "venue": "Neurology",
+      "year": "2026"
+    },
+    {
+      "id": "doi:10.64898/2026.05.05.26352457",
+      "doi": "10.64898/2026.05.05.26352457",
+      "arxiv_id": "",
+      "title": "Apathy precedes worsening depression, but not the reverse",
+      "authors": [
+        "Sijia Zhao",
+        "Nadine Paans",
+        "Didi Rhebergen",
+        "Richard C. Oude Voshaar",
+        "Erik J. Giltay",
+        "Brenda W.J.H. Penninx",
+        "Masud Husain"
+      ],
+      "venue": "medRxiv",
+      "year": "2026"
+    },
+    {
+      "id": "doi:10.1093/brain/awag110",
+      "doi": "10.1093/brain/awag110",
+      "arxiv_id": "",
+      "title": "The emotional cost of caring: amygdala lesions reduce the aversiveness of affective empathy",
+      "authors": [
+        "Sijia Zhao"
+      ],
+      "venue": "Brain",
+      "year": "2026"
+    },
+    {
+      "id": "doi:10.1038/s41398-026-04023-4",
+      "doi": "10.1038/s41398-026-04023-4",
+      "arxiv_id": "",
+      "title": "The social dimension of apathy: evidence for a distinct domain from 11,243 individuals across health and neurocognitive disorders",
+      "authors": [
+        "Sijia Zhao",
+        "Rong Ye",
+        "Qian-Yuan Tang",
+        "Bahaaeddin Attaallah",
+        "Sofia Toniolo",
+        "Youssuf Saleh",
+        "Matthew A. Rouse",
+        "Peter Garrard",
+        "M. John Broulidakis",
+        "Sian Thompson",
+        "Sanjay G. Manohar",
+        "Sarosh R. Irani",
+        "Yuen-Siang Ang",
+        "Patricia Lockwood",
+        "Matthew A. J. Apps",
+        "Panpan Hu",
+        "Kai Wang",
+        "James B. Rowe",
+        "Campbell Le Heron",
+        "Masud Husain"
+      ],
+      "venue": "Translational Psychiatry",
+      "year": "2026"
+    },
+    {
+      "id": "doi:10.7554/elife.109581.3",
+      "doi": "10.7554/elife.109581.3",
+      "arxiv_id": "",
+      "title": "Transsaccadic working memory in healthy ageing and neurodegenerative disease",
+      "authors": [
+        "Sijia Zhao",
+        "Thomas Parr",
+        "Rob Udale",
+        "Verena Klar",
+        "Gabriel Davis Jones",
+        "Anna Scholcz",
+        "Sofia Toniolo",
+        "Sanjay G Manohar",
+        "Masud Husain"
+      ],
+      "venue": "eLife",
+      "year": "2026"
+    },
+    {
+      "id": "doi:10.7554/elife.109581",
+      "doi": "10.7554/elife.109581",
+      "arxiv_id": "",
+      "title": "Transsaccadic working memory in healthy ageing and neurodegenerative disease",
+      "authors": [
+        "Sijia Zhao",
+        "Thomas Parr",
+        "Rob Udale",
+        "Verena Klar",
+        "Gabriel Davis Jones",
+        "Anna Scholcz",
+        "Sofia Toniolo",
+        "Sanjay G Manohar",
+        "Masud Husain"
+      ],
+      "venue": "eLife",
+      "year": "2026"
+    },
+    {
+      "id": "doi:10.2139/ssrn.7560458",
+      "doi": "10.2139/ssrn.7560458",
+      "arxiv_id": "",
+      "title": "Out-of-Bag Random Forests are Jackknife Instruments",
+      "authors": [
+        "Tong Wang"
+      ],
+      "venue": "SSRN",
+      "year": "2026"
+    },
+    {
+      "id": "doi:10.2139/ssrn.4908075",
+      "doi": "10.2139/ssrn.4908075",
+      "arxiv_id": "",
+      "title": "Digital Hype and Blockchain-Based Cryptocurrency: The Case of Initial Coin Offerings",
+      "authors": [
+        "Xintong Han",
+        "Xin (Shane) Wang",
+        "Rajdeep Grewal",
+        "Tong Wang"
+      ],
+      "venue": "SSRN",
+      "year": "2024"
+    },
+    {
+      "id": "doi:10.1016/j.frl.2023.104525",
+      "doi": "10.1016/j.frl.2023.104525",
+      "arxiv_id": "",
+      "title": "A Bayesian estimation approach of random switching exponential smoothing with application to credit forecast",
+      "authors": [
+        "Renhe Wang",
+        "Tong Wang",
+        "Zhiyong Qian",
+        "Shulan Hu"
+      ],
+      "venue": "Finance Research Letters",
+      "year": "2023"
+    },
+    {
+      "id": "doi:10.1016/j.ijindorg.2023.103034",
+      "doi": "10.1016/j.ijindorg.2023.103034",
+      "arxiv_id": "",
+      "title": "Nonlinear pricing in multidimensional context: An empirical analysis of energy consumption",
+      "authors": [
+        "Xintong Han",
+        "Zimin Liu",
+        "Tong Wang"
+      ],
+      "venue": "International Journal of Industrial Organization",
+      "year": "2023"
+    },
+    {
+      "id": "doi:10.1016/j.jebo.2023.08.021",
+      "doi": "10.1016/j.jebo.2023.08.021",
+      "arxiv_id": "",
+      "title": "Peer recognition, badge policies, and content contribution: An empirical study",
+      "authors": [
+        "Xintong Han",
+        "Yushen Li",
+        "Tong Wang"
+      ],
+      "venue": "Journal of Economic Behavior & Organization",
+      "year": "2023"
+    },
+    {
+      "id": "doi:10.1016/j.intfin.2022.101661",
+      "doi": "10.1016/j.intfin.2022.101661",
+      "arxiv_id": "",
+      "title": "Does soft information in expert ratings curb information asymmetry? Evidence from crowdfunding and early transaction phases of Initial Coin offerings",
+      "authors": [
+        "Tong Wang",
+        "Sheng Zhao",
+        "Mengqiu Zhou"
+      ],
+      "venue": "Journal of International Financial Markets, Institutions and Money",
+      "year": "2022"
+    },
+    {
+      "id": "doi:10.1016/j.intfin.2021.101341",
+      "doi": "10.1016/j.intfin.2021.101341",
+      "arxiv_id": "",
+      "title": "Is solicitation status related to rating conservatism and rating quality?",
+      "authors": [
+        "Sheng Zhao",
+        "Fernando Moreira",
+        "Tong Wang"
+      ],
+      "venue": "Journal of International Financial Markets, Institutions and Money",
+      "year": "2021"
+    },
+    {
+      "id": "doi:10.1080/1351847X.2020.1720262",
+      "doi": "10.1080/1351847X.2020.1720262",
+      "arxiv_id": "",
+      "title": "Why does regional information matter? evidence from peer-to-peer lending",
+      "authors": [
+        "Tong Wang",
+        "Sheng Zhao",
+        "Xin Shen"
+      ],
+      "venue": "The European Journal of Finance",
+      "year": "2020"
+    },
+    {
+      "id": "doi:10.1016/j.jet.2016.01.008",
+      "doi": "10.1016/j.jet.2016.01.008",
+      "arxiv_id": "",
+      "title": "Assortative matching and risk sharing",
+      "authors": [
+        "Sanxi Li",
+        "Hailin Sun",
+        "Tong Wang",
+        "Jun Yu"
+      ],
+      "venue": "Journal of Economic Theory",
+      "year": "2016"
+    },
+    {
+      "id": "doi:10.1111/joie.12031",
+      "doi": "10.1111/joie.12031",
+      "arxiv_id": "",
+      "title": "Non‐Obviousness and Screening",
+      "authors": [
+        "Zonglai Kou",
+        "Patrick Rey",
+        "Tong Wang"
+      ],
+      "venue": "The Journal of Industrial Economics",
+      "year": "2013"
+    },
+    {
+      "id": "arxiv:2512.10862",
+      "doi": "",
+      "arxiv_id": "2512.10862",
+      "title": "Inflation in light of ACT/SPT: A new perspective from Weyl gravity",
+      "authors": [
+        "Qing-Yang Wang"
+      ],
+      "venue": "arXiv",
+      "year": "2025"
+    },
+    {
+      "id": "arxiv:2504.13147",
+      "doi": "",
+      "arxiv_id": "2504.13147",
+      "title": "Purely gravitational dark matter production in warm inflation",
+      "authors": [
+        "Qing-Yang Wang",
+        "Tianyu Jia",
+        "Pei-Ran Chen",
+        "Yong Tang"
+      ],
+      "venue": "arXiv",
+      "year": "2025"
+    },
+    {
+      "id": "arxiv:2311.00239",
+      "doi": "",
+      "arxiv_id": "2311.00239",
+      "title": "Gravitational Waves from Preheating in Inflation with Weyl Symmetry",
+      "authors": [
+        "Wei-Yu Hu",
+        "Qing-Yang Wang",
+        "Yan-Qing Ma",
+        "Yong Tang"
+      ],
+      "venue": "arXiv",
+      "year": "2023"
+    },
+    {
+      "id": "arxiv:2301.03744",
+      "doi": "",
+      "arxiv_id": "2301.03744",
+      "title": "Inflation in Weyl Scaling Invariant Gravity with $R^3$ Extensions",
+      "authors": [
+        "Qing-Yang Wang",
+        "Yong Tang",
+        "Yue-Liang Wu"
+      ],
+      "venue": "arXiv",
+      "year": "2023"
+    },
+    {
+      "id": "arxiv:2203.15452",
+      "doi": "",
+      "arxiv_id": "2203.15452",
+      "title": "Dark Matter Production in Weyl $R^2$ Inflation",
+      "authors": [
+        "Qing-Yang Wang",
+        "Yong Tang",
+        "Yue-Liang Wu"
+      ],
+      "venue": "arXiv",
+      "year": "2022"
+    },
+    {
+      "id": "arxiv:2408.07818",
+      "doi": "",
+      "arxiv_id": "2408.07818",
+      "title": "Long time derivation of the Boltzmann equation from hard sphere dynamics",
+      "authors": [
+        "Yu Deng",
+        "Zaher Hani",
+        "Xiao Ma"
+      ],
+      "venue": "arXiv",
+      "year": "2024"
+    },
+    {
+      "id": "arxiv:2311.10082",
+      "doi": "",
+      "arxiv_id": "2311.10082",
+      "title": "Long time justification of wave turbulence theory",
+      "authors": [
+        "Yu Deng",
+        "Zaher Hani"
+      ],
+      "venue": "arXiv",
+      "year": "2023"
+    },
+    {
+      "id": "doi:10.1007/s00222-023-01189-2",
+      "doi": "10.1007/s00222-023-01189-2",
+      "arxiv_id": "",
+      "title": "Full derivation of the wave kinetic equation",
+      "authors": [
+        "Yu Deng",
+        "Zaher Hani"
+      ],
+      "venue": "Inventiones mathematicae",
+      "year": "2023"
+    },
+    {
+      "id": "doi:10.1007/s00222-024-01254-4",
+      "doi": "10.1007/s00222-024-01254-4",
+      "arxiv_id": "",
+      "title": "Invariant Gibbs measures for the three dimensional cubic nonlinear wave equation",
+      "authors": [
+        "Bjoern Bringmann",
+        "Yu Deng",
+        "Andrea R. Nahmod",
+        "Haitian Yue"
+      ],
+      "venue": "Inventiones mathematicae",
+      "year": "2024"
+    },
+    {
+      "id": "doi:10.1007/s00222-021-01084-8",
+      "doi": "10.1007/s00222-021-01084-8",
+      "arxiv_id": "",
+      "title": "Random tensors, propagation of randomness, and nonlinear dispersive equations",
+      "authors": [
+        "Yu Deng",
+        "Andrea R. Nahmod",
+        "Haitian Yue"
+      ],
+      "venue": "Inventiones mathematicae",
+      "year": "2021"
+    },
+    {
+      "id": "doi:10.4007/annals.2024.200.2.1",
+      "doi": "10.4007/annals.2024.200.2.1",
+      "arxiv_id": "",
+      "title": "Invariant Gibbs measures and global strong solutions for nonlinear Schrödinger equations in dimension two",
+      "authors": [
+        "Yu Deng",
+        "Andrea Nahmod",
+        "Haitian Yue"
+      ],
+      "venue": "Annals of Mathematics",
+      "year": "2024"
+    },
+    {
+      "id": "doi:10.1002/cpa.22092",
+      "doi": "10.1002/cpa.22092",
+      "arxiv_id": "",
+      "title": "Long‐Time Instability of the Couette Flow in Low Gevrey Spaces",
+      "authors": [
+        "Yu Deng",
+        "Nader Masmoudi"
+      ],
+      "venue": "Communications on Pure and Applied Mathematics",
+      "year": "2023"
+    },
+    {
+      "id": "doi:10.1002/cpa.21797",
+      "doi": "10.1002/cpa.21797",
+      "arxiv_id": "",
+      "title": "On Growth of Sobolev Norms for Energy Critical NLS on Irrational Tori: Small Energy Case",
+      "authors": [
+        "Yu Deng"
+      ],
+      "venue": "Communications on Pure and Applied Mathematics",
+      "year": "2018"
+    },
+    {
+      "id": "doi:10.4310/ACTA.2017.v219.n2.a1",
+      "doi": "10.4310/ACTA.2017.v219.n2.a1",
+      "arxiv_id": "",
+      "title": "Global solutions of the gravity-capillary water-wave system in three dimensions",
+      "authors": [
+        "Yu Deng",
+        "Alexandru D. Ionescu",
+        "Benoît Pausader",
+        "Fabio Pusateri"
+      ],
+      "venue": "Acta Mathematica",
+      "year": "2017"
+    },
+    {
+      "id": "arxiv:2204.06148",
+      "doi": "",
+      "arxiv_id": "2204.06148",
+      "title": "Almost sharp wave kinetic theory of multidimensional KdV type equations with $d\\ge 3$",
+      "authors": [
+        "Xiao Ma"
+      ],
+      "venue": "arXiv",
+      "year": "2022"
+    },
+    {
+      "id": "doi:10.1007/s00220-020-03910-1",
+      "doi": "10.1007/s00220-020-03910-1",
+      "arxiv_id": "",
+      "title": "Cancellations of Resonances and Long Time Dynamics of Cubic Schrödinger Equation on $${\\mathbb {T}}$$",
+      "authors": [
+        "Kexin Jin",
+        "Xiao Ma"
+      ],
+      "venue": "Communications in Mathematical Physics",
+      "year": "2021"
+    },
+    {
+      "id": "doi:10.1137/21m139671x",
+      "doi": "10.1137/21m139671x",
+      "arxiv_id": "",
+      "title": "Linear Stability of the 2D Irrotational Circulation Flow around an Elliptical Cylinder",
+      "authors": [
+        "Xiao Ma"
+      ],
+      "venue": "SIAM Journal on Mathematical Analysis",
+      "year": "2022"
+    },
+    {
+      "id": "doi:10.2139/ssrn.7481618",
+      "doi": "10.2139/ssrn.7481618",
+      "arxiv_id": "",
+      "title": "Is Rewarded Advertising Rewarding? Field Experimental Evidence from a Digital Advertising Platform",
+      "authors": [
+        "Mingqing Cai",
+        "Xiao Lei",
+        "Lauren Xiaoyuan Lu",
+        "Zhixi Wan",
+        "Lei Huang"
+      ],
+      "venue": "SSRN",
+      "year": "2026"
+    },
+    {
+      "id": "doi:10.2139/ssrn.7162838",
+      "doi": "10.2139/ssrn.7162838",
+      "arxiv_id": "",
+      "title": "When Engagement is not Enough: Gameplay Elements in Educational Platforms",
+      "authors": [
+        "Yipu Deng",
+        "Xiao Lei",
+        "Jun Li",
+        "Liu Ming"
+      ],
+      "venue": "SSRN",
+      "year": "2026"
+    },
+    {
+      "id": "doi:10.2139/ssrn.7001842",
+      "doi": "10.2139/ssrn.7001842",
+      "arxiv_id": "",
+      "title": "Point Redemption Design in Gamified Education",
+      "authors": [
+        "Yimin Yin",
+        "Yipu Deng",
+        "Xiao Lei",
+        "D. J. Wu"
+      ],
+      "venue": "SSRN",
+      "year": "2026"
+    },
+    {
+      "id": "doi:10.2139/ssrn.6137709",
+      "doi": "10.2139/ssrn.6137709",
+      "arxiv_id": "",
+      "title": "Dynamic Optimization for In-App Advertising Games: A Data-Driven Methodology Validated with Field Experiments",
+      "authors": [
+        "Jiacheng Chang",
+        "Xiao Lei",
+        "Zhixi Wan",
+        "Lei Huang"
+      ],
+      "venue": "SSRN",
+      "year": "2026"
+    },
+    {
+      "id": "doi:10.2139/ssrn.7001878",
+      "doi": "10.2139/ssrn.7001878",
+      "arxiv_id": "",
+      "title": "Balanced Game Design",
+      "authors": [
+        "Xinyi Guan",
+        "Xiao Lei"
+      ],
+      "venue": "SSRN",
+      "year": "2026"
+    },
+    {
+      "id": "doi:10.2139/ssrn.4962550",
+      "doi": "10.2139/ssrn.4962550",
+      "arxiv_id": "",
+      "title": "Pricing and Addiction Control for Digital Services",
+      "authors": [
+        "Jiacheng Chang",
+        "Xiao Lei",
+        "Feng Tian"
+      ],
+      "venue": "SSRN",
+      "year": "2024"
+    },
+    {
+      "id": "doi:10.2139/ssrn.4890353",
+      "doi": "10.2139/ssrn.4890353",
+      "arxiv_id": "",
+      "title": "Experimental Design in One-sided Matching Platforms",
+      "authors": [
+        "Chenran Weng",
+        "Xiao Lei",
+        "Nian Si"
+      ],
+      "venue": "SSRN",
+      "year": "2024"
+    },
+    {
+      "id": "doi:10.2139/ssrn.4810618",
+      "doi": "10.2139/ssrn.4810618",
+      "arxiv_id": "",
+      "title": "Taste of Free Lunch: The Impact of Free Product Disclosure on Review Dynamics",
+      "authors": [
+        "Yimin Yin",
+        "Yipu Deng",
+        "Xiao Lei"
+      ],
+      "venue": "SSRN",
+      "year": "2024"
+    },
+    {
+      "id": "doi:10.2139/ssrn.4633784",
+      "doi": "10.2139/ssrn.4633784",
+      "arxiv_id": "",
+      "title": "Regulating Discriminatory Pricing in the Presence of Tacit Collusion",
+      "authors": [
+        "Zongsen Yang",
+        "Xiao Lei",
+        "Pin Gao"
+      ],
+      "venue": "SSRN",
+      "year": "2023"
+    },
+    {
+      "id": "doi:10.2139/ssrn.4593945",
+      "doi": "10.2139/ssrn.4593945",
+      "arxiv_id": "",
+      "title": "Content Rotation in the Presence of Satiation Effects",
+      "authors": [
+        "Xiao Lei",
+        "Beichen Wan",
+        "Shixin Wang"
+      ],
+      "venue": "SSRN",
+      "year": "2023"
+    },
+    {
+      "id": "doi:10.1016/j.ejor.2019.09.003",
+      "doi": "10.1016/j.ejor.2019.09.003",
+      "arxiv_id": "",
+      "title": "Pricing of reusable resources under ambiguous distributions of demand and service time with emerging applications",
+      "authors": [
+        "Xuan Vinh Doan",
+        "Xiao Lei",
+        "Siqian Shen"
+      ],
+      "venue": "European Journal of Operational Research",
+      "year": "2020"
+    },
+    {
+      "id": "arxiv:1811.01641",
+      "doi": "",
+      "arxiv_id": "1811.01641",
+      "title": "Nonadiabatic dynamics and geometric phase of an ultrafast rotating electron spin",
+      "authors": [
+        "Xing-Yan Chen",
+        "Tongcang Li",
+        "Zhang-qi Yin"
+      ],
+      "venue": "arXiv",
+      "year": "2018"
+    },
+    {
+      "id": "arxiv:1804.07591",
+      "doi": "",
+      "arxiv_id": "1804.07591",
+      "title": "Single-loop realization of arbitrary non-adiabatic holonomic single-qubit quantum gates in a superconducting circuit",
+      "authors": [
+        "Y. Xu",
+        "W. Cai",
+        "Y. Ma",
+        "X. Mu",
+        "L. Hu",
+        "Tao Chen",
+        "H. Wang",
+        "Y. P. Song",
+        "Zheng-Yuan Xue",
+        "Zhang-qi Yin",
+        "L. Sun"
+      ],
+      "venue": "arXiv",
+      "year": "2018"
+    },
+    {
+      "id": "arxiv:1801.03782",
+      "doi": "",
+      "arxiv_id": "1801.03782",
+      "title": "16-qubit IBM universal quantum computer can be fully entangled",
+      "authors": [
+        "Yuanhao Wang",
+        "Ying Li",
+        "Zhang-qi Yin",
+        "Bei Zeng"
+      ],
+      "venue": "arXiv",
+      "year": "2018"
+    },
+    {
+      "id": "arxiv:1601.02943",
+      "doi": "",
+      "arxiv_id": "1601.02943",
+      "title": "Experimental Test of Entangled Histories",
+      "authors": [
+        "Jordan Cotler",
+        "Lu-Ming Duan",
+        "Pan-Yu Hou",
+        "Frank Wilczek",
+        "Da Xu",
+        "Zhang-Qi Yin",
+        "Chong Zu"
+      ],
+      "venue": "arXiv",
+      "year": "2016"
+    },
+    {
+      "id": "arxiv:1608.05322",
+      "doi": "",
+      "arxiv_id": "1608.05322",
+      "title": "Bringing quantum mechanics to life: from Schr\\&#34;{o}dinger's cat to Schr\\&#34;{o}dinger's microbe",
+      "authors": [
+        "Zhang-qi Yin",
+        "Tongcang Li"
+      ],
+      "venue": "arXiv",
+      "year": "2016"
+    },
+    {
+      "id": "arxiv:1605.03990",
+      "doi": "",
+      "arxiv_id": "1605.03990",
+      "title": "Torsional optomechanics of a levitated nonspherical nanoparticle",
+      "authors": [
+        "Thai M. Hoang",
+        "Yue Ma",
+        "Jonghoon Ahn",
+        "Jaehoon Bang",
+        "F. Robicheaux",
+        "Zhang-Qi Yin",
+        "Tongcang Li"
+      ],
+      "venue": "arXiv",
+      "year": "2016"
+    },
+    {
+      "id": "arxiv:1509.03763",
+      "doi": "",
+      "arxiv_id": "1509.03763",
+      "title": "Quantum superposition, entanglement, and state teleportation of a microorganism on an electromechanical oscillator",
+      "authors": [
+        "Tongcang Li",
+        "Zhang-Qi Yin"
+      ],
+      "venue": "arXiv",
+      "year": "2015"
+    },
+    {
+      "id": "arxiv:1407.4938",
+      "doi": "",
+      "arxiv_id": "1407.4938",
+      "title": "Quantum network of superconducting qubits through opto-mechanical interface",
+      "authors": [
+        "Zhang-qi Yin",
+        "W. L. Yang",
+        "L. Sun",
+        "L. M. Duan"
+      ],
+      "venue": "arXiv",
+      "year": "2014"
+    },
+    {
+      "id": "arxiv:1409.4485",
+      "doi": "",
+      "arxiv_id": "1409.4485",
+      "title": "Experimental Test of Quantum Jarzynski Equality with a Trapped Ion System",
+      "authors": [
+        "Shuoming An",
+        "Jing-Ning Zhang",
+        "Mark Um",
+        "Dingshun Lv",
+        "Yao Lu",
+        "Junhua Zhang",
+        "Zhang-qi Yin",
+        "H. T. Quan",
+        "Kihwan Kim"
+      ],
+      "venue": "arXiv",
+      "year": "2014"
+    },
+    {
+      "id": "arxiv:1308.4503",
+      "doi": "",
+      "arxiv_id": "1308.4503",
+      "title": "Optomechanics of Levitated Dielectric Particles",
+      "authors": [
+        "Zhang-qi Yin",
+        "Andrew A. Geraci",
+        "Tongcang Li"
+      ],
+      "venue": "arXiv",
+      "year": "2013"
+    },
+    {
+      "id": "doi:10.1137/25M1804406",
+      "doi": "10.1137/25M1804406",
+      "arxiv_id": "",
+      "title": "Hilbert’s Sixth Problem: Particles and Waves",
+      "authors": [
+        "Yu Deng"
+      ],
+      "venue": "Proceedings of the International Congress of Mathematicians 2026",
+      "year": "2026"
+    },
+    {
+      "id": "doi:10.1186/s13660-025-03323-5",
+      "doi": "10.1186/s13660-025-03323-5",
+      "arxiv_id": "",
+      "title": "Lengths of closed geodesics for certain warped product metrics and nearly round metrics on spheres",
+      "authors": [
+        "Yuhang Liu"
+      ],
+      "venue": "Journal of Inequalities and Applications",
+      "year": "2025"
+    },
+    {
+      "id": "doi:10.1007/s10114-024-1418-9",
+      "doi": "10.1007/s10114-024-1418-9",
+      "arxiv_id": "",
+      "title": "On Closed Six-Manifolds Admitting Riemannian Metrics with Positive Sectional Curvature and Non-Abelian Symmetry",
+      "authors": [
+        "Yu Hang Liu"
+      ],
+      "venue": "Acta Mathematica Sinica, English Series",
+      "year": "2024"
+    },
+    {
+      "id": "doi:10.18514/MMN.2022.3901",
+      "doi": "10.18514/MMN.2022.3901",
+      "arxiv_id": "",
+      "title": "Rotational hypersurfaces with constant 2-mean curvature in R^(n+1)",
+      "authors": [
+        "Yuhang Liu"
+      ],
+      "venue": "Miskolc Mathematical Notes",
+      "year": "2022"
+    },
+    {
+      "id": "doi:10.1007/s11401-022-0324-7",
+      "doi": "10.1007/s11401-022-0324-7",
+      "arxiv_id": "",
+      "title": "Rotational Hypersurfaces with Constant Gauss-Kronecker Curvature",
+      "authors": [
+        "Yuhang Liu",
+        "Yunchu Dai"
+      ],
+      "venue": "Chinese Annals of Mathematics, Series B",
+      "year": "2022"
+    },
+    {
+      "id": "arxiv:2609.07252",
+      "doi": "",
+      "arxiv_id": "2609.07252",
+      "title": "Curvature Sign Rigidity and Sharp Pointwise Pinching Thresholds",
+      "authors": [
+        "Minbo Gao",
+        "Yuhang Liu",
+        "Genyuan Zhang"
+      ],
+      "venue": "arXiv",
+      "year": "2026"
+    },
+    {
+      "id": "arxiv:2609.27898",
+      "doi": "",
+      "arxiv_id": "2609.27898",
+      "title": "A Smooth Nonnegatively Curved Sphere Whose Zero-Curvature Point Locus Has Hausdorff Dimension 1/2",
+      "authors": [
+        "Yuhang Liu"
+      ],
+      "venue": "arXiv",
+      "year": "2026"
+    },
+    {
+      "id": "arxiv:2608.20888",
+      "doi": "",
+      "arxiv_id": "2608.20888",
+      "title": "Almost Positive Sectional Curvature with Bounded Geometry on $S^2\\times S^2$",
+      "authors": [
+        "Yuhang Liu"
+      ],
+      "venue": "arXiv",
+      "year": "2026"
+    },
+    {
+      "id": "arxiv:2608.14862",
+      "doi": "",
+      "arxiv_id": "2608.14862",
+      "title": "On the Positivity of the Products of Positive Primitive Forms",
+      "authors": [
+        "Yuhang Liu"
+      ],
+      "venue": "arXiv",
+      "year": "2026"
+    },
+    {
+      "id": "doi:10.1038/s41586-022-05277-w",
+      "doi": "10.1038/s41586-022-05277-w",
+      "arxiv_id": "",
+      "title": "Maturation and circuit integration of transplanted human cortical organoids",
+      "authors": [
+        "Omer Revah",
+        "Felicity Gore",
+        "Kevin W. Kelley",
+        "Jimena Andersen",
+        "Noriaki Sakai",
+        "Xiaoyu Chen",
+        "Min-Yin Li",
+        "Fikri Birey",
+        "Xiao Yang",
+        "Nay L. Saw",
+        "Samuel W. Baker",
+        "Neal D. Amin",
+        "Shravanti Kulkarni",
+        "Rachana Mudipalli",
+        "Bianxiao Cui",
+        "Seiji Nishino",
+        "Gerald A. Grant",
+        "Juliet K. Knowles",
+        "Mehrdad Shamloo",
+        "John R. Huguenard",
+        "Karl Deisseroth",
+        "Sergiu P. Pașca"
+      ],
+      "venue": "Nature",
+      "year": "2022"
+    },
+    {
+      "id": "doi:10.1103/g12h-93th",
+      "doi": "10.1103/g12h-93th",
+      "arxiv_id": "",
+      "title": "Primordial black holes are five dimensional",
+      "authors": [
+        "Luis A. Anchordoqui",
+        "Alek Bedroya",
+        "Dieter Lüst"
+      ],
+      "venue": "Physical Review D",
+      "year": "2026"
+    },
+    {
+      "id": "doi:10.1038/s41593-026-02433-7",
+      "doi": "10.1038/s41593-026-02433-7",
+      "arxiv_id": "",
+      "title": "Two parallel neural ectoderm progenitors contribute to the developing brain",
+      "authors": [
+        "Rayyan T. Jokhai",
+        "Carolyn E. Dundes",
+        "Hadia S. Ahsan",
+        "Rachel S. Kang",
+        "Rachel E. A. Salomon-Shulman",
+        "Arjun Rajan",
+        "Yoon Seok Kim",
+        "Liam J. Stanton",
+        "Christine Xu",
+        "Stephanie Do",
+        "Brennan D. McDonald",
+        "José Miguel Andrade López",
+        "Hugo A. Urrutia",
+        "Hannah Greenfeld",
+        "Alicia Wong",
+        "Yimiao Qu",
+        "Andrew S. Petkovic",
+        "Yi Miao",
+        "K. Christopher Garcia",
+        "Michelle Monje",
+        "Daniel E. Wagner",
+        "Marianne E. Bronner",
+        "Christopher J. Lowe",
+        "Kyle M. Loh"
+      ],
+      "venue": "Nature Neuroscience",
+      "year": "2026"
+    },
+    {
+      "id": "doi:10.1126/science.aee0747",
+      "doi": "10.1126/science.aee0747",
+      "arxiv_id": "",
+      "title": "China’s solar expansion policy reduces bird diversity",
+      "authors": [
+        "Huiming Zhang",
+        "Aixin Zhang",
+        "Kai Wu",
+        "Yinyin Cai",
+        "Shanjun Li",
+        "Shouyang Wang",
+        "Yueming (Lucy) Qiu",
+        "Shoujun Huang",
+        "Thi Thuc Anh Phan"
+      ],
+      "venue": "Science",
+      "year": "2026"
+    },
+    {
+      "id": "arxiv:2607.20366",
+      "doi": "",
+      "arxiv_id": "2607.20366",
+      "title": "Lightest $0^{-+}$ Glueball as Dominant Constituent of $X(2370)$",
+      "authors": [
+        "BESIII Collaboration"
+      ],
+      "venue": "arXiv",
+      "year": "2026"
+    },
+    {
+      "id": "doi:10.1523/JNEUROSCI.0902-16.2016",
+      "doi": "10.1523/JNEUROSCI.0902-16.2016",
+      "arxiv_id": "",
+      "title": "Neural Markers of Responsiveness to the Environment in Human Sleep",
+      "authors": [
+        "Thomas Andrillon",
+        "Andreas Trier Poulsen",
+        "Lars Kai Hansen",
+        "Damien Léger",
+        "Sid Kouider"
+      ],
+      "venue": "The Journal of Neuroscience",
+      "year": "2016"
+    },
+    {
+      "id": "doi:10.1093/sleep/zsag001",
+      "doi": "10.1093/sleep/zsag001",
+      "arxiv_id": "",
+      "title": "Efficacy of pink noise and earplugs for mitigating the effects of intermittent environmental noise exposure on sleep",
+      "authors": [
+        "Mathias Basner",
+        "Michael G Smith",
+        "Makayla Cordoza",
+        "Matthew S Kayser",
+        "Michele Carlin",
+        "Adrian J Ecker",
+        "Yoni Gilad",
+        "Sierra Park-Chavar",
+        "Ka’alana Rennie",
+        "Victoria Schneller",
+        "Sinead Walsh",
+        "Haochang Shou",
+        "Quy Cao",
+        "Magdy Younes",
+        "Daniel Aeschbach",
+        "Christopher W Jones"
+      ],
+      "venue": "SLEEP",
+      "year": "2026"
+    },
+    {
+      "id": "doi:10.1038/s41550-026-02955-x",
+      "doi": "10.1038/s41550-026-02955-x",
+      "arxiv_id": "",
+      "title": "The role of disruptive impacts on ocean generation and longevity in icy moons",
+      "authors": [
+        "Marc Neveu",
+        "Raluca Rufu",
+        "Alyssa Rhoden",
+        "Kevin J. Walsh",
+        "Yuval Steinberg"
+      ],
+      "venue": "Nature Astronomy",
+      "year": "2026"
+    },
+    {
+      "id": "doi:10.1038/s41550-024-02350-4",
+      "doi": "10.1038/s41550-024-02350-4",
+      "arxiv_id": "",
+      "title": "An ancient and impure frozen ocean on Ceres implied by its ice-rich crust",
+      "authors": [
+        "I. F. Pamerleau",
+        "M. M. Sori",
+        "J. E. C. Scully"
+      ],
+      "venue": "Nature Astronomy",
+      "year": "2024"
+    },
+    {
+      "id": "doi:10.1007/s43657-022-00090-x",
+      "doi": "10.1007/s43657-022-00090-x",
+      "arxiv_id": "",
+      "title": "Infrared Imageries of Human Body Activated by Tea Match the Hypothesis of Meridian System",
+      "authors": [
+        "Wenli Jin",
+        "Yichen Tao",
+        "Chen Wang",
+        "Lufei Wang",
+        "Xue Ao",
+        "Mingjie Su",
+        "Binwei Hu",
+        "Yuxiao Ouyang",
+        "Jiaxing Liu",
+        "Hui Li"
+      ],
+      "venue": "Phenomics",
+      "year": "2023"
+    },
+    {
+      "id": "doi:10.1073/pnas.0704292104",
+      "doi": "10.1073/pnas.0704292104",
+      "arxiv_id": "",
+      "title": "Moderation of breastfeeding effects on the IQ by genetic variation in fatty acid metabolism",
+      "authors": [
+        "Avshalom Caspi",
+        "Benjamin Williams",
+        "Julia Kim-Cohen",
+        "Ian W. Craig",
+        "Barry J. Milne",
+        "Richie Poulton",
+        "Leonard C. Schalkwyk",
+        "Alan Taylor",
+        "Helen Werts",
+        "Terrie E. Moffitt"
+      ],
+      "venue": "Proceedings of the National Academy of Sciences",
+      "year": "2007"
+    },
+    {
+      "id": "doi:10.1007/s10519-024-10210-0",
+      "doi": "10.1007/s10519-024-10210-0",
+      "arxiv_id": "",
+      "title": "No Evidence of Interaction Between FADS2 Genotype and Breastfeeding on Cognitive or Other Traits in the UK Biobank",
+      "authors": [
+        "Giulio Centorame",
+        "Nicole M. Warrington",
+        "Gibran Hemani",
+        "Geng Wang",
+        "George Davey Smith",
+        "David M. Evans"
+      ],
+      "venue": "Behavior Genetics",
+      "year": "2024"
+    },
+    {
+      "id": "arxiv:1603.07532",
+      "doi": "",
+      "arxiv_id": "1603.07532",
+      "title": "A Short Note on P-Value Hacking",
+      "authors": [
+        "Nassim Nicholas Taleb"
+      ],
+      "venue": "arXiv",
+      "year": "2016"
+    },
+    {
+      "id": "arxiv:1709.10242",
+      "doi": "",
+      "arxiv_id": "1709.10242",
+      "title": "Intelligence Quotient and Intelligence Grade of Artificial Intelligence",
+      "authors": [
+        "Feng Liu",
+        "Yong Shi",
+        "Ying Liu"
+      ],
+      "venue": "arXiv",
+      "year": "2017"
+    },
+    {
+      "id": "arxiv:2007.08431",
+      "doi": "",
+      "arxiv_id": "2007.08431",
+      "title": "An experiment to test the discreteness of time",
+      "authors": [
+        "Marios Christodoulou",
+        "Andrea Di Biagio",
+        "Pierre Martin-Dussaud"
+      ],
+      "venue": "arXiv",
+      "year": "2020"
+    },
+    {
+      "id": "arxiv:2510.15511",
+      "doi": "",
+      "arxiv_id": "2510.15511",
+      "title": "Language Models are Injective and Hence Invertible",
+      "authors": [
+        "Giorgos Nikolaou",
+        "Tommaso Mencattini",
+        "Donato Crisostomi",
+        "Andrea Santilli",
+        "Yannis Panagakis",
+        "Emanuele Rodolà"
+      ],
+      "venue": "arXiv",
+      "year": "2025"
+    },
+    {
+      "id": "doi:10.1038/s41593-025-02144-5",
+      "doi": "10.1038/s41593-025-02144-5",
+      "arxiv_id": "",
+      "title": "Charting brain morphology in international healthy and neurological populations",
+      "authors": [
+        "Zhizheng Zhuo",
+        "Li Chai",
+        "Yinshan Wang",
+        "Peng Gao",
+        "Xiaolu Xu",
+        "Liping Ai",
+        "Feng Ao",
+        "Yalin Bai",
+        "Yutong Bai",
+        "James H. Cole",
+        "Haihua Bao",
+        "Qing Cai",
+        "Jiancang Cao",
+        "Feiyan Chen",
+        "Feng Chen",
+        "Kun Chen",
+        "Yaojing Chen",
+        "Dan Cheng",
+        "Zaixu Cui",
+        "Hui Dai",
+        "Demao Deng",
+        "Yuhui Du",
+        "Guoguang Fan",
+        "Ying Fu",
+        "Zheqi Gao",
+        "Lubin Gou",
+        "Chunjie Guo",
+        "Min Guo",
+        "Ya Guo",
+        "Xuemei Han",
+        "Hongjian He",
+        "Yang Hou",
+        "Basheng Hu",
+        "Jianping Hu",
+        "Chu-Chung Huang",
+        "Peiyu Huang",
+        "Junqiang Lei",
+        "Hui-Jie Li",
+        "Jianrui Li",
+        "Junlin Li",
+        "Kexuan Li",
+        "Shaowu Li",
+        "Wenling Li",
+        "Xinyu Li",
+        "Yang Li",
+        "Yao Li",
+        "Yongmei Li",
+        "Yuna Li",
+        "Yunfei Li",
+        "Peipeng Liang",
+        "Haiyan Liao",
+        "Ching-Po Lin",
+        "Jun Liu",
+        "Jungang Liu",
+        "Weiqi Liu",
+        "Ying Liu",
+        "Shanshan Lu",
+        "Jie Luo",
+        "Yuqi Luo",
+        "Su Lui",
+        "Hailin Ma",
+        "Ning Mao",
+        "Lanxi Meng",
+        "Linghui Meng",
+        "Yinfeng Qian",
+        "Jun Qiu",
+        "Mengjie Rong",
+        "Juwei Shao",
+        "Qin Shen",
+        "Yulu Shi",
+        "Zhenyu Shu",
+        "Jun Sun",
+        "Decai Tian",
+        "Yiheng Tu",
+        "Fei Wang",
+        "Jinhui Wang",
+        "Junkai Wang",
+        "Wen Wang",
+        "Xiaochun Wang",
+        "Yilong Wang",
+        "Yong Wang",
+        "Zheng Wang",
+        "Jinyuan Weng",
+        "Feiyun Wu",
+        "Ying Wu",
+        "Yuankui Wu",
+        "Haiyan Wu",
+        "Xiaona Xia",
+        "Cheng Xu",
+        "Jiaheng Xu",
+        "Jun Xu",
+        "Rui Xu",
+        "Siyao Xu",
+        "Panjie Yan",
+        "Ruimeng Yang",
+        "SongTao Yin",
+        "Xi Yin",
+        "Yulong Yin",
+        "Rongjun Yu",
+        "Zhen Yuan",
+        "Feifei Zhang",
+        "Hailian Zhang",
+        "Jianguo Zhang",
+        "Ningnannan Zhang",
+        "Renlong Zhang",
+        "Tong Zhang",
+        "Yaqin Zhang",
+        "Zhanjun Zhang",
+        "Zhiqiang Zhang",
+        "Zhihua Zhang",
+        "Jian Zhao",
+        "Lianping Zhao",
+        "Xiaohu Zhao",
+        "Xinxiang Zhao",
+        "Xin Zhao",
+        "Xia Zhe",
+        "Fuqing Zhou",
+        "Jiajia Zhu",
+        "Li Zhu",
+        "Kuncheng Li",
+        "Xujun Duan",
+        "Yunyun Duan",
+        "Xi-Nian Zuo",
+        "Yaou Liu"
+      ],
+      "venue": "Nature Neuroscience",
+      "year": "2025"
+    },
+    {
+      "id": "doi:10.1212/WNL.0000000000214023",
+      "doi": "10.1212/WNL.0000000000214023",
+      "arxiv_id": "",
+      "title": "Association Between Consumption of Low- and No-Calorie Artificial Sweeteners and Cognitive Decline",
+      "authors": [
+        "Natalia Gomes Gonçalves",
+        "Euridice Martinez-Steele",
+        "Paulo A. Lotufo",
+        "Isabela Bensenor",
+        "Alessandra C. Goulart",
+        "Sandhi Maria Barreto",
+        "Luana Giatti",
+        "Carolina Perim de Faria",
+        "Maria del Carmen Bisi Molina",
+        "Paulo Caramelli",
+        "Dirce Maria Marchioni",
+        "Claudia Kimie Suemoto"
+      ],
+      "venue": "Neurology",
+      "year": "2025"
+    },
+    {
+      "id": "doi:10.1126/science.abb8598",
+      "doi": "10.1126/science.abb8598",
+      "arxiv_id": "",
+      "title": "Gene regulatory networks controlling vertebrate retinal regeneration",
+      "authors": [
+        "Thanh Hoang",
+        "Jie Wang",
+        "Patrick Boyd",
+        "Fang Wang",
+        "Clayton Santiago",
+        "Lizhi Jiang",
+        "Sooyeon Yoo",
+        "Manuela Lahne",
+        "Levi J. Todd",
+        "Meng Jia",
+        "Cristian Saez",
+        "Casey Keuthan",
+        "Isabella Palazzo",
+        "Natalie Squires",
+        "Warren A. Campbell",
+        "Fatemeh Rajaii",
+        "Trisha Parayil",
+        "Vickie Trinh",
+        "Dong Won Kim",
+        "Guohua Wang",
+        "Leah J. Campbell",
+        "John Ash",
+        "Andy J. Fischer",
+        "David R. Hyde",
+        "Jiang Qian",
+        "Seth Blackshaw"
+      ],
+      "venue": "Science",
+      "year": "2020"
+    },
+    {
+      "id": "doi:10.1126/sciadv.abj2164",
+      "doi": "10.1126/sciadv.abj2164",
+      "arxiv_id": "",
+      "title": "Acute multidrug delivery via a wearable bioreactor facilitates long-term limb regeneration and functional recovery in adult Xenopus laevis",
+      "authors": [
+        "Nirosha J. Murugan",
+        "Hannah J. Vigran",
+        "Kelsie A. Miller",
+        "Annie Golding",
+        "Quang L. Pham",
+        "Megan M. Sperry",
+        "Cody Rasmussen-Ivey",
+        "Anna W. Kane",
+        "David L. Kaplan",
+        "Michael Levin"
+      ],
+      "venue": "Science Advances",
+      "year": "2022"
+    },
+    {
+      "id": "doi:10.1002/jbmr.4470",
+      "doi": "10.1002/jbmr.4470",
+      "arxiv_id": "",
+      "title": "Mouse Digit Tip Regeneration Is Mechanical Load Dependent",
+      "authors": [
+        "Connor P Dolan",
+        "Felisha Imholt",
+        "Tae-Jung Yang",
+        "Rihana Bokhari",
+        "Joshua Gregory",
+        "Mingquan Yan",
+        "Osama Qureshi",
+        "Katherine Zimmel",
+        "Kirby M Sherman",
+        "Alyssa Falck",
+        "Ling Yu",
+        "Eric Leininger",
+        "Regina Brunauer",
+        "Larry J Suva",
+        "Dana Gaddy",
+        "Lindsay A Dawson",
+        "Ken Muneoka"
+      ],
+      "venue": "Journal of Bone and Mineral Research",
+      "year": "2020"
+    },
+    {
+      "id": "doi:10.1016/j.ydbio.2022.03.007",
+      "doi": "10.1016/j.ydbio.2022.03.007",
+      "arxiv_id": "",
+      "title": "Digit specific denervation does not inhibit mouse digit tip regeneration",
+      "authors": [
+        "Connor P. Dolan",
+        "Felisha Imholt",
+        "Mingquan Yan",
+        "Tae-Jung Yang",
+        "Joshua Gregory",
+        "Osama Qureshi",
+        "Katherine Zimmel",
+        "Kirby M. Sherman",
+        "Hannah M. Smith",
+        "Alyssa Falck",
+        "Eric Leininger",
+        "Ling Yu",
+        "Regina Brunauer",
+        "Larry J. Suva",
+        "Dana Gaddy",
+        "Lindsay A. Dawson",
+        "Ken Muneoka"
+      ],
+      "venue": "Developmental Biology",
+      "year": "2022"
+    },
+    {
+      "id": "doi:10.1126/science.abj3986",
+      "doi": "10.1126/science.abj3986",
+      "arxiv_id": "",
+      "title": "Bacterial sensing via neuronal Nod2 regulates appetite and body temperature",
+      "authors": [
+        "Ilana Gabanyi",
+        "Gabriel Lepousez",
+        "Richard Wheeler",
+        "Alba Vieites-Prado",
+        "Antoine Nissant",
+        "Grégoire Chevalier",
+        "Sébastien Wagner",
+        "Carine Moigneu",
+        "Sophie Dulauroy",
+        "Samia Hicham",
+        "Bernadette Polomack",
+        "Florine Verny",
+        "Philip Rosenstiel",
+        "Nicolas Renier",
+        "Ivo Gomperts Boneca",
+        "Gérard Eberl",
+        "Pierre-Marie Lledo"
+      ],
+      "venue": "Science",
+      "year": "2022"
+    },
+    {
+      "id": "arxiv:2609.36322",
+      "doi": "",
+      "arxiv_id": "2609.36322",
+      "title": "Periodic Weak Spots: Phase Sensitivity from Chunked KV-Cache Compression",
+      "authors": [
+        "Xingyu Zhu",
+        "Pu",
+        "Yi",
+        "Ziheng Cheng",
+        "Ang Lv",
+        "Jing Liu",
+        "Lexing Ying",
+        "Yiyuan Ma",
+        "Xin Dong"
+      ],
+      "venue": "arXiv",
+      "year": "2026"
+    },
+    {
+      "id": "arxiv:2607.15495",
+      "doi": "",
+      "arxiv_id": "2607.15495",
+      "title": "Verbalizable Representations Form a Global Workspace in Language Models",
+      "authors": [
+        "Wes Gurnee",
+        "Nicholas Sofroniew",
+        "Adam Pearce",
+        "Mateusz Piotrowski",
+        "Isaac Kauvar",
+        "Runjin Chen",
+        "Anna Soligo",
+        "Paul Bogdan",
+        "Euan Ong",
+        "Rowan Wang",
+        "Ben Thompson",
+        "David Abrahams",
+        "Subhash Kantamneni",
+        "Emmanuel Ameisen",
+        "Joshua Batson",
+        "Jack Lindsey"
+      ],
+      "venue": "arXiv",
+      "year": "2026"
+    },
+    {
+      "id": "arxiv:2603.21687",
+      "doi": "",
+      "arxiv_id": "2603.21687",
+      "title": "MIRAGE: The Illusion of Visual Understanding",
+      "authors": [
+        "Mohammad Asadi",
+        "Jack W. O'Sullivan",
+        "Fang Cao",
+        "Tahoura Nedaee",
+        "Kamyar Rajabalifardi",
+        "Fei-Fei Li",
+        "Ehsan Adeli",
+        "Euan Ashley"
+      ],
+      "venue": "arXiv",
+      "year": "2026"
+    },
+    {
+      "id": "doi:10.3386/w35401",
+      "doi": "10.3386/w35401",
+      "arxiv_id": "",
+      "title": "Baby Busts and Growth Booms: Demographic Change and the Macroeconomy",
+      "authors": [
+        "Daron Acemoglu",
+        "David Autor",
+        "Keelan Beirne",
+        "Andrew Scott"
+      ],
+      "venue": "National Bureau of Economic Research",
+      "year": "2026"
+    },
+    {
+      "id": "doi:10.1038/s41558-025-02398-8",
+      "doi": "10.1038/s41558-025-02398-8",
+      "arxiv_id": "",
+      "title": "Rising temperatures increase added sugar intake disproportionately in disadvantaged groups in the USA",
+      "authors": [
+        "Pan He",
+        "Zhuojing Xu",
+        "Duo Chan",
+        "Pengfei Liu",
+        "Yan Bai"
+      ],
+      "venue": "Nature Climate Change",
+      "year": "2025"
+    }
+  ],
+  "paper_alias": [
+    {
+      "paper_id": "arxiv:2503.01800",
+      "alias_id": "doi:10.48550/arXiv.2503.01800"
+    },
+    {
+      "paper_id": "arxiv:math/0211159",
+      "alias_id": "doi:10.48550/arXiv.math/0211159"
+    },
+    {
+      "paper_id": "doi:10.1371/journal.pone.0310348",
+      "alias_id": "doi:10.1101/2024.09.01.610707"
+    }
+  ],
+  "zhihu_user": [
+    {
+      "url_token": "paellahorizon",
+      "nickname": "Yu Deng",
+      "label": "愿世界和平，愿龙怜结婚。",
+      "label_source": "签名",
+      "orcid": "0009-0006-0283-8757"
+    },
+    {
+      "url_token": "ma-xiao-42-34",
+      "nickname": "不等式爱好者",
+      "label": "学数学，做数学，爱数学～",
+      "label_source": "签名",
+      "orcid": ""
+    },
+    {
+      "url_token": "xray322",
+      "nickname": "胖骁",
+      "label": "香港大学运营管理助理教授",
+      "label_source": "签名",
+      "orcid": "0000-0003-1421-749X"
+    },
+    {
+      "url_token": "richard-xu-25",
+      "nickname": "Richard Xu",
+      "label": "南加州大学 经济学博士",
+      "label_source": "认证",
+      "orcid": "0000-0003-0541-6673"
+    },
+    {
+      "url_token": "sijiazhao",
+      "nickname": "赵思家",
+      "label": "牛津大学神经科学博士后",
+      "label_source": "签名",
+      "orcid": "0000-0002-6246-0702"
+    },
+    {
+      "url_token": "divinites",
+      "nickname": "司马懿",
+      "label": "三国英雄士，四朝经济臣",
+      "label_source": "签名",
+      "orcid": "0000-0001-6416-6622"
+    },
+    {
+      "url_token": "wang-qing-yang-68-26",
+      "nickname": "王清扬",
+      "label": "宇宙学博士，小星星、恬豆包、雏草姬、GOGO队",
+      "label_source": "签名",
+      "orcid": "0000-0001-9069-8737"
+    },
+    {
+      "url_token": "yinzhangqi",
+      "nickname": "尹璋琦",
+      "label": "大学老师",
+      "label_source": "签名",
+      "orcid": ""
+    },
+    {
+      "url_token": "yuhang-liu-34",
+      "nickname": "Yuhang Liu",
+      "label": "Math PhD",
+      "label_source": "签名",
+      "orcid": "0000-0001-6925-5528"
+    }
+  ],
+  "user_paper_link": [
+    {
+      "url_token": "paellahorizon",
+      "paper_id": "arxiv:2503.01800",
+      "relation": "author"
+    },
+    {
+      "url_token": "ma-xiao-42-34",
+      "paper_id": "arxiv:2503.01800",
+      "relation": "author"
+    },
+    {
+      "url_token": "sijiazhao",
+      "paper_id": "doi:10.1093/braincomms/fcag361",
+      "relation": "author"
+    },
+    {
+      "url_token": "sijiazhao",
+      "paper_id": "doi:10.1136/jnnp-2025-337245",
+      "relation": "author"
+    },
+    {
+      "url_token": "sijiazhao",
+      "paper_id": "doi:10.31234/osf.io/n9dzb_v1",
+      "relation": "author"
+    },
+    {
+      "url_token": "sijiazhao",
+      "paper_id": "doi:10.64898/2026.06.17.732833",
+      "relation": "author"
+    },
+    {
+      "url_token": "sijiazhao",
+      "paper_id": "doi:10.1212/wnl.0000000000214985",
+      "relation": "author"
+    },
+    {
+      "url_token": "sijiazhao",
+      "paper_id": "doi:10.64898/2026.05.05.26352457",
+      "relation": "author"
+    },
+    {
+      "url_token": "sijiazhao",
+      "paper_id": "doi:10.1093/brain/awag110",
+      "relation": "author"
+    },
+    {
+      "url_token": "sijiazhao",
+      "paper_id": "doi:10.1038/s41398-026-04023-4",
+      "relation": "author"
+    },
+    {
+      "url_token": "sijiazhao",
+      "paper_id": "doi:10.7554/elife.109581.3",
+      "relation": "author"
+    },
+    {
+      "url_token": "sijiazhao",
+      "paper_id": "doi:10.7554/elife.109581",
+      "relation": "author"
+    },
+    {
+      "url_token": "divinites",
+      "paper_id": "doi:10.2139/ssrn.7560458",
+      "relation": "author"
+    },
+    {
+      "url_token": "divinites",
+      "paper_id": "doi:10.2139/ssrn.4908075",
+      "relation": "author"
+    },
+    {
+      "url_token": "divinites",
+      "paper_id": "doi:10.1016/j.frl.2023.104525",
+      "relation": "author"
+    },
+    {
+      "url_token": "divinites",
+      "paper_id": "doi:10.1016/j.ijindorg.2023.103034",
+      "relation": "author"
+    },
+    {
+      "url_token": "divinites",
+      "paper_id": "doi:10.1016/j.jebo.2023.08.021",
+      "relation": "author"
+    },
+    {
+      "url_token": "divinites",
+      "paper_id": "doi:10.1016/j.intfin.2022.101661",
+      "relation": "author"
+    },
+    {
+      "url_token": "divinites",
+      "paper_id": "doi:10.1016/j.intfin.2021.101341",
+      "relation": "author"
+    },
+    {
+      "url_token": "divinites",
+      "paper_id": "doi:10.1080/1351847X.2020.1720262",
+      "relation": "author"
+    },
+    {
+      "url_token": "divinites",
+      "paper_id": "doi:10.1016/j.jet.2016.01.008",
+      "relation": "author"
+    },
+    {
+      "url_token": "divinites",
+      "paper_id": "doi:10.1111/joie.12031",
+      "relation": "author"
+    },
+    {
+      "url_token": "wang-qing-yang-68-26",
+      "paper_id": "arxiv:2512.10862",
+      "relation": "author"
+    },
+    {
+      "url_token": "wang-qing-yang-68-26",
+      "paper_id": "arxiv:2504.13147",
+      "relation": "author"
+    },
+    {
+      "url_token": "wang-qing-yang-68-26",
+      "paper_id": "arxiv:2311.00239",
+      "relation": "author"
+    },
+    {
+      "url_token": "wang-qing-yang-68-26",
+      "paper_id": "arxiv:2301.03744",
+      "relation": "author"
+    },
+    {
+      "url_token": "wang-qing-yang-68-26",
+      "paper_id": "arxiv:2203.15452",
+      "relation": "author"
+    },
+    {
+      "url_token": "paellahorizon",
+      "paper_id": "arxiv:2408.07818",
+      "relation": "author"
+    },
+    {
+      "url_token": "paellahorizon",
+      "paper_id": "arxiv:2311.10082",
+      "relation": "author"
+    },
+    {
+      "url_token": "paellahorizon",
+      "paper_id": "doi:10.1007/s00222-023-01189-2",
+      "relation": "author"
+    },
+    {
+      "url_token": "paellahorizon",
+      "paper_id": "doi:10.1007/s00222-024-01254-4",
+      "relation": "author"
+    },
+    {
+      "url_token": "paellahorizon",
+      "paper_id": "doi:10.1007/s00222-021-01084-8",
+      "relation": "author"
+    },
+    {
+      "url_token": "paellahorizon",
+      "paper_id": "doi:10.4007/annals.2024.200.2.1",
+      "relation": "author"
+    },
+    {
+      "url_token": "paellahorizon",
+      "paper_id": "doi:10.1002/cpa.22092",
+      "relation": "author"
+    },
+    {
+      "url_token": "paellahorizon",
+      "paper_id": "doi:10.1002/cpa.21797",
+      "relation": "author"
+    },
+    {
+      "url_token": "paellahorizon",
+      "paper_id": "doi:10.4310/ACTA.2017.v219.n2.a1",
+      "relation": "author"
+    },
+    {
+      "url_token": "ma-xiao-42-34",
+      "paper_id": "arxiv:2408.07818",
+      "relation": "author"
+    },
+    {
+      "url_token": "ma-xiao-42-34",
+      "paper_id": "arxiv:2204.06148",
+      "relation": "author"
+    },
+    {
+      "url_token": "ma-xiao-42-34",
+      "paper_id": "doi:10.1007/s00220-020-03910-1",
+      "relation": "author"
+    },
+    {
+      "url_token": "ma-xiao-42-34",
+      "paper_id": "doi:10.1137/21m139671x",
+      "relation": "author"
+    },
+    {
+      "url_token": "xray322",
+      "paper_id": "doi:10.2139/ssrn.7481618",
+      "relation": "author"
+    },
+    {
+      "url_token": "xray322",
+      "paper_id": "doi:10.2139/ssrn.7162838",
+      "relation": "author"
+    },
+    {
+      "url_token": "xray322",
+      "paper_id": "doi:10.2139/ssrn.7001842",
+      "relation": "author"
+    },
+    {
+      "url_token": "xray322",
+      "paper_id": "doi:10.2139/ssrn.6137709",
+      "relation": "author"
+    },
+    {
+      "url_token": "xray322",
+      "paper_id": "doi:10.2139/ssrn.7001878",
+      "relation": "author"
+    },
+    {
+      "url_token": "xray322",
+      "paper_id": "doi:10.2139/ssrn.4962550",
+      "relation": "author"
+    },
+    {
+      "url_token": "xray322",
+      "paper_id": "doi:10.2139/ssrn.4890353",
+      "relation": "author"
+    },
+    {
+      "url_token": "xray322",
+      "paper_id": "doi:10.2139/ssrn.4810618",
+      "relation": "author"
+    },
+    {
+      "url_token": "xray322",
+      "paper_id": "doi:10.2139/ssrn.4633784",
+      "relation": "author"
+    },
+    {
+      "url_token": "xray322",
+      "paper_id": "doi:10.2139/ssrn.4593945",
+      "relation": "author"
+    },
+    {
+      "url_token": "xray322",
+      "paper_id": "doi:10.1016/j.ejor.2019.09.003",
+      "relation": "author"
+    },
+    {
+      "url_token": "yinzhangqi",
+      "paper_id": "arxiv:1811.01641",
+      "relation": "author"
+    },
+    {
+      "url_token": "yinzhangqi",
+      "paper_id": "arxiv:1804.07591",
+      "relation": "author"
+    },
+    {
+      "url_token": "yinzhangqi",
+      "paper_id": "arxiv:1801.03782",
+      "relation": "author"
+    },
+    {
+      "url_token": "yinzhangqi",
+      "paper_id": "arxiv:1601.02943",
+      "relation": "author"
+    },
+    {
+      "url_token": "yinzhangqi",
+      "paper_id": "arxiv:1608.05322",
+      "relation": "author"
+    },
+    {
+      "url_token": "yinzhangqi",
+      "paper_id": "arxiv:1605.03990",
+      "relation": "author"
+    },
+    {
+      "url_token": "yinzhangqi",
+      "paper_id": "arxiv:1509.03763",
+      "relation": "author"
+    },
+    {
+      "url_token": "yinzhangqi",
+      "paper_id": "arxiv:1407.4938",
+      "relation": "author"
+    },
+    {
+      "url_token": "yinzhangqi",
+      "paper_id": "arxiv:1409.4485",
+      "relation": "author"
+    },
+    {
+      "url_token": "yinzhangqi",
+      "paper_id": "arxiv:1308.4503",
+      "relation": "author"
+    },
+    {
+      "url_token": "paellahorizon",
+      "paper_id": "doi:10.1137/25M1804406",
+      "relation": "author"
+    },
+    {
+      "url_token": "yuhang-liu-34",
+      "paper_id": "doi:10.1186/s13660-025-03323-5",
+      "relation": "author"
+    },
+    {
+      "url_token": "yuhang-liu-34",
+      "paper_id": "doi:10.1007/s10114-024-1418-9",
+      "relation": "author"
+    },
+    {
+      "url_token": "yuhang-liu-34",
+      "paper_id": "doi:10.18514/MMN.2022.3901",
+      "relation": "author"
+    },
+    {
+      "url_token": "yuhang-liu-34",
+      "paper_id": "doi:10.1007/s11401-022-0324-7",
+      "relation": "author"
+    },
+    {
+      "url_token": "yuhang-liu-34",
+      "paper_id": "arxiv:2609.07252",
+      "relation": "author"
+    },
+    {
+      "url_token": "yuhang-liu-34",
+      "paper_id": "arxiv:2609.27898",
+      "relation": "author"
+    },
+    {
+      "url_token": "yuhang-liu-34",
+      "paper_id": "arxiv:2608.20888",
+      "relation": "author"
+    },
+    {
+      "url_token": "yuhang-liu-34",
+      "paper_id": "arxiv:2608.14862",
+      "relation": "author"
+    }
+  ],
+  "paper_card": [
+    {
+      "card_id": "c1",
+      "paper_id": "arxiv:2503.01800",
+      "attached_type": "question",
+      "attached_id": "14073117334"
+    },
+    {
+      "card_id": "c2",
+      "paper_id": "arxiv:2503.01800",
+      "attached_type": "article",
+      "attached_id": "2064545060377587912"
+    },
+    {
+      "card_id": "c3",
+      "paper_id": "arxiv:2503.01800",
+      "attached_type": "question",
+      "attached_id": "2063759151348410113"
+    },
+    {
+      "card_id": "c4",
+      "paper_id": "arxiv:2503.01800",
+      "attached_type": "article",
+      "attached_id": "2065029146414264742"
+    },
+    {
+      "card_id": "c5",
+      "paper_id": "arxiv:2503.01800",
+      "attached_type": "question",
+      "attached_id": "2063944001502310564"
+    },
+    {
+      "card_id": "c6",
+      "paper_id": "arxiv:math/0211159",
+      "attached_type": "question",
+      "attached_id": "456189005"
+    },
+    {
+      "card_id": "c7",
+      "paper_id": "arxiv:math/0211159",
+      "attached_type": "question",
+      "attached_id": "2016633336634815730"
+    },
+    {
+      "card_id": "c8",
+      "paper_id": "arxiv:math/0211159",
+      "attached_type": "article",
+      "attached_id": "1911416790489215932"
+    },
+    {
+      "card_id": "c9",
+      "paper_id": "doi:10.1038/s41586-022-05277-w",
+      "attached_type": "question",
+      "attached_id": "559331730"
+    },
+    {
+      "card_id": "c10",
+      "paper_id": "doi:10.1103/g12h-93th",
+      "attached_type": "question",
+      "attached_id": "2090012215709528994"
+    },
+    {
+      "card_id": "c11",
+      "paper_id": "doi:10.1038/s41593-026-02433-7",
+      "attached_type": "question",
+      "attached_id": "2087113764474824011"
+    },
+    {
+      "card_id": "c12",
+      "paper_id": "doi:10.1126/science.aee0747",
+      "attached_type": "question",
+      "attached_id": "2087855377010225198"
+    },
+    {
+      "card_id": "c13",
+      "paper_id": "doi:10.1126/science.aee0747",
+      "attached_type": "question",
+      "attached_id": "2074259711533266774"
+    },
+    {
+      "card_id": "c14",
+      "paper_id": "doi:10.1038/s41593-026-02433-7",
+      "attached_type": "question",
+      "attached_id": "2085791350843356347"
+    },
+    {
+      "card_id": "c15",
+      "paper_id": "arxiv:2607.20366",
+      "attached_type": "question",
+      "attached_id": "2068632379342714042"
+    },
+    {
+      "card_id": "c16",
+      "paper_id": "doi:10.1523/JNEUROSCI.0902-16.2016",
+      "attached_type": "answer",
+      "attached_id": "2082815507472835643"
+    },
+    {
+      "card_id": "c17",
+      "paper_id": "doi:10.1093/sleep/zsag001",
+      "attached_type": "answer",
+      "attached_id": "2082815507472835643"
+    },
+    {
+      "card_id": "c18",
+      "paper_id": "doi:10.1038/s41550-026-02955-x",
+      "attached_type": "question",
+      "attached_id": "2084940012861375722"
+    },
+    {
+      "card_id": "c19",
+      "paper_id": "doi:10.1038/s41550-024-02350-4",
+      "attached_type": "question",
+      "attached_id": "2033353496121099261"
+    },
+    {
+      "card_id": "c20",
+      "paper_id": "doi:10.1007/s43657-022-00090-x",
+      "attached_type": "question",
+      "attached_id": "457120964"
+    },
+    {
+      "card_id": "c21",
+      "paper_id": "doi:10.1073/pnas.0704292104",
+      "attached_type": "answer",
+      "attached_id": "2001387251708470079"
+    },
+    {
+      "card_id": "c22",
+      "paper_id": "doi:10.1007/s10519-024-10210-0",
+      "attached_type": "answer",
+      "attached_id": "2001387251708470079"
+    },
+    {
+      "card_id": "c23",
+      "paper_id": "arxiv:1603.07532",
+      "attached_type": "answer",
+      "attached_id": "2001387251708470079"
+    },
+    {
+      "card_id": "c24",
+      "paper_id": "arxiv:1709.10242",
+      "attached_type": "answer",
+      "attached_id": "2001387251708470079"
+    },
+    {
+      "card_id": "c25",
+      "paper_id": "arxiv:2007.08431",
+      "attached_type": "question",
+      "attached_id": "407738864"
+    },
+    {
+      "card_id": "c26",
+      "paper_id": "arxiv:2510.15511",
+      "attached_type": "question",
+      "attached_id": "1965384137994122944"
+    },
+    {
+      "card_id": "c27",
+      "paper_id": "doi:10.1038/s41593-025-02144-5",
+      "attached_type": "question",
+      "attached_id": "1998072477620859348"
+    },
+    {
+      "card_id": "c28",
+      "paper_id": "doi:10.1212/WNL.0000000000214023",
+      "attached_type": "answer",
+      "attached_id": "2030979895535325847"
+    },
+    {
+      "card_id": "c29",
+      "paper_id": "doi:10.1126/science.abb8598",
+      "attached_type": "answer",
+      "attached_id": "2029888653502190543"
+    },
+    {
+      "card_id": "c30",
+      "paper_id": "doi:10.1126/sciadv.abj2164",
+      "attached_type": "answer",
+      "attached_id": "2029888653502190543"
+    },
+    {
+      "card_id": "c31",
+      "paper_id": "doi:10.1002/jbmr.4470",
+      "attached_type": "answer",
+      "attached_id": "2029888653502190543"
+    },
+    {
+      "card_id": "c32",
+      "paper_id": "doi:10.1016/j.ydbio.2022.03.007",
+      "attached_type": "answer",
+      "attached_id": "2029888653502190543"
+    },
+    {
+      "card_id": "c33",
+      "paper_id": "doi:10.1126/science.abj3986",
+      "attached_type": "question",
+      "attached_id": "528799309"
+    },
+    {
+      "card_id": "c34",
+      "paper_id": "arxiv:2609.36322",
+      "attached_type": "question",
+      "attached_id": "2091513666864682278"
+    },
+    {
+      "card_id": "c35",
+      "paper_id": "arxiv:2607.15495",
+      "attached_type": "question",
+      "attached_id": "2057860832793453851"
+    },
+    {
+      "card_id": "c36",
+      "paper_id": "arxiv:2603.21687",
+      "attached_type": "question",
+      "attached_id": "2022698807524161519"
+    },
+    {
+      "card_id": "c37",
+      "paper_id": "doi:10.3386/w35401",
+      "attached_type": "question",
+      "attached_id": "2059739353270816819"
+    },
+    {
+      "card_id": "c38",
+      "paper_id": "doi:10.1038/s41558-025-02398-8",
+      "attached_type": "question",
+      "attached_id": "1948700850022256811"
+    }
+  ],
+  "question": [
+    {
+      "qid": "14073117334",
+      "title": "Yu Deng 及合作者在 arxiv 发布希尔伯特第六问题论文，这个世纪数学难题是否已被最终解决？",
+      "url": "https://www.zhihu.com/question/14073117334"
+    },
+    {
+      "qid": "2063759151348410113",
+      "title": "如何通俗地理解邓煜、王虹作为菲尔兹奖得主的核心研究成果？有怎样的价值？",
+      "url": "https://www.zhihu.com/question/2063759151348410113"
+    },
+    {
+      "qid": "2063944001502310564",
+      "title": "邓煜团队证明的格子玻尔兹曼方法的推导对流体领域有哪些影响？",
+      "url": "https://www.zhihu.com/question/2063944001502310564"
+    },
+    {
+      "qid": "456189005",
+      "title": "数学家佩雷尔曼水平在数学史上怎样？",
+      "url": "https://www.zhihu.com/question/456189005"
+    },
+    {
+      "qid": "2016633336634815730",
+      "title": "为什么丘成桐自己不去证明庞加莱猜想？",
+      "url": "https://www.zhihu.com/question/2016633336634815730"
+    },
+    {
+      "qid": "407738864",
+      "title": "如何看待最新研究表明，普朗克时间或可观测？",
+      "url": "https://www.zhihu.com/question/407738864"
+    },
+    {
+      "qid": "457120964",
+      "title": "复旦大学研究表明茶是打通人体经络最有效的食品，这一研究科学吗？",
+      "url": "https://www.zhihu.com/question/457120964"
+    },
+    {
+      "qid": "528799309",
+      "title": "研究发现大脑可与肠道细菌直接对话，这一发现具有哪些意义？可能对哪些领域发展造成影响？",
+      "url": "https://www.zhihu.com/question/528799309"
+    },
+    {
+      "qid": "559331730",
+      "title": "《自然》杂志登最新研究「人鼠混合大脑」，首次证明「人脑细胞在体外也有智力」，此研究是否会存在伦理问题？",
+      "url": "https://www.zhihu.com/question/559331730"
+    },
+    {
+      "qid": "2090012215709528994",
+      "title": "探测到的高能中微子或来自五维原初黑洞，这颠覆了什么？",
+      "url": "https://www.zhihu.com/question/2090012215709528994"
+    },
+    {
+      "qid": "2087113764474824011",
+      "title": "斯坦福研究发现人脑由两套细胞系统构成，大脑其实是两个器官？",
+      "url": "https://www.zhihu.com/question/2087113764474824011"
+    },
+    {
+      "qid": "2087855377010225198",
+      "title": "中国科协发文锐评光伏鸟类相关争议论文，如何理解「重视顶刊，但不迷信顶刊」这一说法？",
+      "url": "https://www.zhihu.com/question/2087855377010225198"
+    },
+    {
+      "qid": "2074259711533266774",
+      "title": "如何评价南信大团队在《Science》上发文「中国太阳能扩张政策导致鸟类生物多样性下降」？",
+      "url": "https://www.zhihu.com/question/2074259711533266774"
+    },
+    {
+      "qid": "2085791350843356347",
+      "title": "斯坦福大学最新研究称人脑由两群互不重叠的祖细胞并行构建，如何理解？这一发现具有哪些科学意义？",
+      "url": "https://www.zhihu.com/question/2085791350843356347"
+    },
+    {
+      "qid": "2068632379342714042",
+      "title": "我国首次证实「胶球」存在，对物理研究有什么影响？",
+      "url": "https://www.zhihu.com/question/2068632379342714042"
+    },
+    {
+      "qid": "2084940012861375722",
+      "title": "研究表明，太阳系大型卫星的液态海洋可以在剧烈撞击下幸存，如何看待这项研究？",
+      "url": "https://www.zhihu.com/question/2084940012861375722"
+    },
+    {
+      "qid": "2033353496121099261",
+      "title": "研究表明谷神星曾有一个富含杂质的全球性液态海洋，如何看待这个发现？",
+      "url": "https://www.zhihu.com/question/2033353496121099261"
+    },
+    {
+      "qid": "1965384137994122944",
+      "title": "罗马大学等机构研究发现 LLM 是「无损编码」，如何评价？",
+      "url": "https://www.zhihu.com/question/1965384137994122944"
+    },
+    {
+      "qid": "1998072477620859348",
+      "title": "研究发现中国人大脑发育约 38 岁达顶峰，峰值和老化均比西方人晚，为何会出现这种差异？有哪些科学依据？",
+      "url": "https://www.zhihu.com/question/1998072477620859348"
+    },
+    {
+      "qid": "2091513666864682278",
+      "title": "如何评价字节Seed团队发现DeepSeek性能漂移？",
+      "url": "https://www.zhihu.com/question/2091513666864682278"
+    },
+    {
+      "qid": "2057860832793453851",
+      "title": "如何看待anthropic最新发表的论文，发现了能对大模型诛心和PUA的J SPACE？",
+      "url": "https://www.zhihu.com/question/2057860832793453851"
+    },
+    {
+      "qid": "2022698807524161519",
+      "title": "斯坦福论文指出AI「海市蜃楼」现象，AI没看到图却脑补答案，为什么会出现这种情况？",
+      "url": "https://www.zhihu.com/question/2022698807524161519"
+    },
+    {
+      "qid": "2059739353270816819",
+      "title": "阿西莫格鲁（Daron Acemoğlu）论文提出「少子化未必会拖累经济增长」，如何看待这一结论？",
+      "url": "https://www.zhihu.com/question/2059739353270816819"
+    },
+    {
+      "qid": "1948700850022256811",
+      "title": "科学家研究论文指出「全球变暖导致添加糖摄入增加」，这一说法是否科学？",
+      "url": "https://www.zhihu.com/question/1948700850022256811"
+    },
+    {
+      "qid": "2016941639352992722",
+      "title": "睡前听「粉红噪声」反而让睡眠变差，其作用机制是怎样的？",
+      "url": "https://www.zhihu.com/question/2016941639352992722"
+    },
+    {
+      "qid": "665729810",
+      "title": "研究表明：喝母乳的小孩比不喝母乳的小孩智商高，你会倾向于喂母乳还是不喂母乳？",
+      "url": "https://www.zhihu.com/question/665729810"
+    },
+    {
+      "qid": "2030966529596946042",
+      "title": "研究发现长期喝无糖饮料会加速老年痴呆，让大脑提前变老，真是这样吗？背后有什么科学原理？",
+      "url": "https://www.zhihu.com/question/2030966529596946042"
+    },
+    {
+      "qid": "2029562201795552406",
+      "title": "Science 最新研究发现肢体再生可能由「环境」而非基因决定，可参考性有多大？人类的肢体可能再生吗？",
+      "url": "https://www.zhihu.com/question/2029562201795552406"
+    }
+  ],
+  "answer": [
+    {
+      "aid": "123281591095",
+      "qid": "14073117334",
+      "url_token": "paellahorizon",
+      "author_name": "Yu Deng",
+      "url": "https://www.zhihu.com/question/14073117334/answer/123281591095",
+      "vote_count": 5917
+    },
+    {
+      "aid": "121697164005",
+      "qid": "14073117334",
+      "url_token": "ma-xiao-42-34",
+      "author_name": "不等式爱好者",
+      "url": "https://www.zhihu.com/question/14073117334/answer/121697164005",
+      "vote_count": 5779
+    },
+    {
+      "aid": "120681480487",
+      "qid": "14073117334",
+      "url_token": "fan-po-30",
+      "author_name": "返朴",
+      "url": "https://www.zhihu.com/question/14073117334/answer/120681480487",
+      "vote_count": 381
+    },
+    {
+      "aid": "124405150584",
+      "qid": "14073117334",
+      "url_token": "mirabelle-39-41",
+      "author_name": "Mirabella",
+      "url": "https://www.zhihu.com/question/14073117334/answer/124405150584",
+      "vote_count": 12
+    },
+    {
+      "aid": "2063862080718033322",
+      "qid": "2063759151348410113",
+      "url_token": "sun-astro",
+      "author_name": "孙萌",
+      "url": "https://www.zhihu.com/question/2063759151348410113/answer/2063862080718033322",
+      "vote_count": 1405
+    },
+    {
+      "aid": "2063944215965571065",
+      "qid": "2063944001502310564",
+      "url_token": "OCTC",
+      "author_name": "智仿优连",
+      "url": "https://www.zhihu.com/question/2063944001502310564/answer/2063944215965571065",
+      "vote_count": 37
+    },
+    {
+      "aid": "2048040767550120065",
+      "qid": "456189005",
+      "url_token": "chasparkcha-si-wu",
+      "author_name": "Chaspark茶思屋",
+      "url": "https://www.zhihu.com/question/456189005/answer/2048040767550120065",
+      "vote_count": 71
+    },
+    {
+      "aid": "2076226431634370927",
+      "qid": "2016633336634815730",
+      "url_token": "qi-zhao-gua-niu-kan-hai-3",
+      "author_name": "骑着蜗牛看海",
+      "url": "https://www.zhihu.com/question/2016633336634815730/answer/2076226431634370927",
+      "vote_count": 149
+    },
+    {
+      "aid": "2082815507472835643",
+      "qid": "2016941639352992722",
+      "url_token": "MarryMea",
+      "author_name": "赵泠",
+      "url": "https://www.zhihu.com/question/2016941639352992722/answer/2082815507472835643",
+      "vote_count": 32
+    },
+    {
+      "aid": "2001387251708470079",
+      "qid": "665729810",
+      "url_token": "MarryMea",
+      "author_name": "赵泠",
+      "url": "https://www.zhihu.com/question/665729810/answer/2001387251708470079",
+      "vote_count": 187
+    },
+    {
+      "aid": "2030979895535325847",
+      "qid": "2030966529596946042",
+      "url_token": "li-lei-up",
+      "author_name": "李雷",
+      "url": "https://www.zhihu.com/question/2030966529596946042/answer/2030979895535325847",
+      "vote_count": 1031
+    },
+    {
+      "aid": "2029888653502190543",
+      "qid": "2029562201795552406",
+      "url_token": "MarryMea",
+      "author_name": "赵泠",
+      "url": "https://www.zhihu.com/question/2029562201795552406/answer/2029888653502190543",
+      "vote_count": 48
+    }
+  ],
+  "article": [
+    {
+      "pid": "2064545060377587912",
+      "url_token": "li-you-hua",
+      "author_name": "大老李",
+      "title": "从硬球动力学长时间推导玻尔兹曼方程 —— 论文解读报告",
+      "url": "https://zhuanlan.zhihu.com/p/2064545060377587912",
+      "vote_count": 150
+    },
+    {
+      "pid": "2065029146414264742",
+      "url_token": "19461-77",
+      "author_name": "消融ball",
+      "title": "邓煜对希尔波特第六问题证明带来的启示：熵增是一种信息丢失",
+      "url": "https://zhuanlan.zhihu.com/p/2065029146414264742",
+      "vote_count": 31
+    },
+    {
+      "pid": "1911416790489215932",
+      "url_token": "ni-hao-44-5-98",
+      "author_name": "科学达人",
+      "title": "佩雷尔曼为何将数学视为生理需求？",
+      "url": "https://zhuanlan.zhihu.com/p/1911416790489215932",
+      "vote_count": 830
+    }
+  ],
+  "_author_label_rule": "label = badge_v2.title (认证) if present, else headline (个性签名), else the placeholder 优秀答主. label_source records which."
+}
