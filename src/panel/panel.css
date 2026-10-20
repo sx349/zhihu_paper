@@ -45,9 +45,12 @@ main{flex:1;overflow-y:auto;overflow-x:hidden}
 .shead{display:flex;align-items:center;gap:8px}
 .shead,.zdhead{cursor:pointer;user-select:none}
 .shead:focus-visible,.zdhead:focus-visible{outline:2px solid var(--zhihu);outline-offset:3px;border-radius:3px}
-.chev{flex:none;width:9px;font-size:9px;line-height:1;color:var(--muted)}
-.chev::before{content:"\25be"}
-.sec.folded .chev::before{content:"\25b8"}
+/* Drawn with borders, not a glyph: U+25BE is the *small* triangle codepoint
+   and several fonts render it as barely more than a dot. */
+.chev{flex:none;width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;
+  border-top:7px solid var(--ink-2);transition:transform .12s ease,border-top-color .12s ease}
+.sec.folded .chev{transform:rotate(-90deg)}
+.shead:hover .chev,.zdhead:hover .chev{border-top-color:var(--zhihu)}
 /* The heading stays, everything else goes. */
 .sec.folded > :not(.shead):not(.zdhead){display:none}
 .sec.folded{padding-bottom:13px}
