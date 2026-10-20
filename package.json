@@ -7,7 +7,7 @@
   "scripts": {
     "test": "for f in tests/*.test.mjs; do node \"$f\" || exit 1; done",
     "lint": "eslint .",
-    "pack": "rm -f zhihu_paper.zip && zip -r zhihu_paper.zip manifest.json src data README.md schema.sql -x '*.DS_Store'"
+    "pack": "git archive --format=zip --prefix=zhihu_paper/ -o zhihu_paper.zip HEAD"
   },
   "devDependencies": {
     "eslint": "^9.39.0"
