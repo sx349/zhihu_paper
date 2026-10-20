@@ -2,6 +2,7 @@ import { getPaper, authorsByOrcid, mergeAuthors } from '../lib/papergraph.js';
 import { searchZhihu, searchZhihuWeb, searchQuestionsWeb, questionAnswers, zhida, zhidaWeb, zhidaPrompt, getSecret, draftQuestionCandidates, questionBody } from '../lib/zhihu.js';
 import { paperQuestions } from '../lib/paperquestions.js';
 import { rankByZhida } from '../lib/rank.js';
+import { readCache, writeCache, clearCache } from '../lib/cache.js';
 import { enrich } from '../lib/crossref.js';
 
 // Per-tab state lives in session storage, NOT a Map: MV3 kills the worker
@@ -139,8 +140,11 @@ async function rerank(tabId, paper, resolution) {
   const linked = (order || resolution.linked)
     .sort((a, b) => (b.authorInvolved - a.authorInvolved) || 0)   // stable: author-first wins
     .slice(0, 10);
-  await setState(tabId, { ...s, phase: null, resolution: { ...s.resolution, linked, ranked: !!order } });
+  const settled = { ...s.resolution, linked, ranked: !!order };
+  await setState(tabId, { ...s, phase: null, resolution: settled });
   chrome.runtime.sendMessage({ type: 'STATE_CHANGED', tabId }).catch(() => {});
+  // Cached only now: the provisional order is not what the panel shows.
+  await writeCache(paper.id, settled);
 }
 
 // The push (PAPER_FOUND) is the normal path. This is the other half of it:
@@ -168,10 +172,22 @@ async function pullFromTab(tabId) {
  * not even the paper title. The pool, the hydration and the title search
  * take a second or two between them, and they arrive by STATE_CHANGED.
  */
-async function handlePaper(tabId, rawPaper) {
+async function handlePaper(tabId, rawPaper, { fresh = false } = {}) {
   // Crossref fills only what the page left blank (ScienceDirect authors,
   // missing abstracts). Never overrides what the page actually said.
   const paper = await enrich(rawPaper);
+
+  if (!fresh) {
+    const cached = await readCache(paper.id);
+    if (cached) {
+      const s = { paper, resolution: cached, phase: null };
+      await setState(tabId, s);
+      chrome.runtime.sendMessage({ type: 'STATE_CHANGED', tabId }).catch(() => {});
+      console.log('[知乎论文助手]', paper.id, '-> cached');
+      return s;
+    }
+  }
+
   const preliminary = { paper, resolution: null, phase: 'fetching' };
   await setState(tabId, preliminary);
   chrome.runtime.sendMessage({ type: 'STATE_CHANGED', tabId }).catch(() => {});
@@ -196,6 +212,7 @@ async function resolveInBackground(tabId, paper) {
   await setState(tabId, { paper, resolution, phase: resolution.linked.length > 1 ? 'ranking' : null });
   chrome.runtime.sendMessage({ type: 'STATE_CHANGED', tabId }).catch(() => {});
   if (resolution.linked.length > 1) rerank(tabId, paper, resolution);
+  else await writeCache(paper.id, resolution);   // nothing to rank; this is final
 }
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
@@ -206,6 +223,15 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
     if (msg.type === 'PAPER_FOUND') {
       await handlePaper(tabId, msg.paper);
+      sendResponse({ ok: true });
+      return;
+    }
+
+    if (msg.type === 'REFRESH') {
+      const s = await getState(msg.tabId);
+      if (!s?.paper) { sendResponse({ ok: false }); return; }
+      await clearCache(s.paper.id);
+      await handlePaper(msg.tabId, s.paper, { fresh: true });
       sendResponse({ ok: true });
       return;
     }

@@ -325,6 +325,20 @@ document.getElementById('ask').addEventListener('click', async () => {
   await chrome.runtime.sendMessage({ type: 'OPEN_COMPOSE', tabId: tab?.id });
 });
 
+document.getElementById('refresh').addEventListener('click', async () => {
+  const btn = document.getElementById('refresh');
+  if (btn.disabled) return;
+  btn.disabled = true;
+  btn.classList.add('spin');
+  try {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    await chrome.runtime.sendMessage({ type: 'REFRESH', tabId: tab?.id });
+  } finally {
+    btn.disabled = false;
+    btn.classList.remove('spin');
+  }
+});
+
 document.getElementById('settings').addEventListener('click', () => chrome.runtime.openOptionsPage());
 chrome.runtime.onMessage.addListener((m) => { if (m.type === 'STATE_CHANGED' || m.type === 'ZHIDA_DONE') refresh(); });
 chrome.tabs.onActivated.addListener(refresh);

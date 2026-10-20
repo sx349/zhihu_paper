@@ -28,7 +28,12 @@ body{margin:0;background:var(--surface);color:var(--ink);font-family:var(--sans)
 .chrome .mark{width:16px;height:16px;border-radius:4px;background:var(--zhihu);flex:none;position:relative}
 .chrome .mark::after{content:"知";position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-size:10px;font-weight:700}
 .chrome .nm{font-size:12px;font-weight:600}
-.icon{margin-left:auto;background:none;border:0;color:var(--muted);font-size:14px;cursor:pointer;padding:2px 4px;border-radius:4px}
+.icon{background:none;border:0;color:var(--muted);font-size:19px;line-height:1;cursor:pointer;
+  width:30px;height:30px;display:grid;place-items:center;border-radius:6px}
+.icon:first-of-type{margin-left:auto}
+.icon:disabled{opacity:.4;cursor:default}
+#refresh.spin{animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 .icon:hover{color:var(--ink)}
 .icon:focus-visible{outline:2px solid var(--zhihu);outline-offset:1px}
 
