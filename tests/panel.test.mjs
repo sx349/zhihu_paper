@@ -1,5 +1,5 @@
 import { makeDom } from './domstub.mjs';
-const P='/Users/yejiaxu/Downloads/zhihu_paper';
+const P = new URL('..', import.meta.url).pathname.replace(/\/$/, '');
 let pass=0,fail=0;
 const ck=(n,c,e='')=>{c?pass++:fail++;console.log(`${c?'ok  ':'FAIL'}  ${n}${e?'  '+e:''}`);};
 

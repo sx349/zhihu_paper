@@ -1,6 +1,6 @@
 // Stub the two browser APIs papergraph.js touches, then exercise the real module.
 import { readFileSync } from 'fs';
-const P = '/Users/yejiaxu/Downloads/zhihu_paper';
+const P = new URL('..', import.meta.url).pathname.replace(/\/$/, '');
 globalThis.chrome = { runtime: { getURL: (p) => P + '/' + p } };
 globalThis.fetch = async (u) => ({ json: async () => JSON.parse(readFileSync(u, 'utf8')) });
 

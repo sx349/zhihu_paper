@@ -37,3 +37,4 @@ for (const [url, wantDoi, wantArxiv] of cases){
 const sdMeta = 'dc.identifier = 10.1016/j.amc.2016.12.030';
 console.log(`\nScienceDirect via meta: ${cleanDoi(sdMeta.split(' = ')[1])}`);
 console.log(`\n${pass} passed, ${fail} failed`);
+process.exit(fail ? 1 : 0);

@@ -1,4 +1,4 @@
-const { renderMarkdown: md } = await import('/Users/yejiaxu/Downloads/zhihu_paper/src/panel/md.js');
+const { renderMarkdown: md } = await import(new URL('../src/panel/md.js', import.meta.url));
 let pass=0,fail=0;
 const ck=(n,c,e='')=>{c?pass++:fail++;console.log(`${c?'ok  ':'FAIL'}  ${n}${e?'  '+e:''}`);};
 

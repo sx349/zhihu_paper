@@ -1,5 +1,5 @@
 // searchZhihuWeb mapping and zhidaWeb SSE parsing, against captured shapes.
-const P='/Users/yejiaxu/Downloads/zhihu_paper';
+const P = new URL('..', import.meta.url).pathname.replace(/\/$/, '');
 const store={};
 globalThis.chrome={ storage:{ local:{ get:async(k)=>({[k]:store[k]}), set:async(o)=>Object.assign(store,o) } } };
 let pass=0,fail=0; const ck=(n,c,e='')=>{c?pass++:fail++;console.log(`${c?'ok  ':'FAIL'}  ${n}${e?'  '+e:''}`);};

@@ -53,3 +53,4 @@ for(const [d,want] of [['10.48550/arXiv.2408.07818','2408.07818'],['10.48550/arx
   console.log(`${ok?'ok  ':'FAIL'}  ${'arXiv DOI -> id'.padEnd(23)} ${got}`);
 }
 console.log(`\n${pass} passed, ${fail} failed`);
+process.exit(fail ? 1 : 0);

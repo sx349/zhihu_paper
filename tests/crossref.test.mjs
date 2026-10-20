@@ -1,5 +1,5 @@
 import { readFileSync } from 'fs';
-const P='/Users/yejiaxu/Downloads/zhihu_paper';
+const P = new URL('..', import.meta.url).pathname.replace(/\/$/, '');
 const store={};
 globalThis.chrome={ storage:{ local:{
   get: async(k)=>({[k]:store[k]}),
