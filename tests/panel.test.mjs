@@ -17,7 +17,7 @@ async function run(state){
   globalThis.chrome.runtime.sendMessage=async(m)=>(m.type==='GET_STATE'?state:null);
   await import(P+'/src/panel/panel.js?v='+Math.random());
   await new Promise(r=>setTimeout(r,30));
-  return { secs: dom.root.sections(), text: dom.root.textContent, foot: !dom.foot.hidden };
+  return { secs: dom.root.sections(), text: dom.root.textContent, foot: !dom.foot.hidden, dom };
 }
 
 let r = await run({paper,resolution:{layer:'linked',authors,linked,search,viaAlias:false}});
@@ -85,6 +85,27 @@ ck('missing zhida field (older worker) still renders the button', r.text.include
 
 r = await run(null);
 ck('no paper: placeholder only', r.secs.length===0 && !r.foot);
+
+// --- folding --------------------------------------------------------------
+r = await run({paper,resolution:{layer:'linked',authors,linked,search,viaAlias:false},zhida:{text:'',pending:false}});
+const secs = r.dom.root.querySelectorAll('sec');
+const heads = secs.map((x)=> x.querySelectorAll('shead')[0] || x.querySelectorAll('zdhead')[0]);
+
+ck('every section is foldable', secs.length===4 && heads.every(Boolean), String(secs.length)+' sections');
+ck('  each heading carries a marker', heads.every((h)=>h.querySelectorAll('chev').length===1));
+ck('  and is reachable as a button', heads.every((h)=>h.getAttribute('role')==='button' && h.getAttribute('tabindex')==='0'));
+ck('all four start expanded', secs.every((x)=>!x.classList.contains('folded'))
+   && heads.every((h)=>h.getAttribute('aria-expanded')==='true'));
+
+// fold 相关问题 and the heading must survive while its body goes
+const qi = r.secs.findIndex((t)=>t.includes('相关问题'));
+heads[qi].fire('click');
+ck('folding sets the class', secs[qi].classList.contains('folded'));
+ck('  and flips aria-expanded', heads[qi].getAttribute('aria-expanded')==='false');
+ck('  while the heading and its count stay', secs[qi].querySelectorAll('shead')[0].textContent.includes('相关问题'));
+ck('  and the others are untouched', secs.filter((x,i)=>i!==qi).every((x)=>!x.classList.contains('folded')));
+heads[qi].fire('click');
+ck('unfolding puts it back', !secs[qi].classList.contains('folded') && heads[qi].getAttribute('aria-expanded')==='true');
 
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail?1:0);

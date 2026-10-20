@@ -6,7 +6,15 @@ class El {
   appendChild(n){ this.append(n); return n; }
   remove(){ const p=this.parentElement; if(p) p.children=p.children.filter(c=>c!==this); }
   replaceWith(n){ const p=this.parentElement; if(!p) return; n.parentElement=p; p.children=p.children.map(c=>c===this?n:c); }
-  addEventListener(){}
+  addEventListener(ev,fn){ (this._on ??= {})[ev] ??= []; this._on[ev].push(fn); }
+  fire(ev){ for(const fn of this._on?.[ev] ?? []) fn({ preventDefault(){}, key:'Enter' }); }
+  get classList(){ const self=this;
+    const list=()=>String(self.className).split(' ').filter(Boolean);
+    const has=(c)=>list().includes(c);
+    const add=(c)=>{ if(!has(c)) self.className=[...list(),c].join(' '); };
+    const rm=(c)=>{ self.className=list().filter(x=>x!==c).join(' '); };
+    return { contains:has, add, remove:rm,
+             toggle:(c,on)=>{ (on===undefined ? !has(c) : !!on) ? add(c) : rm(c); } }; }
   setAttribute(k,v){ this.attrs[k]=String(v); }
   getAttribute(k){ return this.attrs[k] ?? null; }
   querySelector(sel){ return this._find(sel)[0]||null; }

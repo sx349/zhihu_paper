@@ -34,12 +34,45 @@ function paperHeader(p) {
   return box;
 }
 
+// Which sections the reader has folded away. Held in memory, not storage:
+// the panel re-renders on every STATE_CHANGED and would otherwise unfold
+// what was just folded, while a fresh panel is meant to open expanded.
+const folded = new Set();
+
+// Folding hides the section's body but never its heading, so the count stays
+// readable -- that is what says what is hidden. CSS does the hiding, which
+// is why no caller has to route its content through a wrapper.
+// Called before the heading text so the marker sits first. The marker is a
+// bare span -- CSS draws the arrow off .folded, which keeps the glyph out of
+// the heading's text.
+function foldable(s, head, key) {
+  head.append(el('span', 'chev'));
+  head.setAttribute('role', 'button');
+  head.setAttribute('tabindex', '0');
+
+  const apply = () => {
+    const off = folded.has(key);
+    s.classList.toggle('folded', off);
+    head.setAttribute('aria-expanded', String(!off));
+  };
+  const toggle = () => {
+    if (folded.has(key)) folded.delete(key); else folded.add(key);
+    apply();
+  };
+  head.addEventListener('click', toggle);
+  head.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+  });
+  apply();
+}
+
 function section(title, count) {
   const s = el('div', 'sec');
   const h = el('div', 'shead');
+  s.append(h);
+  foldable(s, h, title);
   h.append(el('h3', null, title));
   if (count != null) h.append(el('span', 'count', String(count)));
-  s.append(h);
   return s;
 }
 
@@ -128,8 +161,9 @@ function discussionItem(d, fuzzy) {
 function zhidaSection(paper, zhida) {
   const s = el('div', 'sec');
   const head = el('div', 'zdhead');
-  head.append(el('h3', null, '论文解读'), el('span', 'ai', 'AI 生成'));
   s.append(head);
+  foldable(s, head, '论文解读');
+  head.append(el('h3', null, '论文解读'), el('span', 'ai', 'AI 生成'));
 
   const out = el('div', 'zdbody');
   const note = el('div', 'zdnote', '由知乎直答生成，仅供参考。');
