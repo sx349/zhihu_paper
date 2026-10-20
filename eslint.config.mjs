@@ -24,6 +24,7 @@ export default [
         URLSearchParams: 'readonly',
         TextDecoder: 'readonly',
         MutationObserver: 'readonly',
+        DOMParser: 'readonly',
         CustomEvent: 'readonly',
         DataTransfer: 'readonly',
         Event: 'readonly',

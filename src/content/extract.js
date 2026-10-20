@@ -108,6 +108,28 @@ var ZhihuPaper = (function () {
     return a ? cleanDoi((JSON.stringify(a).match(DOI_RE) || [])[1]) : '';
   }
 
+  function onArxivPdf() {
+    return location.hostname.indexOf('arxiv.org') > -1 && location.pathname.indexOf('/pdf/') === 0;
+  }
+
+  // A /pdf/ URL serves the PDF itself, and Chrome's viewer leaves us an empty
+  // document with no metas at all -- the id in the path is the only thing the
+  // page can give. The abs page for that id carries the full citation_* set
+  // and is same-origin, so its metas are fetched and planted into this
+  // document; every reader below then works as it does on a real abs page.
+  function plantAbsMetas() {
+    var id = onArxivPdf() && arxivId();
+    if (!id) return null;
+    return fetch('https://arxiv.org/abs/' + id)
+      .then(function (r) { return r.ok ? r.text() : ''; })
+      .then(function (html) {
+        var metas = new DOMParser().parseFromString(html, 'text/html')
+          .querySelectorAll('meta[name^="citation_"]');
+        for (var i = 0; i < metas.length; i++) document.head.appendChild(metas[i]);
+      })
+      .catch(function () {});
+  }
+
   function arxivId() {
     var m = decodeURIComponent(location.pathname).match(ARXIV_RE);
     if (m) return m[1];
@@ -233,9 +255,12 @@ var ZhihuPaper = (function () {
     var ld = ldArticle();
     var abs = abstractFromPage();
 
+    // /pdf/ is a file rather than a landing page, so the reader gets abs.
+    var url = onArxivPdf() && arxiv ? 'https://arxiv.org/abs/' + arxiv : location.href.split('?')[0];
+
     return {
       source: sourceName(),
-      url: location.href.split('?')[0],
+      url: url,
       doi: doi,
       arxivId: arxiv,
       id: doi ? 'doi:' + doi : 'arxiv:' + arxiv,
@@ -266,12 +291,19 @@ var ZhihuPaper = (function () {
       console.log('[知乎论文助手] extracted:', p || '(no paper on this page)');
       onChange(p);
     }
-    tick();
-    var push = history.pushState;
-    history.pushState = function () { push.apply(this, arguments); setTimeout(tick, 400); };
-    window.addEventListener('popstate', function () { setTimeout(tick, 400); });
-    var tries = 0;
-    var poll = setInterval(function () { tick(); if (++tries > 20) clearInterval(poll); }, 500);
+    function start() {
+      tick();
+      var push = history.pushState;
+      history.pushState = function () { push.apply(this, arguments); setTimeout(tick, 400); };
+      window.addEventListener('popstate', function () { setTimeout(tick, 400); });
+      var tries = 0;
+      var poll = setInterval(function () { tick(); if (++tries > 20) clearInterval(poll); }, 500);
+    }
+
+    // On a /pdf/ page the first look would see only the id. Waiting for the
+    // planted metas avoids pushing a title-less paper and resolving twice.
+    var planted = plantAbsMetas();
+    planted ? planted.then(start) : start();
   }
 
   // The identifier helpers are exposed so the tests can exercise the real

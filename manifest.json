@@ -35,6 +35,7 @@
     {
       "matches": [
         "https://arxiv.org/abs/*",
+        "https://arxiv.org/pdf/*",
         "https://www.sciencedirect.com/science/article/*",
         "https://link.springer.com/article/*",
         "https://link.springer.com/chapter/*",
