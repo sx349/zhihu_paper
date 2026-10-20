@@ -35,14 +35,11 @@ function paperHeader(p) {
   return box;
 }
 
-function section(title, count, note) {
+function section(title, count) {
   const s = el('div', 'sec');
   const h = el('div', 'shead');
   h.append(el('h3', null, title));
   if (count != null) h.append(el('span', 'count', String(count)));
-  // The pool arrives in about a second but 直答 takes another six to order
-  // it, so the heading says which of the two is still running.
-  if (note) h.append(el('span', 'note', note));
   s.append(h);
   return s;
 }
@@ -198,7 +195,14 @@ function collapsingList(parent, items, renderItem, shown) {
   parent.append(more);
 }
 
-function searchSection(search) {
+function searchSection(search, pending) {
+  // Nothing has been looked up yet, so 暂无相关讨论 below would be a claim
+  // about results that have not been fetched.
+  if (pending) {
+    const s = section('按标题检索');
+    s.append(el('div', 'zdwait', '正在获取结果…'));
+    return s;
+  }
   if (search.layer === 'needs-secret') {
     const s = el('div', 'sec');
     s.append(warn('!', '未配置 Access Secret，无法使用知乎搜索与直答。'));
@@ -272,17 +276,14 @@ function renderInner(state) {
   // itself five seconds after the reader starts on it is worse than a wait.
   const phase = state.phase;
   if (linked.length || phase) {
-    const s = section('关联讨论', phase ? null : linked.length,
-                      phase === 'fetching' ? '正在获取结果…'
-                      : phase === 'ranking' ? '正在用知乎直答排序…'
-                      : null);
+    const s = section('关联讨论', phase ? null : linked.length);
     if (resolution.conflict) s.append(warn('i', '匹配到多篇论文，以下结果可能与本文无关。'));
-    if (phase) s.append(el('div', 'empty', '请稍候'));
+    if (phase) s.append(el('div', 'zdwait', phase === 'fetching' ? '正在获取结果…' : '正在用知乎直答排序…'));
     else collapsingList(s, linked, questionItem, 5);
     root.append(s);
   }
 
-  root.append(searchSection(search));
+  root.append(searchSection(search, !state.resolution));
   root.append(zhidaSection(paper, state.zhida));
   // Only a question is somewhere a reader can add to. Linked articles and
   // answers are still listed, but they don't count as a place to discuss.

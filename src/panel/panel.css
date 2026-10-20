@@ -140,7 +140,6 @@ dialog textarea{width:100%;border:1px solid var(--line-2);border-radius:7px;padd
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 
 /* 关联讨论 rows: where the question came from, and whose answer is shown. */
-.shead .note{margin-left:auto;font-size:11px;color:var(--muted);font-style:italic}
 .ikind .src{margin-left:7px;padding:0 5px;border:1px solid var(--line);border-radius:3px;color:var(--muted);font-weight:600}
 .ikind .src.card{color:var(--linked);border-color:var(--linked-line);background:var(--linked-bg)}
 .ikind .byauth{margin-left:6px;padding:0 5px;border-radius:3px;color:#fff;background:var(--zhihu);font-weight:700}

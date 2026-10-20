@@ -57,6 +57,9 @@ ck('ambiguous match is disclosed', r.text.includes('可能与本文无关'));
 // Progress while the pool is still being fetched / ranked.
 r = await run({paper,resolution:null,phase:'fetching'});
 ck('fetching phase shows progress', r.text.includes('正在获取结果'));
+// 暂无相关讨论 before anything has been fetched would be a claim about
+// results that do not exist yet.
+ck('  搜索 section waits rather than claiming empty', !r.text.includes('暂无相关讨论'));
 r = await run({paper,resolution:{authors:[],linked,search},phase:'ranking'});
 ck('ranking phase shows progress', r.text.includes('正在用知乎直答排序'));
 // The list is withheld until ranked, so it never reshuffles under the reader.
