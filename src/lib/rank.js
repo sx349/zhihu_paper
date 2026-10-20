@@ -46,6 +46,23 @@ export function borda(orders, n) {
 }
 
 /**
+ * 直答 is handed the pool before it is hydrated, so the items it returns are
+ * the pre-hydration objects. This reapplies that order to the hydrated list
+ * by qid. Anything the order does not name keeps the tail rather than being
+ * dropped -- rankByZhida only returns full permutations, but losing a
+ * question to a mismatch between two modules would be silent.
+ */
+export function reorderByQid(ordered, hydrated) {
+  const left = new Map(hydrated.map((q) => [q.qid, q]));
+  const out = [];
+  for (const o of ordered) {
+    const h = left.get(o.qid);
+    if (h) { out.push(h); left.delete(o.qid); }
+  }
+  return [...out, ...left.values()];
+}
+
+/**
  * Returns the pool reordered, or null when 直答 could not be reached or
  * agreed on too little — the caller then keeps whatever order it had.
  */

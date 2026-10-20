@@ -5,7 +5,7 @@ globalThis.chrome = { storage: { local: { get: async (k) => ({ [k]: store[k] }),
 let pass = 0, fail = 0;
 const ck = (n, c, e = '') => { c ? pass++ : fail++; console.log(`${c ? 'ok  ' : 'FAIL'}  ${n}${e ? '  ' + e : ''}`); };
 
-const { parseOrder, borda, rankByZhida } = await import(P + '/src/lib/rank.js');
+const { parseOrder, borda, rankByZhida, reorderByQid } = await import(P + '/src/lib/rank.js');
 
 // --- parseOrder ----------------------------------------------------------
 ck('clean permutation', JSON.stringify(parseOrder('3,1,2', 3)) === JSON.stringify([3, 1, 2]));
@@ -69,6 +69,24 @@ ck('every pooled item is ranked', ranked !== null && ranked.length === 22);
 ck('  the last pooled item ranks first', ranked && ranked[0].title === 'q22');
 ck('  keeping ten leaves the ranker\'s top ten', ranked && ranked.slice(0, 10).map((x) => x.title).join(',')
    === 'q22,q21,q20,q19,q18,q17,q16,q15,q14,q13');
+
+// --- reapplying a rank order onto the hydrated pool ---------------------
+// 直答 ranks before hydration, so its items are the thin ones; the order has
+// to land on the fat ones without losing what hydration added.
+const thin = [{ qid: 'a', title: 'A' }, { qid: 'b', title: 'B' }, { qid: 'c', title: 'C' }];
+const fat = thin.map((q) => ({ ...q, answers: [{ votes: 1 }], top: { votes: 1 }, authorInvolved: false }));
+const applied = reorderByQid([thin[2], thin[0], thin[1]], fat);
+ck('order applied by qid', applied.map((q) => q.qid).join(',') === 'c,a,b', applied.map((q) => q.qid).join(','));
+ck('  returns the hydrated objects, not the ranked ones', applied.every((q) => q.top !== undefined));
+ck('  and the same objects, not copies', applied[0] === fat[2]);
+
+const short = reorderByQid([thin[1]], fat);
+ck('an order naming fewer keeps the rest at the tail', short.map((q) => q.qid).join(',') === 'b,a,c', short.map((q) => q.qid).join(','));
+ck('  and loses nothing', short.length === 3);
+ck('an empty order drops nothing', reorderByQid([], fat).length === 3);
+
+const unknown = reorderByQid([{ qid: 'zzz' }, thin[1]], fat);
+ck('a qid that is not in the pool is skipped', unknown.map((q) => q.qid).join(',') === 'b,a,c', unknown.map((q) => q.qid).join(','));
 
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

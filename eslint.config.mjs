@@ -35,6 +35,7 @@ export default [
         btoa: 'readonly',
         atob: 'readonly',
         crypto: 'readonly',
+        performance: 'readonly',
         history: 'readonly',
         Blob: 'readonly',
         ClipboardEvent: 'readonly',

@@ -29,81 +29,82 @@ const strip = (h) => String(h || '').replace(/<[^>]+>/g, '');
  * than the open platform — author url_token, question id and votes are
  * fields — but no relevance score, so order is Zhihu's own ranking.
  */
-export async function searchZhihuWeb(query, count = 10) {
-  const url = new URL('https://www.zhihu.com/api/v4/search_v3');
-  url.searchParams.set('t', 'general');
-  url.searchParams.set('q', query);
-  url.searchParams.set('limit', String(count));
-  url.searchParams.set('offset', '0');
-  const res = await fetch(url, { credentials: 'include' });
-  if (!res.ok) throw new Error('search_v3 HTTP ' + res.status);
-  const json = await res.json();
-
-  return (json.data || [])
-    .filter((d) => d.type === 'search_result' && d.object)
-    .map((d) => d.object)
-    .filter((o) => o.type === 'answer' || o.type === 'article')
-    .map((o) => {
-      // Ids are 19-digit and arrive as strings; they must never pass through
-      // a Number, which would round them.
-      const id = String(o.id);
-      const qid = o.question?.id != null ? String(o.question.id) : '';
-      return {
-        kind: o.type,
-        title: strip(o.type === 'answer' ? o.question?.name : o.title),
-        url: o.type === 'answer'
-          ? 'https://www.zhihu.com/question/' + qid + '/answer/' + id
-          : 'https://zhuanlan.zhihu.com/p/' + id,
-        excerpt: strip(o.excerpt).slice(0, 160),
-        author: strip(o.author?.name),   // matched terms are <em>-highlighted here too
-        authorToken: o.author?.url_token || '',
-        votes: o.voteup_count || 0,
-        questionId: qid
-      };
-    });
-}
-
 /**
- * The same search, reduced to distinct questions, for the 相关问题 pool.
+ * Zhihu's general search, mapped once and used for both panels.
  *
  * There is no question vertical to ask for: t=question, t=answer and
  * t=article all return zero rows, and Zhihu's own search UI has no 问题 tab,
- * so the filtering is ours to do. Answers carry their question, articles are
- * dropped here (they keep their place in 相关回答/文章).
+ * so the filtering is ours to do. Answers carry their question, which is what
+ * 相关问题 needs; articles have no question and belong only to 相关回答/文章.
  *
  * Two pages, because one is not enough and three is too many: page 1 of a
  * worked example yielded 4 questions, page 2 took it to 11 and completed
  * every question the hand-built seed had, and pages 3-4 added 21 more
- * without a single further hit.
+ * without a single further hit. The pages are fetched together -- their
+ * offsets are known up front, so serialising them only cost latency.
+ *
+ * This used to be two functions hitting the same endpoint with overlapping
+ * windows: a limit=10 offset=0 call for 相关回答/文章 on top of these two,
+ * re-fetching rows page 1 already had. One call now feeds both, so the two
+ * panels can no longer disagree about what search returned.
  */
-export async function searchQuestionsWeb(query, pages = 2) {
-  const byQid = new Map();
-  for (let page = 0; page < pages; page++) {
+export async function searchWeb(query, pages = 2) {
+  const page = async (n) => {
     const url = new URL('https://www.zhihu.com/api/v4/search_v3');
     url.searchParams.set('t', 'general');
     url.searchParams.set('q', query);
     url.searchParams.set('limit', '20');
-    url.searchParams.set('offset', String(page * 20));
+    url.searchParams.set('offset', String(n * 20));
     const res = await fetch(url, { credentials: 'include' });
-    if (!res.ok) break;
-    const json = await res.json();
+    if (!res.ok) throw new Error('search_v3 HTTP ' + res.status);
+    return (await res.json()).data || [];
+  };
 
-    for (const o of (json.data || []).filter((d) => d.object).map((d) => d.object)) {
-      if (o.type !== 'answer') continue;
+  const settled = await Promise.allSettled(Array.from({ length: pages }, (_, n) => page(n)));
+  // Page 1 failing is the real failure; a later page is a bonus.
+  if (settled[0].status === 'rejected') throw settled[0].reason;
+
+  const rows = [];
+  for (const s of settled) {
+    if (s.status !== 'fulfilled') continue;
+    for (const d of s.value) {
+      if (d.type !== 'search_result' || !d.object) continue;
+      const o = d.object;
+      if (o.type !== 'answer' && o.type !== 'article') continue;
+      // Ids are 19-digit and arrive as strings; they must never pass through
+      // a Number, which would round them.
+      const id = String(o.id);
       const qid = o.question?.id != null ? String(o.question.id) : '';
-      if (!qid) continue;
-      const prev = byQid.get(qid);
-      const votes = o.voteup_count || 0;
-      if (!prev || votes > prev.votes) {
-        byQid.set(qid, {
-          kind: 'question',
-          qid,
-          title: strip(o.question?.name),
-          url: 'https://www.zhihu.com/question/' + qid,
-          votes,
-          src: 'search'
-        });
-      }
+      rows.push({
+        kind: o.type,
+        qid,
+        title: strip(o.type === 'answer' ? o.question?.name : o.title),
+        url: o.type === 'answer'
+          ? 'https://www.zhihu.com/question/' + qid + '/answer/' + id
+          : 'https://zhuanlan.zhihu.com/p/' + id,
+        author: strip(o.author?.name),   // matched terms are <em>-highlighted here too
+        votes: o.voteup_count || 0
+      });
+    }
+  }
+  return rows;
+}
+
+/** The answer rows above, collapsed to distinct questions for 相关问题. */
+export function questionsFromRows(rows) {
+  const byQid = new Map();
+  for (const r of rows) {
+    if (r.kind !== 'answer' || !r.qid) continue;
+    const prev = byQid.get(r.qid);
+    if (!prev || r.votes > prev.votes) {
+      byQid.set(r.qid, {
+        kind: 'question',
+        qid: r.qid,
+        title: r.title,
+        url: 'https://www.zhihu.com/question/' + r.qid,
+        votes: r.votes,
+        src: 'search'
+      });
     }
   }
   return [...byQid.values()];
