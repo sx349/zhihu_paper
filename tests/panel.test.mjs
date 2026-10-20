@@ -11,7 +11,7 @@ const linked=[{kind:'question',title:'Q1',url:'https://z/q/1',answers:[{author:'
 const search={layer:'fuzzy',items:[{kind:'article',title:'S1',url:'https://z/p/2',author:'c',votes:1,score:0.67}],hidden:2};
 
 let lastDom=null;
-const dom_primary=()=>lastDom.primary.textContent;
+const dom_disabled=()=>lastDom.primary.disabled;
 async function run(state){
   const dom=makeDom(); lastDom=dom;
   globalThis.chrome.runtime.sendMessage=async(m)=>(m.type==='GET_STATE'?state:null);
@@ -25,9 +25,13 @@ ck('linked: renders authors + 关联讨论 + 按标题检索', r.secs.includes('
 ck('linked: title search shown even with a DOI hit', r.secs.includes('按标题检索'));
 ck('linked question: no 提问草稿', !r.secs.includes('提问草稿'));
 ck('panel never renders a draft section', !r.text.includes('提问草稿'));
-ck('linked question: button is 去知乎讨论', dom_primary(r)==='去知乎讨论');
-r = await run({paper,resolution:{layer:'linked',authors,linked:[linked[1]],search}});   // article only
-ck('linked article only: button is 去知乎提问', dom_primary(r)==='去知乎提问');
+// 参与讨论 opens the top-ranked question, so it is live only once there is
+// a ranked pool to open.
+ck('ranked pool: 参与讨论 is live', dom_disabled(r)===false);
+r = await run({paper,resolution:{layer:'linked',authors,linked:[],search}});
+ck('nothing found: 参与讨论 is disabled', dom_disabled(r)===true);
+r = await run({paper,resolution:{layer:'linked',authors,linked,search},phase:'ranking'});
+ck('still ranking: 参与讨论 is disabled', dom_disabled(r)===true);
 ck('linked article only: article still listed under 关联讨论', r.secs.includes('关联讨论'));
 ck('linked: no 标题搜索 tag', !r.text.includes('标题搜索'));
 ck('author card shows nickname, not real name', r.text.includes('不等式爱好者') && !r.text.includes('Xiao Ma'));

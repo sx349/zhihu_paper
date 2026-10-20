@@ -120,18 +120,3 @@ export function mergeAuthors(declared, viaOrcid) {
   const seen = new Set();
   return [...declared, ...viaOrcid].filter((a) => !seen.has(a.url_token) && seen.add(a.url_token));
 }
-
-/** Rows the demo writes back: user corrections and helpfulness votes. */
-export async function putFeedback(record) {
-  const key = 'feedback';
-  const store = await chrome.storage.local.get(key);
-  const rows = store[key] || [];
-  rows.push({ ...record, ts: Date.now() });
-  await chrome.storage.local.set({ [key]: rows });
-  return envelope({ stored: rows.length });
-}
-
-export async function exportFeedback() {
-  const store = await chrome.storage.local.get('feedback');
-  return store.feedback || [];
-}

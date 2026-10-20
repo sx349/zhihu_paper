@@ -31,8 +31,7 @@ class El {
 }
 export function makeDom(){
   const byId={};
-  for(const id of ['root','foot','primary','report','settings','fbdlg','fbtext']) byId[id]=new El('div');
-  byId.fbdlg.showModal=()=>{};
+  for(const id of ['root','foot','primary','ask','settings']) byId[id]=new El('div');
   globalThis.document={
     createElement:(t)=>new El(t),
     getElementById:(id)=>byId[id]||null,

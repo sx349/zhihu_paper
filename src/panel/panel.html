@@ -21,28 +21,11 @@
   </main>
 
   <footer id="foot" hidden>
-    <div class="fbbar">
-      <span class="q">结果是否有帮助？</span>
-      <button class="tb up" data-v="up"   aria-pressed="false" aria-label="有帮助">👍</button>
-      <button class="tb dn" data-v="down" aria-pressed="false" aria-label="没帮助">👎</button>
-    </div>
     <div class="btns">
-      <button id="primary" class="btn pri">去知乎讨论</button>
-      <button id="report"  class="btn">提交反馈</button>
+      <button id="primary" class="btn pri" disabled>参与讨论</button>
+      <button id="ask"     class="btn">发起提问</button>
     </div>
   </footer>
-
-  <dialog id="fbdlg">
-    <form method="dialog">
-      <h2>提交反馈</h2>
-      <p class="hint">请描述匹配结果的问题。</p>
-      <textarea id="fbtext" rows="5" placeholder="例如：第 2 条和这篇论文无关"></textarea>
-      <div class="dlgbtns">
-        <button value="cancel" class="btn">取消</button>
-        <button value="send" id="fbsend" class="btn pri">发送</button>
-      </div>
-    </form>
-  </dialog>
 
   <script src="panel.js" type="module"></script>
 </body>

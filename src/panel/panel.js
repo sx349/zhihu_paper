@@ -2,7 +2,6 @@ import { renderMarkdown } from './md.js';
 
 const root = document.getElementById('root');
 const foot = document.getElementById('foot');
-const dlg = document.getElementById('fbdlg');
 let current = null;
 
 const el = (tag, cls, text) => {
@@ -285,12 +284,11 @@ function renderInner(state) {
 
   root.append(searchSection(search, !state.resolution));
   root.append(zhidaSection(paper, state.zhida));
-  // Only a question is somewhere a reader can add to. Linked articles and
-  // answers are still listed, but they don't count as a place to discuss.
-  const questions = linked.filter((d) => d.kind === 'question');
 
-  document.getElementById('primary').textContent =
-    questions.length ? '去知乎讨论' : '去知乎提问';
+  // 参与讨论 opens the top-ranked question, so it stays disabled until the
+  // ranking is in -- otherwise it would act on the provisional order the
+  // panel is deliberately not showing -- and when there is nothing to open.
+  document.getElementById('primary').disabled = !!state.phase || !linked.length;
   foot.hidden = false;
 }
 
@@ -312,42 +310,17 @@ async function refresh() {
   render(state);
 }
 
-// feedback
-document.querySelectorAll('.tb').forEach((b) => {
-  b.addEventListener('click', () => {
-    const on = b.getAttribute('aria-pressed') === 'true';
-    b.parentElement.querySelectorAll('.tb').forEach((s) => s.setAttribute('aria-pressed', 'false'));
-    b.setAttribute('aria-pressed', on ? 'false' : 'true');
-    if (on) return;
-    chrome.runtime.sendMessage({
-      type: 'FEEDBACK',
-      record: { paperId: current?.paper?.id, layer: current?.resolution?.layer, verdict: b.dataset.v }
-    });
-  });
+document.getElementById('primary').addEventListener('click', () => {
+  // linked is ranked by the time this is clickable, so the first entry is
+  // the top-ranked question.
+  const q = (current?.resolution?.linked || [])[0];
+  if (q) chrome.tabs.create({ url: q.url });
 });
 
-document.getElementById('report').addEventListener('click', () => dlg.showModal());
-dlg.addEventListener('close', () => {
-  if (dlg.returnValue !== 'send') return;
-  const note = document.getElementById('fbtext').value.trim();
-  if (!note) return;
-  chrome.runtime.sendMessage({
-    type: 'FEEDBACK',
-    record: { paperId: current?.paper?.id, layer: current?.resolution?.layer, verdict: 'note', note }
-  });
-  document.getElementById('fbtext').value = '';
-});
-
-document.getElementById('primary').addEventListener('click', async () => {
-  const r = current?.resolution;
-  // linked is already ranked, so the first question in it is the top-ranked one.
-  const q = (r?.linked || []).find((d) => d.kind === 'question');
-  if (q) {
-    chrome.tabs.create({ url: q.url });
-    return;
-  }
-  // No question to join — compose one. The dialog opens on the paper page,
-  // where there is room for five candidates and an abstract-sized body.
+// Composing needs no existing discussion, so this is always available. The
+// dialog opens on the paper page, where there is room for five candidates
+// and an abstract-sized body.
+document.getElementById('ask').addEventListener('click', async () => {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   await chrome.runtime.sendMessage({ type: 'OPEN_COMPOSE', tabId: tab?.id });
 });

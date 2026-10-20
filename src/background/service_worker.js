@@ -1,4 +1,4 @@
-import { getPaper, authorsByOrcid, mergeAuthors, putFeedback, exportFeedback } from '../lib/papergraph.js';
+import { getPaper, authorsByOrcid, mergeAuthors } from '../lib/papergraph.js';
 import { searchZhihu, searchZhihuWeb, searchQuestionsWeb, questionAnswers, zhida, zhidaWeb, zhidaPrompt, getSecret, draftQuestionCandidates, questionBody } from '../lib/zhihu.js';
 import { paperQuestions } from '../lib/paperquestions.js';
 import { rankByZhida } from '../lib/rank.js';
@@ -247,16 +247,6 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       await chrome.storage.local.set({ pendingDraft: { title: msg.title, body: msg.body } });
       await chrome.tabs.create({ url: 'https://www.zhihu.com/' });
       sendResponse({ ok: true });
-      return;
-    }
-
-    if (msg.type === 'FEEDBACK') {
-      sendResponse(await putFeedback(msg.record));
-      return;
-    }
-
-    if (msg.type === 'EXPORT_FEEDBACK') {
-      sendResponse(await exportFeedback());
       return;
     }
 

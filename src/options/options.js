@@ -43,14 +43,3 @@ $('clear').addEventListener('click', async () => {
   set($('status'), '已清除');
 });
 
-$('export').addEventListener('click', async () => {
-  const { feedback = [] } = await chrome.storage.local.get('feedback');
-  if (!feedback.length) return set($('fbstat'), '暂无反馈记录');
-  const blob = new Blob([JSON.stringify(feedback, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'zhihu-paper-feedback.json';
-  a.click();
-  URL.revokeObjectURL(a.href);
-  set($('fbstat'), '已导出 ' + feedback.length + ' 条', 'ok');
-});
