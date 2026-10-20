@@ -155,13 +155,28 @@ async function pullFromTab(tabId) {
   return handlePaper(tabId, res.paper);
 }
 
+/**
+ * Registers the paper and returns at once, with resolve() left running.
+ *
+ * The panel's first GET_STATE on a cold tab comes through pullFromTab, so
+ * anything awaited here is time the panel spends showing nothing at all --
+ * not even the paper title. The pool, the hydration and the title search
+ * take a second or two between them, and they arrive by STATE_CHANGED.
+ */
 async function handlePaper(tabId, rawPaper) {
   // Crossref fills only what the page left blank (ScienceDirect authors,
   // missing abstracts). Never overrides what the page actually said.
   const paper = await enrich(rawPaper);
-  await setState(tabId, { paper, resolution: null, phase: 'fetching' });
+  const preliminary = { paper, resolution: null, phase: 'fetching' };
+  await setState(tabId, preliminary);
   chrome.runtime.sendMessage({ type: 'STATE_CHANGED', tabId }).catch(() => {});
+  // Deliberately not awaited. Nothing upstream can act on a failure here, and
+  // the panel keeps its pending state until a STATE_CHANGED says otherwise.
+  resolveInBackground(tabId, paper).catch((e) => console.log('[知乎论文助手] resolve failed:', e.message));
+  return preliminary;
+}
 
+async function resolveInBackground(tabId, paper) {
   const resolution = await resolve(paper);
   console.log('[知乎论文助手]', paper.id, '-> matched by', resolution.via,
               '| authors:', resolution.authors.length,
@@ -169,10 +184,14 @@ async function handlePaper(tabId, rawPaper) {
               '(card ' + resolution.linked.filter((d) => d.src === 'card').length + ')',
               '| search:', resolution.search.layer, resolution.search.items.length,
               resolution.error ? '| error: ' + resolution.error : '');
-  const s = { paper, resolution, phase: resolution.linked.length > 1 ? 'ranking' : null };
-  await setState(tabId, s);
+  // The tab may have moved on while the pool was being built.
+  const current = await getState(tabId);
+  if (!current || current.paper.id !== paper.id) return;
+
+  await setState(tabId, { paper, resolution, phase: resolution.linked.length > 1 ? 'ranking' : null });
+  chrome.runtime.sendMessage({ type: 'STATE_CHANGED', tabId }).catch(() => {});
+  chrome.tabs.sendMessage(tabId, { type: 'PAPER_COUNT', count: resolution.linked.length }).catch(() => {});
   if (resolution.linked.length > 1) rerank(tabId, paper, resolution);
-  return s;
 }
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
@@ -182,9 +201,9 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     const tabId = sender.tab?.id ?? msg.tabId;
 
     if (msg.type === 'PAPER_FOUND') {
-      const s = await handlePaper(tabId, msg.paper);
-      chrome.runtime.sendMessage({ type: 'STATE_CHANGED', tabId }).catch(() => {});
-      sendResponse({ count: s.resolution.linked.length });
+      await handlePaper(tabId, msg.paper);
+      // The count is not known yet; the badge gets it via PAPER_COUNT.
+      sendResponse({ count: null });
       return;
     }
 

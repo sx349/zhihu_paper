@@ -62,6 +62,9 @@
   // The worker can restart and lose what we pushed; let it ask again.
   chrome.runtime.onMessage.addListener(function (msg, sender, reply) {
     if (msg.type === 'GET_PAPER') reply({ paper: lastPaper });
+    // The worker answers PAPER_FOUND before it knows how many discussions
+    // there are, so the count arrives separately.
+    if (msg.type === 'PAPER_COUNT') render(lastPaper, msg.count);
   });
 
   ZhihuPaper.watch(function (paper) {
