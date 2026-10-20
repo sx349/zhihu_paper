@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - run: npm ci
+
+      # Catches a reference to a function that was never defined -- the bug
+      # that shipped in 0.1.0. No test can see it: the tests never load the
+      # service worker, because node has no chrome API to load it against.
+      - name: Lint
+        run: npm run lint
+
+      - name: Tests
+        run: npm test
+
+      # The version in chrome://extensions is the only thing a tester can
+      # read back to us. If it does not match package.json, builds become
+      # indistinguishable again.
+      - name: manifest version matches package.json
+        run: |
+          m=$(node -p "require('./manifest.json').version")
+          p=$(node -p "require('./package.json').version")
+          echo "manifest=$m package=$p"
+          test "$m" = "$p"

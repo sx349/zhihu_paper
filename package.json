@@ -1,0 +1,15 @@
+{
+  "name": "zhihu-paper",
+  "version": "0.1.0",
+  "description": "在论文页面识别当前论文，并连接知乎上的相关讨论。",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "for f in tests/*.test.mjs; do node \"$f\" || exit 1; done",
+    "lint": "eslint .",
+    "pack": "rm -f zhihu_paper.zip && zip -r zhihu_paper.zip manifest.json src data README.md schema.sql -x '*.DS_Store'"
+  },
+  "devDependencies": {
+    "eslint": "^9.39.0"
+  }
+}
