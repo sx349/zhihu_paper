@@ -59,5 +59,16 @@ ck('network failure yields null, not a throw', out === null, String(out));
 
 ck('a single item is not worth ranking', (await rankByZhida({ title: 'p' }, [{ title: 'only' }])) === null);
 
+// --- the pool is cut after ranking, not before --------------------------
+// Mirrors the worker: rank the whole pool, keep ten, show five.
+const big = Array.from({ length: 22 }, (_, i) => ({ title: 'q' + (i + 1) }));
+call = 0; replies = [[...Array(22).keys()].map((i) => 22 - i).join(',')];   // exact reverse
+globalThis.fetch = async () => sse(replies[0]);
+const ranked = await rankByZhida({ title: 'p', abstract: '' }, big);
+ck('every pooled item is ranked', ranked !== null && ranked.length === 22);
+ck('  the last pooled item ranks first', ranked && ranked[0].title === 'q22');
+ck('  keeping ten leaves the ranker\'s top ten', ranked && ranked.slice(0, 10).map((x) => x.title).join(',')
+   === 'q22,q21,q20,q19,q18,q17,q16,q15,q14,q13');
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

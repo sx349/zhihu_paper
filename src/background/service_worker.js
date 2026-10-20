@@ -132,8 +132,13 @@ async function rerank(tabId, paper, resolution) {
   const s = await getState(tabId);
   if (!s || s.paper.id !== paper.id) return;           // tab moved on
 
-  const linked = (order || resolution.linked).sort((a, b) =>
-    (b.authorInvolved - a.authorInvolved) || 0);        // stable: author-first wins
+  // Kept after ranking, never before it: 直答 judges the whole pool, so a
+  // low-vote explainer from the second page of search results can still earn
+  // its place. Only the tail it rejected is dropped. Five shown, five more
+  // behind the expander.
+  const linked = (order || resolution.linked)
+    .sort((a, b) => (b.authorInvolved - a.authorInvolved) || 0)   // stable: author-first wins
+    .slice(0, 10);
   await setState(tabId, { ...s, phase: null, resolution: { ...s.resolution, linked, ranked: !!order } });
   chrome.runtime.sendMessage({ type: 'STATE_CHANGED', tabId }).catch(() => {});
 }
