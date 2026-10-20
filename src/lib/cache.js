@@ -7,6 +7,13 @@ const PREFIX = 'cache:';
 const TTL_MS = 24 * 60 * 60 * 1000;   // discussion accumulates slowly
 const MAX_ENTRIES = 200;              // ~4KB each; a backstop, not the usual bound
 
+// A 论文解读 is a function of the paper and the model, so unlike the pool it
+// does not go stale -- the reason to drop one is storage, not freshness.
+// Hence a week rather than a day, and a tighter cap, each entry being larger.
+const Z_PREFIX = 'zhida:';
+const Z_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+const Z_MAX_ENTRIES = 50;             // ~4KB each
+
 const key = (paperId) => PREFIX + paperId;
 
 /**
@@ -48,35 +55,57 @@ function rehydrate(cached) {
   };
 }
 
-export async function readCache(paperId) {
-  const k = key(paperId);
+/** One expiring, capped store; the two below differ only in their constants. */
+async function read(prefix, paperId, ttl) {
+  const k = prefix + paperId;
   const got = await chrome.storage.local.get(k);
   const row = got[k];
   if (!row) return null;
-  if (Date.now() - row.ts > TTL_MS) {
+  if (Date.now() - row.ts > ttl) {
     await chrome.storage.local.remove(k);
     return null;
   }
-  return rehydrate(row.resolution);
+  return row;
 }
 
-export async function writeCache(paperId, resolution) {
+async function write(prefix, paperId, ttl, max, fields) {
   const all = await chrome.storage.local.get(null);
   const now = Date.now();
 
   const rows = Object.entries(all)
-    .filter(([k]) => k.startsWith(PREFIX))
-    .filter(([, v]) => now - v.ts <= TTL_MS);
+    .filter(([k]) => k.startsWith(prefix))
+    .filter(([, v]) => now - v.ts <= ttl);
 
-  const stale = Object.keys(all).filter((k) => k.startsWith(PREFIX) && !rows.some(([r]) => r === k));
+  const stale = Object.keys(all).filter((k) => k.startsWith(prefix) && !rows.some(([r]) => r === k));
   // Keep the newest; the cap only bites on a day of unusually heavy browsing.
-  const overflow = rows.sort((a, b) => b[1].ts - a[1].ts).slice(MAX_ENTRIES - 1).map(([k]) => k);
-  const drop = [...new Set([...stale, ...overflow])].filter((k) => k !== key(paperId));
+  const overflow = rows.sort((a, b) => b[1].ts - a[1].ts).slice(max - 1).map(([k]) => k);
+  const drop = [...new Set([...stale, ...overflow])].filter((k) => k !== prefix + paperId);
   if (drop.length) await chrome.storage.local.remove(drop);
 
-  await chrome.storage.local.set({ [key(paperId)]: { ts: now, resolution: trim(resolution) } });
+  await chrome.storage.local.set({ [prefix + paperId]: { ts: now, ...fields } });
+}
+
+export async function readCache(paperId) {
+  const row = await read(PREFIX, paperId, TTL_MS);
+  return row ? rehydrate(row.resolution) : null;
+}
+
+export async function writeCache(paperId, resolution) {
+  await write(PREFIX, paperId, TTL_MS, MAX_ENTRIES, { resolution: trim(resolution) });
 }
 
 export async function clearCache(paperId) {
   await chrome.storage.local.remove(key(paperId));
+}
+
+// The 论文解读, kept beside the resolution rather than inside it: ⟳ drops the
+// pool and re-resolves, and a generation that costs twenty seconds should not
+// go with it.
+export async function readZhida(paperId) {
+  const row = await read(Z_PREFIX, paperId, Z_TTL_MS);
+  return row ? row.text : '';
+}
+
+export async function writeZhida(paperId, text) {
+  await write(Z_PREFIX, paperId, Z_TTL_MS, Z_MAX_ENTRIES, { text });
 }

@@ -2,7 +2,7 @@ import { getPaper, authorsByOrcid, mergeAuthors } from '../lib/papergraph.js';
 import { searchZhihu, searchWeb, questionsFromRows, questionAnswers, zhida, zhidaWeb, zhidaPrompt, getSecret, draftQuestionCandidates, questionBody } from '../lib/zhihu.js';
 import { paperQuestions } from '../lib/paperquestions.js';
 import { rankByZhida, reorderByQid } from '../lib/rank.js';
-import { readCache, writeCache, clearCache } from '../lib/cache.js';
+import { readCache, writeCache, clearCache, readZhida, writeZhida } from '../lib/cache.js';
 import { enrich } from '../lib/crossref.js';
 
 // Per-tab state lives in session storage, NOT a Map: MV3 kills the worker
@@ -13,10 +13,6 @@ const getState = async (tabId) => (await chrome.storage.session.get(stateKey(tab
 const setState = (tabId, s) => chrome.storage.session.set({ [stateKey(tabId)]: s });
 
 const zhidaPending = new Set();   // paper ids with a generation in flight
-
-// 直答 output is keyed by paper, not tab, and kept in session storage so it
-// survives tab switches and worker restarts but not a browser close.
-const zhidaKey = (paperId) => 'zhida:' + paperId;
 
 chrome.runtime.onInstalled.addListener((details) => {
   chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch(() => {});
@@ -264,9 +260,8 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       if (id == null) { sendResponse(null); return; }
       const s = (await getState(id)) || (await pullFromTab(id));
       if (!s) { sendResponse(null); return; }
-      const key = zhidaKey(s.paper.id);
-      const stored = await chrome.storage.session.get(key);
-      sendResponse({ ...s, phase: s.phase || null, zhida: { text: stored[key] || '', pending: zhidaPending.has(s.paper.id) } });
+      sendResponse({ ...s, phase: s.phase || null,
+                     zhida: { text: await readZhida(s.paper.id), pending: zhidaPending.has(s.paper.id) } });
       return;
     }
 
@@ -313,7 +308,7 @@ chrome.runtime.onConnect.addListener((port) => {
         if (!(await getSecret())) throw new Error('直答暂不可用');
         full = await zhida(prompt, (delta) => port.postMessage({ delta }));
       }
-      await chrome.storage.session.set({ [zhidaKey(id)]: full });
+      await writeZhida(id, full);
       port.postMessage({ done: true, text: full });
       // The panel may have re-rendered mid-stream (tab switch); tell it to refetch.
       chrome.runtime.sendMessage({ type: 'ZHIDA_DONE', paperId: id }).catch(() => {});

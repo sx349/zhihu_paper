@@ -11,7 +11,7 @@ globalThis.chrome = { storage: { local: {
 let pass = 0, fail = 0;
 const ck = (n, c, e = '') => { c ? pass++ : fail++; console.log(`${c ? 'ok  ' : 'FAIL'}  ${n}${e ? '  ' + e : ''}`); };
 
-const { readCache, writeCache, clearCache } = await import(P + '/src/lib/cache.js');
+const { readCache, writeCache, clearCache, readZhida, writeZhida } = await import(P + '/src/lib/cache.js');
 
 const answer = (who) => ({ author: who, urlToken: who + '-token', votes: 5939,
                            url: 'https://www.zhihu.com/question/1/answer/2' });
@@ -79,6 +79,38 @@ ck('expired entries pruned on write', store['cache:stale'] === undefined);
 // --- clear ----------------------------------------------------------------
 await clearCache('x');
 ck('clearCache removes just that paper', store['cache:x'] === undefined);
+
+// --- the 论文解读 store ----------------------------------------------------
+// Its own prefix, week-long expiry and tighter cap: a 解读 does not go stale
+// the way a pool does, so it is evicted for space rather than for freshness.
+store = {};
+await writeZhida('arxiv:2503.01800', '## 一、论文做了什么\n\n这是…');
+ck('zhida reads back', (await readZhida('arxiv:2503.01800')).startsWith('## 一、'));
+ck('  under its own prefix', !!store['zhida:arxiv:2503.01800'] && !store['cache:arxiv:2503.01800']);
+ck('  a paper with none reads as empty, not null', (await readZhida('nope')) === '');
+
+// the two stores must not evict each other
+store = {};
+await writeCache('p', resolution);
+await writeZhida('p', 'text');
+ck('resolution and 解读 coexist for one paper', !!store['cache:p'] && !!store['zhida:p']);
+await clearCache('p');
+ck('clearing the resolution leaves the 解读', !store['cache:p'] && !!store['zhida:p']);
+
+store['zhida:old'] = { ts: Date.now() - 8 * 24 * 60 * 60 * 1000, text: 'x' };
+ck('8 days old is a miss', (await readZhida('old')) === '');
+store['zhida:recent'] = { ts: Date.now() - 6 * 24 * 60 * 60 * 1000, text: 'x' };
+ck('  6 days old is still a hit', (await readZhida('recent')) === 'x');
+
+store = {};
+const t = Date.now();
+for (let i = 0; i < 60; i++) store['zhida:z' + i] = { ts: t - i * 1000, text: 'x' };
+for (let i = 0; i < 300; i++) store['cache:c' + i] = { ts: t - i * 1000, resolution: { linked: [], search: { items: [] } } };
+await writeZhida('newest', 'x');
+ck('zhida capped at 50', Object.keys(store).filter((k) => k.startsWith('zhida:')).length === 50,
+   String(Object.keys(store).filter((k) => k.startsWith('zhida:')).length));
+ck('  and the resolution cache is untouched by it',
+   Object.keys(store).filter((k) => k.startsWith('cache:')).length === 300);
 
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

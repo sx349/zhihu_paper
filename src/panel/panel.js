@@ -167,25 +167,12 @@ function zhidaSection(paper, zhida) {
 
   const out = el('div', 'zdbody');
   const note = el('div', 'zdnote', '由知乎直答生成，仅供参考。');
-
-  // Already generated for this paper (survives tab switches via session storage).
-  if (zhida?.text) {
-    out.innerHTML = renderMarkdown(zhida.text);
-    s.append(out, note);
-    return s;
-  }
-
   const placeholder = el('div', 'zdwait', '正在生成…');
 
-  // Generation in flight from an earlier render; ZHIDA_DONE will refresh us.
-  if (zhida?.pending) {
-    s.append(placeholder, note);
-    return s;
-  }
-
-  const btn = el('button', 'zdgen', '生成直答解读');
-  btn.addEventListener('click', () => {
-    btn.replaceWith(placeholder);
+  // Streams into `placeholder`, which `from` is replaced by, and settles into
+  // `out`. Shared by the first generation and by 重新生成.
+  const generate = (from) => {
+    from.replaceWith(placeholder);
     let received = 0;
     const port = chrome.runtime.connect({ name: 'zhida' });
     port.onMessage.addListener((m) => {
@@ -202,8 +189,27 @@ function zhidaSection(paper, zhida) {
       }
     });
     port.postMessage({ paper });
-  });
+  };
 
+  // Already generated for this paper. Kept for a week in local storage, so
+  // this survives a browser restart and an extension reload, not just a tab
+  // switch -- and ⟳ re-resolves the pool without discarding it.
+  if (zhida?.text) {
+    out.innerHTML = renderMarkdown(zhida.text);
+    const again = el('button', 'zdagain', '重新生成');
+    again.addEventListener('click', () => generate(out));
+    s.append(out, note, again);
+    return s;
+  }
+
+  // Generation in flight from an earlier render; ZHIDA_DONE will refresh us.
+  if (zhida?.pending) {
+    s.append(placeholder, note);
+    return s;
+  }
+
+  const btn = el('button', 'zdgen', '生成直答解读');
+  btn.addEventListener('click', () => generate(btn));
   s.append(btn, note);
   return s;
 }

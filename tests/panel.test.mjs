@@ -76,10 +76,14 @@ r = await run({paper,resolution:{layer:'fuzzy',authors:[],linked:[],search},
                zhida:{text:'## 论文做了什么\n\n**核心**结论\n- 一\n- 二',pending:false}});
 ck('stored 直答 renders on load without a button', r.text.includes('论文做了什么') && !r.text.includes('生成直答解读'));
 ck('stored 直答 is rendered markdown, not raw', r.text.includes('核心') && !r.text.includes('**') && !r.text.includes('## '));
+ck('stored 直答 offers 重新生成', r.text.includes('重新生成'));
+ck('  and it sits in the body, not the heading, so folding hides it',
+   !(r.dom.root.querySelectorAll('zdhead')[0] || {textContent:''}).textContent.includes('重新生成'));
 r = await run({paper,resolution:{layer:'fuzzy',authors:[],linked:[],search},zhida:{text:'',pending:true}});
 ck('in-flight 直答 shows placeholder, no button', r.text.includes('正在生成') && !r.text.includes('生成直答解读'));
 r = await run({paper,resolution:{layer:'fuzzy',authors:[],linked:[],search},zhida:{text:'',pending:false}});
 ck('no 直答 yet shows the button', r.text.includes('生成直答解读') && !r.text.includes('正在生成'));
+ck('  and no 重新生成 before there is anything to regenerate', !r.text.includes('重新生成'));
 r = await run({paper,resolution:{layer:'fuzzy',authors:[],linked:[],search}});
 ck('missing zhida field (older worker) still renders the button', r.text.includes('生成直答解读'));
 
