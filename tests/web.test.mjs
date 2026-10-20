@@ -77,6 +77,9 @@ const sse=[
   ': keep-alive','',
   'data: {"event":"HeartBeat","data":{}}','',
   'data: {"event":"Answer","data":{"delta":true,"summary":"系统混乱程度</mark>的量"}}','',
+  // 直答 cites inline, and an element can straddle two deltas
+  'data: {"event":"Answer","data":{"delta":true,"summary":"，约 7 分钟<cite data-id=\'50"}}','',
+  'data: {"event":"Answer","data":{"delta":true,"summary":"00003\'>5000003</cite>可读完。"}}','',
   'data: not json','',
 ].join('\n')+'\n';
 const enc=new TextEncoder();
@@ -85,8 +88,12 @@ globalThis.fetch=async(u,o)=>{
   return { ok:true, status:200, body:new ReadableStream({ start(c){ for(const chunk of [sse.slice(0,70), sse.slice(70)]) c.enqueue(enc.encode(chunk)); c.close(); } }) };
 };
 const chunks=[]; const full=await zhidaWeb('p',(d)=>chunks.push(d));
-ck('accumulates Answer deltas, skips Init/HeartBeat/comments/garbage', full==='熵是描述系统混乱程度的量', full);
+ck('accumulates Answer deltas, skips Init/HeartBeat/comments/garbage',
+   full==='熵是描述系统混乱程度的量，约 7 分钟可读完。', full);
 ck('<mark> stripped', !full.includes('<mark>'));
-ck('onChunk called per delta', chunks.length===2);
+ck('<cite> goes with its contents, not just its tags', !full.includes('5000003') && !full.includes('cite'));
+ck('  even when it straddles two deltas', full.endsWith('分钟可读完。'));
+ck('  while a real number in the prose survives', full.includes('约 7 分钟'));
+ck('onChunk called per delta', chunks.length===4, String(chunks.length));
 
 console.log(`\n${pass} passed, ${fail} failed`); process.exit(fail?1:0);

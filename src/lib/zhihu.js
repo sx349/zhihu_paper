@@ -21,7 +21,14 @@ async function headers() {
   };
 }
 
-const strip = (h) => String(h || '').replace(/<[^>]+>/g, '');
+// 直答 cites its sources inline as <cite data-id='5000003'>5000003</cite>.
+// Dropping only the tags would leave the id behind as a run of digits glued
+// to the sentence -- and ids can be as short as a single character, so they
+// cannot be told from real numbers once the tags are gone. The element goes
+// with its contents; everything else keeps its text.
+const strip = (h) => String(h || '')
+  .replace(/<cite\b[^>]*>[\s\S]*?<\/cite>/gi, '')
+  .replace(/<[^>]+>/g, '');
 
 /**
  * Title search through Zhihu's web API with the user's cookies. No secret,
@@ -242,11 +249,14 @@ export async function zhidaWeb(prompt, onChunk) {
       let obj;
       try { obj = JSON.parse(line.slice(5).trim()); } catch (e) { continue; }
       if (obj.event !== 'Answer') continue;
-      const delta = strip(obj.data?.summary || '');
-      if (delta) { full += delta; onChunk(delta); }
+      // Accumulated raw and stripped at the end: an element split across two
+      // deltas is only removable once both halves are in hand. onChunk still
+      // gets a stripped delta -- it only feeds a progress count.
+      const delta = obj.data?.summary || '';
+      if (delta) { full += delta; onChunk(strip(delta)); }
     }
   }
-  return full;
+  return strip(full);
 }
 
 // Zhihu's own editorial prompt for turning a paper into a public question.
