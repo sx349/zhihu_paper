@@ -267,15 +267,18 @@ function renderInner(state) {
     root.append(s);
   }
 
+  // Nothing is listed until the ranking is in. The provisional order exists
+  // in state and is good enough to show, but a list that silently reshuffles
+  // itself five seconds after the reader starts on it is worse than a wait.
   const phase = state.phase;
   if (linked.length || phase) {
-    const note = phase === 'fetching' ? '正在获取结果…'
-               : phase === 'ranking'  ? '正在用知乎直答排序…'
-               : null;
-    const s = section('关联讨论', linked.length || null, note);
+    const s = section('关联讨论', phase ? null : linked.length,
+                      phase === 'fetching' ? '正在获取结果…'
+                      : phase === 'ranking' ? '正在用知乎直答排序…'
+                      : null);
     if (resolution.conflict) s.append(warn('i', '匹配到多篇论文，以下结果可能与本文无关。'));
-    if (linked.length) collapsingList(s, linked, questionItem, 5);
-    else if (phase) s.append(el('div', 'empty', '正在查找…'));
+    if (phase) s.append(el('div', 'empty', '请稍候'));
+    else collapsingList(s, linked, questionItem, 5);
     root.append(s);
   }
 

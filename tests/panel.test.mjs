@@ -59,6 +59,10 @@ r = await run({paper,resolution:null,phase:'fetching'});
 ck('fetching phase shows progress', r.text.includes('正在获取结果'));
 r = await run({paper,resolution:{authors:[],linked,search},phase:'ranking'});
 ck('ranking phase shows progress', r.text.includes('正在用知乎直答排序'));
+// The list is withheld until ranked, so it never reshuffles under the reader.
+ck('  no discussion listed while ranking', !r.text.includes(linked[0].title), linked[0].title);
+r = await run({paper,resolution:{authors:[],linked,search},phase:null});
+ck('  listed once ranking is done', r.text.includes(linked[0].title));
 
 // 直答 persistence + rendering
 r = await run({paper,resolution:{layer:'fuzzy',authors:[],linked:[],search},
