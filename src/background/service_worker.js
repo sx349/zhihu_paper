@@ -73,6 +73,23 @@ async function resolve(paper) {
   };
 }
 
+// The push (PAPER_FOUND) is the normal path. This is the other half of it:
+// badge.js keeps the last paper it found and answers GET_PAPER, so a worker
+// that lost its session state can ask the tab again instead of reporting no
+// paper on a page that plainly has one. A tab with no content script -- one
+// opened before the extension loaded -- has nothing to answer with, and null
+// is the honest result there.
+async function pullFromTab(tabId) {
+  let res;
+  try {
+    res = await chrome.tabs.sendMessage(tabId, { type: 'GET_PAPER' });
+  } catch (e) {
+    return null;
+  }
+  if (!res || !res.paper) return null;
+  return handlePaper(tabId, res.paper);
+}
+
 async function handlePaper(tabId, rawPaper) {
   // Crossref fills only what the page left blank (ScienceDirect authors,
   // missing abstracts). Never overrides what the page actually said.
