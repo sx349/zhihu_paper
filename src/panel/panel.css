@@ -8,16 +8,7 @@
   --sans:"IBM Plex Sans","Noto Sans SC",system-ui,-apple-system,"Segoe UI",sans-serif;
   --serif:"IBM Plex Serif","Noto Sans SC",Georgia,serif;
   --mono:ui-monospace,SFMono-Regular,Menlo,monospace;
-}
-@media (prefers-color-scheme:dark){
-  :root{
-    --surface:#171C24; --surface-2:#1E242E;
-    --ink:#E7ECF3; --ink-2:#BFC8D4; --muted:#8996A6;
-    --line:#28303B; --line-2:#36404E;
-    --zhihu:#4DA6FF;
-    --linked:#5FCFAA; --linked-bg:#12271F; --linked-line:#2E5F4E;
-    --fuzzy:#E0A551; --fuzzy-bg:#2A2013; --fuzzy-line:#5C4626;
-  }
+  color-scheme:light;
 }
 *{box-sizing:border-box}
 html,body{height:100%}

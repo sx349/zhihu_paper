@@ -20,7 +20,7 @@
   function onKey(e) { if (e.key === 'Escape') close(); }
 
   var CSS = [
-    ':host{all:initial}',
+    ':host{all:initial;color-scheme:light}',
     '*{box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans SC",sans-serif}',
     '.back{position:fixed;inset:0;z-index:2147483000;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:24px}',
     '.box{width:min(620px,100%);max-height:88vh;overflow-y:auto;background:#fff;color:#111721;border-radius:12px;',
@@ -46,16 +46,7 @@
     '.btn{padding:9px 18px;border-radius:8px;font-size:13.5px;font-weight:600;border:1px solid #C8D0DB;background:#fff;color:#111721;cursor:pointer}',
     '.btn:hover{border-color:#667385}',
     '.btn.pri{background:#0084FF;border-color:#0084FF;color:#fff}',
-    '.btn.pri:disabled{opacity:.45;cursor:not-allowed}',
-    '@media (prefers-color-scheme:dark){',
-    '  .box{background:#171C24;color:#E7ECF3}',
-    '  .c{background:#1E242E;border-color:#28303B;color:#E7ECF3}',
-    '  .c:hover{background:#171C24}',
-    '  input,textarea{background:#1E242E;border-color:#36404E;color:#E7ECF3}',
-    '  .btn{background:#171C24;border-color:#36404E;color:#E7ECF3}',
-    '  .hd .x:hover{background:#1E242E;color:#E7ECF3}',
-    '  .wait{border-color:#36404E}',
-    '}'
+    '.btn.pri:disabled{opacity:.45;cursor:not-allowed}'
   ].join('');
 
   function open(paper, body) {
