@@ -1,4 +1,4 @@
-import { authorsByOrcid, mergeAuthors, putFeedback, exportFeedback } from '../lib/papergraph.js';
+import { getPaper, authorsByOrcid, mergeAuthors, putFeedback, exportFeedback } from '../lib/papergraph.js';
 import { searchZhihu, searchZhihuWeb, searchQuestionsWeb, questionAnswers, zhida, zhidaWeb, zhidaPrompt, getSecret, draftQuestionCandidates, questionBody } from '../lib/zhihu.js';
 import { paperQuestions } from '../lib/paperquestions.js';
 import { rankByZhida } from '../lib/rank.js';
@@ -83,7 +83,15 @@ async function hydrate(items) {
 }
 
 async function resolve(paper) {
-  const authors = mergeAuthors([], await authorsByOrcid(paper.orcids));
+  // Zhihu has no endpoint for this, so the author bindings still come from
+  // the seed. ORCID alone cannot stand in: an arXiv preprint has no Crossref
+  // record to carry ORCIDs, so a declared link is the only way its authors
+  // are found at all.
+  const alt = [...(paper.altIds || [])];
+  if (paper.doi && paper.arxivId) alt.push('arxiv:' + paper.arxivId);
+  const hit = await getPaper(paper.id, alt);
+  const declared = hit.Code === 0 ? hit.Data.authors : [];
+  const authors = mergeAuthors(declared, await authorsByOrcid(paper.orcids));
   const authorTokens = new Set(authors.map((a) => a.url_token).filter(Boolean));
 
   const p = await pool(paper);

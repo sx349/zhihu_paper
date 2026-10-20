@@ -34,6 +34,17 @@ check('unseeded paper misses cleanly', miss.Code === 404 && miss.Data === null);
 const alt = await getPaper('doi:10.9999/nope', 'arxiv:2503.01800');
 check('falls back to alt id', alt.Code === 0);
 
+// --- declared author bindings -----------------------------------------
+// The 关联讨论 pool comes from Zhihu's index now, but the author bindings
+// still come from here, and ORCID cannot stand in for them: an arXiv
+// preprint has no Crossref record to carry an ORCID.
+const hilbert = await getPaper('arxiv:2503.01800');
+const bound = hilbert.Code === 0 ? hilbert.Data.authors.map((a) => a.url_token) : [];
+check('seeded paper carries its author links', bound.length === 2, bound.join(','));
+check('  Yu Deng bound', bound.includes('paellahorizon'));
+check('  Xiao Ma bound', bound.includes('ma-xiao-42-34'));
+check('  every binding resolves to an account', hilbert.Code === 0 && hilbert.Data.authors.every((a) => a.url_token && a.nickname));
+
 // --- 补充说明 body (the title now comes from the compose modal)
 const paper = { title:'Hilbert\'s sixth problem: derivation of fluid equations via Boltzmann\'s kinetic theory',
   authors:['Yu Deng','Zaher Hani','Xiao Ma'], arxivId:'2503.01800', doi:'', journal:'', year:'2025',
