@@ -190,7 +190,6 @@ async function resolveInBackground(tabId, paper) {
 
   await setState(tabId, { paper, resolution, phase: resolution.linked.length > 1 ? 'ranking' : null });
   chrome.runtime.sendMessage({ type: 'STATE_CHANGED', tabId }).catch(() => {});
-  chrome.tabs.sendMessage(tabId, { type: 'PAPER_COUNT', count: resolution.linked.length }).catch(() => {});
   if (resolution.linked.length > 1) rerank(tabId, paper, resolution);
 }
 
@@ -202,8 +201,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
     if (msg.type === 'PAPER_FOUND') {
       await handlePaper(tabId, msg.paper);
-      // The count is not known yet; the badge gets it via PAPER_COUNT.
-      sendResponse({ count: null });
+      sendResponse({ ok: true });
       return;
     }
 
