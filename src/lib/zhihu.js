@@ -215,7 +215,12 @@ export async function zhidaWeb(prompt, onChunk) {
     body: JSON.stringify({
       knowledge_ids: ['KBT_GLOBAL', 'KBT_ZHIHU', 'KBT_PAPER'],
       quiz_type: 'QT_CHAT', attachments: [], message_source_type: 'text',
-      session_id: '', zhida_source: 'ai_search_general', chat_mode: 'FAST',
+      session_id: '', zhida_source: 'zhida', chat_mode: 'FAST',
+      // What the site itself sends. Measured against 'ai_search_general' it is
+      // no faster -- chat_model is in fact ignored outright, a garbage value
+      // returns 200 and a usable answer -- but matching the site keeps us off
+      // whatever path the ai_search_general source selects.
+      chat_model: 'CM_DEEP_SEEK_R1',
       message_content: prompt, push_interval: 50
     })
   });
