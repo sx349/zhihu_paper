@@ -1,0 +1,47 @@
+name: 反馈一个问题
+description: 插件在某个论文页面没有正常工作
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        前三项是定位问题最关键的信息，请尽量填写。
+
+  - type: input
+    id: version
+    attributes:
+      label: 插件版本
+      description: 打开 `chrome://extensions`，在「知乎论文助手」下方可以看到版本号。
+      placeholder: "0.2.0"
+    validations:
+      required: true
+
+  - type: input
+    id: url
+    attributes:
+      label: 页面网址
+      description: 从地址栏直接复制，不要用分享链接。
+      placeholder: https://www.nature.com/articles/s41563-019-0422-4
+    validations:
+      required: true
+
+  - type: dropdown
+    id: panel
+    attributes:
+      label: 侧边栏显示的内容
+      options:
+        - 未识别到论文
+        - 显示了论文标题，但下面没有任何讨论
+        - 显示了讨论，但讨论和这篇论文无关
+        - 侧边栏打不开或者是空白
+        - 其他（请在下面说明）
+    validations:
+      required: true
+
+  - type: textarea
+    id: detail
+    attributes:
+      label: 补充说明
+      description: 截图很有帮助，可以直接拖进来。
+    validations:
+      required: false
