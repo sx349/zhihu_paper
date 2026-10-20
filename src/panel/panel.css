@@ -16,11 +16,11 @@ body{margin:0;background:var(--surface);color:var(--ink);font-family:var(--sans)
   display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
 
 .chrome{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid var(--line);background:var(--surface-2);flex:none}
-.chrome .mark{width:16px;height:16px;border-radius:4px;background:var(--zhihu);flex:none;position:relative}
-.chrome .mark::after{content:"知";position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-size:10px;font-weight:700}
-.chrome .nm{font-size:12px;font-weight:600}
-.icon{background:none;border:0;color:var(--muted);font-size:38px;line-height:1;cursor:pointer;
-  width:44px;height:44px;display:grid;place-items:center;border-radius:6px}
+.chrome .mark{width:22px;height:22px;border-radius:6px;background:var(--zhihu);flex:none;position:relative}
+.chrome .mark::after{content:"知";position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-size:14px;font-weight:700}
+.chrome .nm{font-size:15px;font-weight:600}
+.icon{background:none;border:0;color:var(--muted);font-size:28px;line-height:1;cursor:pointer;
+  width:36px;height:36px;display:grid;place-items:center;border-radius:6px}
 .icon:first-of-type{margin-left:auto}
 .icon:disabled{opacity:.4;cursor:default}
 #refresh.spin{animation:spin .8s linear infinite}
