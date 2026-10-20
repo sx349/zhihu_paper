@@ -12,18 +12,6 @@ const stateKey = (tabId) => 'tab:' + tabId;
 const getState = async (tabId) => (await chrome.storage.session.get(stateKey(tabId)))[stateKey(tabId)] || null;
 const setState = (tabId, s) => chrome.storage.session.set({ [stateKey(tabId)]: s });
 
-// Temporary instrumentation. Every leg of a resolution is timed so the
-// parallelisation work has measured numbers rather than estimates. Takes a
-// thunk, not a promise, so the clock starts at the call and not at creation.
-async function leg(name, run) {
-  const t0 = performance.now();
-  try {
-    return await run();
-  } finally {
-    console.log('[\u77e5\u4e4e\u8bba\u6587\u52a9\u624b] \u23f1 ' + name.padEnd(16) + Math.round(performance.now() - t0) + 'ms');
-  }
-}
-
 const zhidaPending = new Set();   // paper ids with a generation in flight
 
 // 直答 output is keyed by paper, not tab, and kept in session storage so it
@@ -72,8 +60,8 @@ async function search(paper) {
  */
 async function pool(paper) {
   const [card, sr] = await Promise.all([
-    leg('paperQuestions', () => paperQuestions(paper)).catch((e) => ({ questions: [], paperIds: [], via: 'error', error: e })),
-    leg('search', () => search(paper))
+    paperQuestions(paper).catch((e) => ({ questions: [], paperIds: [], via: 'error', error: e })),
+    search(paper)
   ]);
 
   const seen = new Set();
@@ -105,21 +93,21 @@ async function resolve(paper) {
   // are found at all.
   const alt = [...(paper.altIds || [])];
   if (paper.doi && paper.arxivId) alt.push('arxiv:' + paper.arxivId);
-  const hit = await leg('seed', () => getPaper(paper.id, alt));
+  const hit = await getPaper(paper.id, alt);
   const declared = hit.Code === 0 ? hit.Data.authors : [];
   const authors = mergeAuthors(declared, await authorsByOrcid(paper.orcids));
   const authorTokens = new Set(authors.map((a) => a.url_token).filter(Boolean));
 
-  const p = await leg('pool', () => pool(paper));
+  const p = await pool(paper);
 
   // 直答 ranks on titles alone, so it is launched here rather than after the
   // hydration it does not need. The two then overlap, and since ranking is
   // much the slower of them the hydration costs nothing in wall time.
   const ranking = p.items.length > 1
-    ? leg('rank', () => rankByZhida(paper, p.items)).catch(() => null)
+    ? rankByZhida(paper, p.items).catch(() => null)
     : Promise.resolve(null);
 
-  const hydrated = await leg('hydrate', () => hydrate(p.items));
+  const hydrated = await hydrate(p.items);
 
   // An author's own answer is worth surfacing next to the top one, which is
   // often somebody else's — the badge would otherwise point at a row that
@@ -202,7 +190,7 @@ async function pullFromTab(tabId) {
 async function handlePaper(tabId, rawPaper, { fresh = false } = {}) {
   // Crossref fills only what the page left blank (ScienceDirect authors,
   // missing abstracts). Never overrides what the page actually said.
-  const paper = await leg('enrich', () => enrich(rawPaper));
+  const paper = await enrich(rawPaper);
 
   if (!fresh) {
     const cached = await readCache(paper.id);
@@ -225,8 +213,7 @@ async function handlePaper(tabId, rawPaper, { fresh = false } = {}) {
 }
 
 async function resolveInBackground(tabId, paper) {
-  const started = performance.now();
-  const { resolution, ranking } = await leg('resolve', () => resolve(paper));
+  const { resolution, ranking } = await resolve(paper);
   console.log('[知乎论文助手]', paper.id, '-> matched by', resolution.via,
               '| authors:', resolution.authors.length,
               '| pool:', resolution.linked.length,
@@ -239,9 +226,8 @@ async function resolveInBackground(tabId, paper) {
 
   await setState(tabId, { paper, resolution, phase: resolution.linked.length > 1 ? 'ranking' : null });
   chrome.runtime.sendMessage({ type: 'STATE_CHANGED', tabId }).catch(() => {});
-  if (resolution.linked.length > 1) await rerank(tabId, paper, resolution, ranking);
+  if (resolution.linked.length > 1) rerank(tabId, paper, resolution, ranking);
   else await writeCache(paper.id, resolution);   // nothing to rank; this is final
-  console.log('[\u77e5\u4e4e\u8bba\u6587\u52a9\u624b] \u23f1 ' + 'TOTAL'.padEnd(16) + Math.round(performance.now() - started) + 'ms');
 }
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
