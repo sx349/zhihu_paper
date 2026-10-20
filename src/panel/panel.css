@@ -121,6 +121,10 @@ main{flex:1;overflow-y:auto;overflow-x:hidden}
 .zdbody hr{border:0;border-top:1px solid var(--line);margin:10px 0}
 .zdwait{padding:13px 12px;border-radius:8px;border:1px dashed var(--line-2);background:var(--surface-2);
   color:var(--muted);font-size:12.5px;text-align:center;font-variant-numeric:tabular-nums}
+/* Holds the items beyond the first few; matches the section's own spacing,
+   and takes up no room at all while collapsed. */
+.rest{display:flex;flex-direction:column;gap:10px}
+.rest:empty{display:none}
 .zdgen{padding:13px 12px;border-radius:8px;border:1px dashed var(--line-2);background:var(--surface-2);
   color:var(--ink-2);font-size:12.5px;font-weight:500;cursor:pointer;font-family:var(--sans);width:100%}
 .zdgen:hover{border-color:var(--zhihu);color:var(--zhihu)}

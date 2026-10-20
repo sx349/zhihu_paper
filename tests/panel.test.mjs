@@ -117,5 +117,24 @@ ck('  and the others are untouched', secs.filter((x,i)=>i!==qi).every((x)=>!x.cl
 heads[qi].fire('click');
 ck('unfolding puts it back', !secs[qi].classList.contains('folded') && heads[qi].getAttribute('aria-expanded')==='true');
 
+// --- showing three, and getting back to three -----------------------------
+const ten = Array.from({length:10},(_,i)=>({kind:'question',title:'Q'+(i+1),url:'https://z/q/'+i,
+  answers:[{author:'a',votes:100-i}],top:{author:'a',votes:100-i}}));
+r = await run({paper,resolution:{layer:'linked',authors:[],linked:ten,search:{layer:'empty',items:[]}},
+               zhida:{text:'',pending:false}});
+const items = () => r.dom.root.querySelectorAll('item').length;
+const more = r.dom.root.querySelectorAll('zdgen').find((b)=>b.textContent.includes('展开')||b.textContent.includes('收起'));
+
+ck('shows three of ten', items()===3, String(items()));
+ck('  and offers the other seven', more && more.textContent==='展开其余 7 条', more && more.textContent);
+more.fire('click');
+ck('expanding shows all ten', items()===10, String(items()));
+ck('  and the same button now collapses', more.textContent==='收起');
+more.fire('click');
+ck('collapsing returns to three', items()===3, String(items()));
+ck('  and the label comes back', more.textContent==='展开其余 7 条');
+more.fire('click');
+ck('expanding a second time still works', items()===10, String(items()));
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail?1:0);

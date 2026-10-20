@@ -235,18 +235,26 @@ function warn(icon, text) {
   return w;
 }
 
-// Linked lists can get long once an index exists; show the strongest few
-// and keep the rest one click away.
+// Linked lists can get long once an index exists; show the strongest few and
+// keep the rest one click away, in both directions.
+//
+// The rest go in a container appended ahead of the button rather than after
+// the visible items, so expanding and collapsing never has to move the button
+// -- it keeps its place, and only its label changes.
 function collapsingList(parent, items, renderItem, shown) {
   items.slice(0, shown).forEach((d) => parent.append(renderItem(d)));
   if (items.length <= shown) return;
+
   const rest = items.slice(shown);
+  const box = el('div', 'rest');
   const more = el('button', 'zdgen', `展开其余 ${rest.length} 条`);
   more.addEventListener('click', () => {
-    more.remove();
-    rest.forEach((d) => parent.append(renderItem(d)));
+    const open = box.children.length > 0;
+    box.innerHTML = '';
+    if (!open) rest.forEach((d) => box.append(renderItem(d)));
+    more.textContent = open ? `展开其余 ${rest.length} 条` : '收起';
   });
-  parent.append(more);
+  parent.append(box, more);
 }
 
 function searchSection(search, pending) {
@@ -288,7 +296,7 @@ function searchSection(search, pending) {
   }
   const s = section('相关回答/文章', search.items.length);
   s.append(warn('!', '以下为按标题检索的结果，可能与本文无关。'));
-  collapsingList(s, search.items, (d) => discussionItem(d, true), 5);
+  collapsingList(s, search.items, (d) => discussionItem(d, true), 3);
   return s;
 }
 
@@ -333,7 +341,7 @@ function renderInner(state) {
     const s = section('相关问题', phase ? null : linked.length);
     if (resolution.conflict) s.append(warn('i', '匹配到多篇论文，以下结果可能与本文无关。'));
     if (phase) s.append(el('div', 'zdwait', phase === 'fetching' ? '正在获取结果…' : '正在由知乎直答排序…'));
-    else collapsingList(s, linked, questionItem, 5);
+    else collapsingList(s, linked, questionItem, 3);
     root.append(s);
   }
 
