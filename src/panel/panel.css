@@ -98,9 +98,13 @@ main{flex:1;overflow-y:auto;overflow-x:hidden}
 .zdhead h3{margin:0;font-size:11px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--muted)}
 .ai{font-family:var(--mono);font-size:9.5px;font-weight:600;color:var(--zhihu);border:1px solid var(--zhihu);
   border-radius:3px;padding:1px 5px;opacity:.85}
-.zdagain{align-self:flex-start;background:none;border:0;padding:0;font:inherit;font-size:11px;
-  color:var(--muted);cursor:pointer;text-decoration:underline;text-underline-offset:2px}
-.zdagain:hover{color:var(--zhihu)}
+.zdmeta{display:flex;align-items:center;gap:10px}
+.zdmeta .zdnote{flex:1;min-width:0}
+.zdagain{flex:none;background:var(--surface-2);border:1px solid var(--line-2);border-radius:999px;
+  padding:3px 10px;font:inherit;font-size:11px;font-weight:600;color:var(--ink-2);cursor:pointer}
+.zdagain:hover{border-color:var(--zhihu);color:var(--zhihu)}
+.zdagain:focus-visible{outline:2px solid var(--zhihu);outline-offset:1px}
+.zdagain:disabled{opacity:.5;cursor:default;border-color:var(--line);color:var(--muted)}
 .zdbody{font-size:12.5px;line-height:1.62;color:var(--ink-2);border-left:2px solid var(--zhihu);padding:2px 0 2px 11px}
 .zdbody>*:first-child{margin-top:0}
 .zdbody>*:last-child{margin-bottom:0}

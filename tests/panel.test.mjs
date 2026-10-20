@@ -77,10 +77,16 @@ r = await run({paper,resolution:{layer:'fuzzy',authors:[],linked:[],search},
 ck('stored 直答 renders on load without a button', r.text.includes('论文做了什么') && !r.text.includes('生成直答解读'));
 ck('stored 直答 is rendered markdown, not raw', r.text.includes('核心') && !r.text.includes('**') && !r.text.includes('## '));
 ck('stored 直答 offers 重新生成', r.text.includes('重新生成'));
+ck('  enabled when nothing is running', r.dom.root.querySelectorAll('zdagain')[0].disabled !== true);
 ck('  and it sits in the body, not the heading, so folding hides it',
    !(r.dom.root.querySelectorAll('zdhead')[0] || {textContent:''}).textContent.includes('重新生成'));
 r = await run({paper,resolution:{layer:'fuzzy',authors:[],linked:[],search},zhida:{text:'',pending:true}});
 ck('in-flight 直答 shows placeholder, no button', r.text.includes('正在生成') && !r.text.includes('生成直答解读'));
+
+// a regeneration started elsewhere: text is stored AND pending is set
+r = await run({paper,resolution:{layer:'fuzzy',authors:[],linked:[],search},zhida:{text:'旧的解读内容',pending:true}});
+ck('regenerating shows progress, not the stale text', r.text.includes('正在生成') && !r.text.includes('旧的解读内容'));
+ck('  and 重新生成 is disabled meanwhile', r.dom.root.querySelectorAll('zdagain')[0].disabled === true);
 r = await run({paper,resolution:{layer:'fuzzy',authors:[],linked:[],search},zhida:{text:'',pending:false}});
 ck('no 直答 yet shows the button', r.text.includes('生成直答解读') && !r.text.includes('正在生成'));
 ck('  and no 重新生成 before there is anything to regenerate', !r.text.includes('重新生成'));

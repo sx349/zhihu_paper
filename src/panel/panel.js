@@ -166,12 +166,21 @@ function zhidaSection(paper, zhida) {
   head.append(el('h3', null, '论文解读'), el('span', 'ai', 'AI 生成'));
 
   const out = el('div', 'zdbody');
-  const note = el('div', 'zdnote', '由知乎直答生成，仅供参考。');
   const placeholder = el('div', 'zdwait', '正在生成…');
 
+  // Disclaimer left, 重新生成 right, directly under the heading -- the body
+  // can run long, and a control parked below it is a control nobody finds.
+  const meta = el('div', 'zdmeta');
+  meta.append(el('span', 'zdnote', '由知乎直答生成，仅供参考。'));
+  s.append(meta);
+
+  const again = el('button', 'zdagain', '重新生成');
+
   // Streams into `placeholder`, which `from` is replaced by, and settles into
-  // `out`. Shared by the first generation and by 重新生成.
+  // `out`. Shared by the first generation and by 重新生成, which is held
+  // disabled for the duration so a second click cannot open a second stream.
   const generate = (from) => {
+    again.disabled = true;
     from.replaceWith(placeholder);
     let received = 0;
     const port = chrome.runtime.connect({ name: 'zhida' });
@@ -182,10 +191,12 @@ function zhidaSection(paper, zhida) {
       }
       if (m.error) {
         placeholder.replaceWith(warn('!', m.error));
+        again.disabled = false;
       }
       if (m.done) {
         out.innerHTML = renderMarkdown(m.text || '');
         placeholder.replaceWith(out);
+        again.disabled = false;
       }
     });
     port.postMessage({ paper });
@@ -196,21 +207,25 @@ function zhidaSection(paper, zhida) {
   // switch -- and ⟳ re-resolves the pool without discarding it.
   if (zhida?.text) {
     out.innerHTML = renderMarkdown(zhida.text);
-    const again = el('button', 'zdagain', '重新生成');
     again.addEventListener('click', () => generate(out));
-    s.append(out, note, again);
+    meta.append(again);
+    // A regeneration started before this render -- the panel re-renders on
+    // every STATE_CHANGED, and this branch outranks the pending one below.
+    // Show what the local path shows, so the two cannot disagree.
+    if (zhida.pending) { again.disabled = true; s.append(placeholder); }
+    else s.append(out);
     return s;
   }
 
   // Generation in flight from an earlier render; ZHIDA_DONE will refresh us.
   if (zhida?.pending) {
-    s.append(placeholder, note);
+    s.append(placeholder);
     return s;
   }
 
   const btn = el('button', 'zdgen', '生成直答解读');
   btn.addEventListener('click', () => generate(btn));
-  s.append(btn, note);
+  s.append(btn);
   return s;
 }
 
