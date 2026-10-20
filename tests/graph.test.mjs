@@ -60,6 +60,7 @@ check('DOI paper links through doi.org', doiBody.includes('链接：https://doi.
 check('no abstract -> no 摘要 line', !doiBody.includes('摘要'));
 check('authorless body has no 作者 line', !questionBody({ ...paper, authors: [] }).includes('作者：'));
 check('zhida prompt includes abstract', zhidaPrompt(paper).includes('摘要：'));
+check('zhida prompt asks for no tables', zhidaPrompt(paper).includes('请不要使用表格'));
 
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

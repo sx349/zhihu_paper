@@ -355,7 +355,10 @@ export function zhidaPrompt(paper) {
     paper.doi ? 'DOI：' + paper.doi : '',
     paper.journal ? '期刊：' + paper.journal : '',
     paper.abstract ? '\n摘要：' + paper.abstract.slice(0, 1200) : '',
-    '\n请说明：这篇论文要解决什么问题、核心方法是什么、相比已有工作推进在哪里。'
+    '\n请说明：这篇论文要解决什么问题、核心方法是什么、相比已有工作推进在哪里。',
+    // The panel is a ~380px side panel; a multi-column table of Chinese prose
+    // is unreadable in it, whether it wraps or scrolls.
+    '请不要使用表格，改用段落或列表。'
   ];
   return bits.filter(Boolean).join('\n');
 }
