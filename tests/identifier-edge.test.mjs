@@ -1,17 +1,7 @@
-// candidate replacements
-const DOI_RE   = /\b(10\.\d{4,9}\/[^\s"']+)/;
-const ARXIV_RE = /\/(?:abs|pdf)\/((?:[a-z-]+(?:\.[A-Z]{2})?\/\d{7})|(?:\d{4}\.\d{4,5}))(?:v\d+)?/;
-const ARXIV_DOI_RE = /^10\.48550\/arxiv\.(.+)$/i;
+// Edge cases for the identifier: old-style arXiv ids, DOIs containing
+// parentheses and angle brackets, query-string DOIs, SSRN's abstract_id.
+import { at, ARXIV_DOI_RE, doiFromUrl, doiFromSsrn, arxivId } from './loadextract.mjs';
 
-function cleanDoi(raw){
-  if(!raw) return '';
-  let d=raw.trim();
-  try{d=decodeURIComponent(d)}catch(e){}
-  d=d.replace(/^(?:https?:\/\/)?(?:dx\.)?doi\.org\//i,'').replace(/^doi:\s*/i,'');
-  d=d.replace(/[.,;]+$/,'');            // prose punctuation only; ) and ] are legal in DOIs
-  const m=d.match(DOI_RE);
-  return m?m[1]:'';
-}
 const cases=[
  ['AEA query-string DOI',  'https://www.aeaweb.org/articles?id=10.1257/aer.91.5.1369', 'doi','10.1257/aer.91.5.1369'],
  ['PLOS query-string DOI', 'https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0310348','doi','10.1371/journal.pone.0310348'],
@@ -29,23 +19,19 @@ const cases=[
  ['INFORMS + query',       'https://pubsonline.informs.org/doi/abs/10.1287/mnsc.2022.4522?journalCode=mnsc','doi','10.1287/mnsc.2022.4522'],
  ['Wiley epdf',            'https://onlinelibrary.wiley.com/doi/epdf/10.1002/adma.202301234','doi','10.1002/adma.202301234'],
  ['ScienceDirect (PII)',   'https://www.sciencedirect.com/science/article/pii/S0096300316307640','none',''],
+ ['SSRN abstract_id',      'https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5238498','doi','10.2139/ssrn.5238498'],
 ];
 let pass=0,fail=0;
 for(const [name,url,kind,want] of cases){
-  const u=new URL(url);
-  const path=decodeURIComponent(u.pathname);
-  const am=path.match(ARXIV_RE);
-  const arx=am?am[1]:'';
-  const dm=path.match(DOI_RE)||decodeURIComponent(u.search).match(DOI_RE);
-  const doi=arx?'':(dm?cleanDoi(dm[1]):'');
+  at(url);
+  const arx = arxivId();
+  const doi = arx ? '' : (doiFromUrl() || doiFromSsrn());
   const got = kind==='arxiv'?arx : kind==='doi'?doi : (arx||doi||'');
   const ok = got===want;
   ok?pass++:fail++;
   console.log(`${ok?'ok  ':'FAIL'}  ${name.padEnd(23)} ${got||'(nothing)'}`);
   if(!ok) console.log(`      ${' '.repeat(23)} want ${want||'(nothing)'}`);
 }
-// SSRN: abstract_id -> DOI, pure string transform
-{ const u=new URL('https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5238498'); const m=u.search.match(/abstract_id=(\d+)/); const got=m?'10.2139/ssrn.'+m[1]:''; const ok=got==='10.2139/ssrn.5238498'; ok?pass++:fail++; console.log(`${ok?'ok  ':'FAIL'}  ${'SSRN abstract_id -> DOI'.padEnd(23)} ${got}`); }
 // arXiv DOI <-> arXiv id is a pure string transform, always reliable
 for(const [d,want] of [['10.48550/arXiv.2408.07818','2408.07818'],['10.48550/arxiv.math/0211159','math/0211159']]){
   const m=d.match(ARXIV_DOI_RE); const got=m?m[1]:'';

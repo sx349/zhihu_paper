@@ -1,13 +1,6 @@
 // Exercises the URL-path identifier logic from extract.js against real URLs.
-const DOI_RE = /\b(10\.\d{4,9}\/[^\s"'<>&?#]+)/;
-const ARXIV_RE = /\/(?:abs|pdf)\/(\d{4}\.\d{4,5})(?:v\d+)?/;
-function cleanDoi(raw){
-  if(!raw) return '';
-  let d = raw.trim();
-  try { d = decodeURIComponent(d); } catch(e){}
-  d = d.replace(/^(?:https?:\/\/)?(?:dx\.)?doi\.org\//i,'').replace(/^doi:\s*/i,'').replace(/[.,;)\]]+$/,'');
-  return DOI_RE.test(d) ? d.match(DOI_RE)[1] : '';
-}
+import { at, cleanDoi, doiFromUrl, arxivId } from './loadextract.mjs';
+
 const cases = [
   ['https://arxiv.org/abs/2503.01800',                                      null, '2503.01800'],
   ['https://arxiv.org/abs/1706.03762v5',                                    null, '1706.03762'],
@@ -22,19 +15,19 @@ const cases = [
 ];
 let pass=0, fail=0;
 for (const [url, wantDoi, wantArxiv] of cases){
-  const u = new URL(url);
-  const m = decodeURIComponent(u.pathname).match(DOI_RE);
-  const doi = m ? cleanDoi(m[1]) : '';
-  const am = u.pathname.match(ARXIV_RE);
-  const arx = am ? am[1] : '';
+  at(url);
+  const arx = arxivId();
+  const doi = arx ? '' : doiFromUrl();
   const okDoi   = wantDoi   === null || doi === wantDoi;
   const okArxiv = wantArxiv === null || arx === wantArxiv;
   const ok = okDoi && okArxiv;
   ok ? pass++ : fail++;
-  console.log(`${ok?'ok  ':'FAIL'}  ${u.hostname.padEnd(26)} doi=${(doi||'-').padEnd(34)} arxiv=${arx||'-'}`);
+  console.log(`${ok?'ok  ':'FAIL'}  ${new URL(url).hostname.padEnd(26)} doi=${(doi||'-').padEnd(34)} arxiv=${arx||'-'}`);
 }
 // meta-tag path, using the real dump the user supplied from ScienceDirect
 const sdMeta = 'dc.identifier = 10.1016/j.amc.2016.12.030';
-console.log(`\nScienceDirect via meta: ${cleanDoi(sdMeta.split(' = ')[1])}`);
+const sdOk = cleanDoi(sdMeta.split(' = ')[1]) === '10.1016/j.amc.2016.12.030';
+sdOk ? pass++ : fail++;
+console.log(`${sdOk?'ok  ':'FAIL'}  ScienceDirect via meta`);
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

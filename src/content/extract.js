@@ -274,5 +274,19 @@ var ZhihuPaper = (function () {
     var poll = setInterval(function () { tick(); if (++tries > 20) clearInterval(poll); }, 500);
   }
 
-  return { extract: extract, watch: watch };
+  // The identifier helpers are exposed so the tests can exercise the real
+  // regexes against real URLs. They used to keep their own copies, which
+  // silently drifted: one still carried the older DOI_RE that stops at '<',
+  // so it could not read a Wiley SICI DOI, and the test passed anyway.
+  return {
+    extract: extract,
+    watch: watch,
+    identifier: {
+      ARXIV_DOI_RE: ARXIV_DOI_RE,
+      cleanDoi: cleanDoi,
+      doiFromUrl: doiFromUrl,
+      doiFromSsrn: doiFromSsrn,
+      arxivId: arxivId
+    }
+  };
 })();
