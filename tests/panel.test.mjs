@@ -49,8 +49,16 @@ ck('search error is not reported as 暂无讨论', r.text.includes('知乎搜索
 r = await run({paper,resolution:{layer:'empty',authors:[],linked:[],search:{layer:'empty',items:[],hidden:4}}});
 ck('genuine empty says 暂无相关讨论', r.text.includes('暂无相关讨论')&&r.text.includes('已隐藏 4 条'));
 
-r = await run({paper,resolution:{layer:'linked',authors,linked,search,viaAlias:true,matchedId:'arxiv:2503.01800'}});
-ck('alias match is disclosed', r.text.includes('另一版本'));
+// The seed alias table no longer feeds 关联讨论; Zhihu's index decides what
+// a paper is, and says so by matching more than one paper (409).
+r = await run({paper,resolution:{layer:'linked',authors,linked,search,conflict:true}});
+ck('ambiguous match is disclosed', r.text.includes('可能与本文无关'));
+
+// Progress while the pool is still being fetched / ranked.
+r = await run({paper,resolution:null,phase:'fetching'});
+ck('fetching phase shows progress', r.text.includes('正在获取结果'));
+r = await run({paper,resolution:{authors:[],linked,search},phase:'ranking'});
+ck('ranking phase shows progress', r.text.includes('正在用知乎直答排序'));
 
 // 直答 persistence + rendering
 r = await run({paper,resolution:{layer:'fuzzy',authors:[],linked:[],search},

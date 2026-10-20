@@ -63,6 +63,83 @@ export async function searchZhihuWeb(query, count = 10) {
     });
 }
 
+/**
+ * The same search, reduced to distinct questions, for the 关联讨论 pool.
+ *
+ * There is no question vertical to ask for: t=question, t=answer and
+ * t=article all return zero rows, and Zhihu's own search UI has no 问题 tab,
+ * so the filtering is ours to do. Answers carry their question, articles are
+ * dropped here (they keep their place in 按标题检索).
+ *
+ * Two pages, because one is not enough and three is too many: page 1 of a
+ * worked example yielded 4 questions, page 2 took it to 11 and completed
+ * every question the hand-built seed had, and pages 3-4 added 21 more
+ * without a single further hit.
+ */
+export async function searchQuestionsWeb(query, pages = 2) {
+  const byQid = new Map();
+  for (let page = 0; page < pages; page++) {
+    const url = new URL('https://www.zhihu.com/api/v4/search_v3');
+    url.searchParams.set('t', 'general');
+    url.searchParams.set('q', query);
+    url.searchParams.set('limit', '20');
+    url.searchParams.set('offset', String(page * 20));
+    const res = await fetch(url, { credentials: 'include' });
+    if (!res.ok) break;
+    const json = await res.json();
+
+    for (const o of (json.data || []).filter((d) => d.object).map((d) => d.object)) {
+      if (o.type !== 'answer') continue;
+      const qid = o.question?.id != null ? String(o.question.id) : '';
+      if (!qid) continue;
+      const prev = byQid.get(qid);
+      const votes = o.voteup_count || 0;
+      if (!prev || votes > prev.votes) {
+        byQid.set(qid, {
+          kind: 'question',
+          qid,
+          title: strip(o.question?.name),
+          url: 'https://www.zhihu.com/question/' + qid,
+          votes,
+          src: 'search'
+        });
+      }
+    }
+  }
+  return [...byQid.values()];
+}
+
+/**
+ * Top answers for a question, in Zhihu's own order.
+ *
+ * This is /feeds, not /answers. /answers ignores sort_by entirely — default,
+ * voteups, voteup_count and score return byte-identical rows — and serves a
+ * slice that omits the top answers outright: on question 14073117334 it leads
+ * with a 381-vote answer and never shows the 5939-vote one. /feeds matches
+ * what the question page itself renders, including Zhihu's ranking, which is
+ * not vote order and must not be re-sorted here — the panel has to agree with
+ * the page the reader lands on.
+ */
+export async function questionAnswers(qid, limit = 20) {
+  const url = new URL('https://www.zhihu.com/api/v4/questions/' + qid + '/feeds');
+  url.searchParams.set('limit', String(limit));
+  url.searchParams.set('cursor', '');
+  url.searchParams.set('include', 'data[*].target.voteup_count,data[*].target.author');
+  const res = await fetch(url, { credentials: 'include' });
+  if (!res.ok) throw new Error('feeds HTTP ' + res.status);
+  const json = await res.json();
+
+  return (json.data || []).map((row) => {
+    const a = row.target || row;
+    return {
+      author: strip(a.author?.name),
+      urlToken: a.author?.url_token || '',
+      votes: a.voteup_count || 0,
+      url: 'https://www.zhihu.com/question/' + qid + '/answer/' + String(a.id || '')
+    };
+  });
+}
+
 /** Fuzzy title search — the L2 fallback when the paper index has no entry. */
 export async function searchZhihu(query, count = 8) {
   const url = new URL(BASE + '/api/v1/content/zhihu_search');

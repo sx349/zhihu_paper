@@ -35,11 +35,14 @@ function paperHeader(p) {
   return box;
 }
 
-function section(title, count) {
+function section(title, count, note) {
   const s = el('div', 'sec');
   const h = el('div', 'shead');
   h.append(el('h3', null, title));
   if (count != null) h.append(el('span', 'count', String(count)));
+  // The pool arrives in about a second but 直答 takes another six to order
+  // it, so the heading says which of the two is still running.
+  if (note) h.append(el('span', 'note', note));
   s.append(h);
   return s;
 }
@@ -58,6 +61,40 @@ function authorCard(a) {
   info.append(el('span', 'atok', '@' + a.url_token));
   card.append(info);
   return card;
+}
+
+// A pooled question: where it came from, Zhihu's own top answer, and the
+// author's own answer when there is one. Both are shown — the top answer is
+// usually somebody else's, so marking the row 作者 and showing only that
+// would point at the wrong person.
+function questionItem(d) {
+  const a = link(d.url, 'item');
+  a.append(el('div', 'stripe'));
+  const body = el('div', 'ibody');
+
+  const kind = el('div', 'ikind');
+  kind.append(el('span', 'k', '问题'));
+  kind.append(el('span', 'src' + (d.src === 'card' ? ' card' : ''), d.src === 'card' ? '论文卡片' : '标题检索'));
+  if (d.authorInvolved) kind.append(el('span', 'byauth', '作者参与'));
+  body.append(kind, el('p', 'ititle', d.title));
+
+  const rows = el('div', 'ans');
+  const row = (label, ans, cls) => {
+    const r = el('div', 'arow' + (cls ? ' ' + cls : ''));
+    if (label) r.append(el('span', 'tag', label));
+    r.append(el('span', 'who', ans.author || '—'),
+             el('span', 'votes', (ans.votes || 0).toLocaleString()),
+             el('span', 'up', '赞同'));
+    rows.append(r);
+  };
+  if (d.authorAnswer) row('作者', d.authorAnswer, 'byauthor');
+  // Skip the top answer when it is the author's own — it would repeat.
+  if (d.top && (!d.authorAnswer || d.top.urlToken !== d.authorAnswer.urlToken)) row('最高', d.top);
+  if (!d.top && !d.authorAnswer) rows.append(el('div', 'arow', '暂无回答'));
+  body.append(rows);
+
+  a.append(body);
+  return a;
 }
 
 function discussionItem(d, fuzzy) {
@@ -209,7 +246,10 @@ function renderInner(state) {
     return;
   }
 
-  const { paper, resolution } = state;
+  const { paper } = state;
+  // null while the first pass is still running, so the header and the
+  // progress note can render before there is anything to put under them.
+  const resolution = state.resolution || {};
 
   // Tolerate a resolution from an older service worker: a shape mismatch
   // should cost detail, never blank the panel below the first section.
@@ -227,10 +267,15 @@ function renderInner(state) {
     root.append(s);
   }
 
-  if (linked.length) {
-    const s = section('关联讨论', linked.length);
-    if (resolution.viaAlias) s.append(warn('i', '讨论关联至本文的另一版本：' + resolution.matchedId));
-    collapsingList(s, linked, (d) => discussionItem(d, false), 5);
+  const phase = state.phase;
+  if (linked.length || phase) {
+    const note = phase === 'fetching' ? '正在获取结果…'
+               : phase === 'ranking'  ? '正在用知乎直答排序…'
+               : null;
+    const s = section('关联讨论', linked.length || null, note);
+    if (resolution.conflict) s.append(warn('i', '匹配到多篇论文，以下结果可能与本文无关。'));
+    if (linked.length) collapsingList(s, linked, questionItem, 5);
+    else if (phase) s.append(el('div', 'empty', '正在查找…'));
     root.append(s);
   }
 

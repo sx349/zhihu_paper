@@ -1,6 +1,6 @@
 {
   "name": "zhihu-paper",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "在论文页面识别当前论文，并连接知乎上的相关讨论。",
   "private": true,
   "type": "module",

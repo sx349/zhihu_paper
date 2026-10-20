@@ -1,5 +1,7 @@
-import { getPaper, authorsByOrcid, mergeAuthors, putFeedback, exportFeedback } from '../lib/papergraph.js';
-import { searchZhihu, searchZhihuWeb, zhida, zhidaWeb, zhidaPrompt, getSecret, draftQuestionCandidates, questionBody } from '../lib/zhihu.js';
+import { authorsByOrcid, mergeAuthors, putFeedback, exportFeedback } from '../lib/papergraph.js';
+import { searchZhihu, searchZhihuWeb, searchQuestionsWeb, questionAnswers, zhida, zhidaWeb, zhidaPrompt, getSecret, draftQuestionCandidates, questionBody } from '../lib/zhihu.js';
+import { paperQuestions } from '../lib/paperquestions.js';
+import { rankByZhida } from '../lib/rank.js';
 import { enrich } from '../lib/crossref.js';
 
 // Per-tab state lives in session storage, NOT a Map: MV3 kills the worker
@@ -47,30 +49,85 @@ async function searchFallback(paper) {
   }
 }
 
+/**
+ * The 关联讨论 pool: questions Zhihu has linked to the paper, plus questions
+ * the title search turns up. Card rows come first so they win the dedupe and
+ * keep their relevance_score.
+ */
+async function pool(paper) {
+  const [card, found] = await Promise.all([
+    paperQuestions(paper).catch((e) => ({ questions: [], paperIds: [], via: 'error', error: e })),
+    paper.title ? searchQuestionsWeb(paper.title).catch(() => []) : Promise.resolve([])
+  ]);
+
+  const seen = new Set();
+  const items = [];
+  for (const q of [...card.questions, ...found]) {
+    if (seen.has(q.qid)) continue;
+    seen.add(q.qid);
+    items.push(q);
+  }
+  return { items, via: card.via, error: card.error, paperIds: card.paperIds };
+}
+
+/** Top answers for every pooled question, in parallel. ~1s for a dozen. */
+async function hydrate(items) {
+  return Promise.all(items.map(async (q) => {
+    try {
+      const answers = await questionAnswers(q.qid);
+      return { ...q, answers };
+    } catch (e) {
+      return { ...q, answers: [] };   // one question failing must not sink the batch
+    }
+  }));
+}
+
 async function resolve(paper) {
-  const alt = [...(paper.altIds || [])];
-  if (paper.doi && paper.arxivId) alt.push('arxiv:' + paper.arxivId);
-  const hit = await getPaper(paper.id, alt);
+  const authors = mergeAuthors([], await authorsByOrcid(paper.orcids));
+  const authorTokens = new Set(authors.map((a) => a.url_token).filter(Boolean));
 
-  const declared = hit.Code === 0 ? hit.Data.authors : [];
-  const linked = hit.Code === 0 ? hit.Data.discussions : [];
-  // An author can be found two ways: a link row for this paper, or an ORCID
-  // on their account that Crossref lists for the paper. The second needs no
-  // per-paper data at all.
-  const authors = mergeAuthors(declared, await authorsByOrcid(paper.orcids));
+  const p = await pool(paper);
+  const hydrated = await hydrate(p.items);
 
-  // Title search runs regardless of whether the index hit. A paper can carry
-  // one linked card and still have unlinked discussion worth surfacing.
+  // An author's own answer is worth surfacing next to the top one, which is
+  // often somebody else's — the badge would otherwise point at a row that
+  // does not show the author at all.
+  const marked = hydrated.map((q) => {
+    const mine = q.answers.find((a) => a.urlToken && authorTokens.has(a.urlToken));
+    return { ...q, authorInvolved: !!mine, authorAnswer: mine || null, top: q.answers[0] || null };
+  });
+
+  // Something renders now; 直答 reorders it a few seconds later.
+  const provisional = [...marked].sort((a, b) =>
+    (b.authorInvolved - a.authorInvolved) ||
+    ((b.score || 0) - (a.score || 0)) ||
+    ((b.top?.votes || 0) - (a.top?.votes || 0)));
+
   const search = await searchFallback(paper);
-
   return {
-    layer: linked.length ? 'linked' : search.layer,
+    linked: provisional,
     authors,
-    linked,
     search,
-    viaAlias: !!hit.ViaAlias,
-    matchedId: hit.MatchedId
+    via: p.via,
+    error: p.error?.message,
+    conflict: p.error?.status === 409,
+    ranked: false
   };
+}
+
+/**
+ * Second pass: 直答 ranks the pool. Slow (~6s), so it never gates the first
+ * render — the panel shows the provisional order and this swaps it in.
+ */
+async function rerank(tabId, paper, resolution) {
+  const order = await rankByZhida(paper, resolution.linked).catch(() => null);
+  const s = await getState(tabId);
+  if (!s || s.paper.id !== paper.id) return;           // tab moved on
+
+  const linked = (order || resolution.linked).sort((a, b) =>
+    (b.authorInvolved - a.authorInvolved) || 0);        // stable: author-first wins
+  await setState(tabId, { ...s, phase: null, resolution: { ...s.resolution, linked, ranked: !!order } });
+  chrome.runtime.sendMessage({ type: 'STATE_CHANGED', tabId }).catch(() => {});
 }
 
 // The push (PAPER_FOUND) is the normal path. This is the other half of it:
@@ -94,14 +151,19 @@ async function handlePaper(tabId, rawPaper) {
   // Crossref fills only what the page left blank (ScienceDirect authors,
   // missing abstracts). Never overrides what the page actually said.
   const paper = await enrich(rawPaper);
+  await setState(tabId, { paper, resolution: null, phase: 'fetching' });
+  chrome.runtime.sendMessage({ type: 'STATE_CHANGED', tabId }).catch(() => {});
+
   const resolution = await resolve(paper);
-  console.log('[知乎论文助手]', paper.id, '->', resolution.layer,
+  console.log('[知乎论文助手]', paper.id, '-> matched by', resolution.via,
               '| authors:', resolution.authors.length,
-              '| linked:', resolution.linked.length,
+              '| pool:', resolution.linked.length,
+              '(card ' + resolution.linked.filter((d) => d.src === 'card').length + ')',
               '| search:', resolution.search.layer, resolution.search.items.length,
-              resolution.search.error ? '| error: ' + resolution.search.error : '');
-  const s = { paper, resolution };
+              resolution.error ? '| error: ' + resolution.error : '');
+  const s = { paper, resolution, phase: resolution.linked.length > 1 ? 'ranking' : null };
   await setState(tabId, s);
+  if (resolution.linked.length > 1) rerank(tabId, paper, resolution);
   return s;
 }
 
@@ -133,7 +195,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       if (!s) { sendResponse(null); return; }
       const key = zhidaKey(s.paper.id);
       const stored = await chrome.storage.session.get(key);
-      sendResponse({ ...s, zhida: { text: stored[key] || '', pending: zhidaPending.has(s.paper.id) } });
+      sendResponse({ ...s, phase: s.phase || null, zhida: { text: stored[key] || '', pending: zhidaPending.has(s.paper.id) } });
       return;
     }
 

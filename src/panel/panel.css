@@ -138,3 +138,13 @@ dialog textarea{width:100%;border:1px solid var(--line-2);border-radius:7px;padd
   font-size:12.5px;background:var(--surface-2);color:var(--ink);resize:vertical}
 .dlgbtns{display:flex;gap:8px;margin-top:10px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* 关联讨论 rows: where the question came from, and whose answer is shown. */
+.shead .note{margin-left:auto;font-size:11px;color:var(--muted);font-style:italic}
+.ikind .src{margin-left:7px;padding:0 5px;border:1px solid var(--line);border-radius:3px;color:var(--muted);font-weight:600}
+.ikind .src.card{color:var(--linked);border-color:var(--linked-line);background:var(--linked-bg)}
+.ikind .byauth{margin-left:6px;padding:0 5px;border-radius:3px;color:#fff;background:var(--zhihu);font-weight:700}
+.arow .tag{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.04em;color:var(--muted);
+  border:1px solid var(--line);border-radius:3px;padding:0 4px;flex:none}
+.arow.byauthor .tag{color:var(--zhihu);border-color:var(--linked-line);background:var(--linked-bg)}
+.arow.byauthor .who{color:var(--zhihu)}
