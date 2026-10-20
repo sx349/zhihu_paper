@@ -21,8 +21,8 @@ async function run(state){
 }
 
 let r = await run({paper,resolution:{layer:'linked',authors,linked,search,viaAlias:false}});
-ck('linked: renders authors + 关联讨论 + 按标题检索', r.secs.includes('本文作者在知乎')&&r.secs.includes('关联讨论')&&r.secs.includes('按标题检索'), r.secs.join(' | '));
-ck('linked: title search shown even with a DOI hit', r.secs.includes('按标题检索'));
+ck('linked: renders authors + 相关问题 + 相关回答/文章', r.secs.includes('本文作者在知乎')&&r.secs.includes('相关问题')&&r.secs.includes('相关回答/文章'), r.secs.join(' | '));
+ck('linked: title search shown even with a DOI hit', r.secs.includes('相关回答/文章'));
 ck('linked question: no 提问草稿', !r.secs.includes('提问草稿'));
 ck('panel never renders a draft section', !r.text.includes('提问草稿'));
 // 参与讨论 opens the top-ranked question, so it is live only once there is
@@ -32,7 +32,7 @@ r = await run({paper,resolution:{layer:'linked',authors,linked:[],search}});
 ck('nothing found: 参与讨论 is disabled', dom_disabled(r)===true);
 r = await run({paper,resolution:{layer:'linked',authors,linked,search},phase:'ranking'});
 ck('still ranking: 参与讨论 is disabled', dom_disabled(r)===true);
-ck('linked article only: article still listed under 关联讨论', r.secs.includes('关联讨论'));
+ck('linked article only: article still listed under 相关问题', r.secs.includes('相关问题'));
 ck('linked: no 标题搜索 tag', !r.text.includes('标题搜索'));
 ck('author card shows nickname, not real name', r.text.includes('不等式爱好者') && !r.text.includes('Xiao Ma'));
 ck('author card shows Zhihu label + token', r.text.includes('学数学，做数学') && r.text.includes('@ma-xiao-42-34'));
@@ -42,10 +42,10 @@ ck('empty label falls back to 优秀答主', r.text.includes('优秀答主'));
 // the regression: an older service worker shape must not blank the panel
 r = await run({paper,resolution:{layer:'linked',authors,items:linked}});
 ck('stale SW shape still renders every section', r.secs.length>=3, r.secs.join(' | '));
-ck('stale SW shape does not truncate after authors', r.secs.includes('关联讨论'));
+ck('stale SW shape does not truncate after authors', r.secs.includes('相关问题'));
 
 r = await run({paper,resolution:{layer:'fuzzy',authors:[],linked:[],search}});
-ck('no index hit: shows 按标题检索, no 提问草稿', r.secs.includes('按标题检索')&&!r.secs.includes('提问草稿'));
+ck('no index hit: shows 相关回答/文章, no 提问草稿', r.secs.includes('相关回答/文章')&&!r.secs.includes('提问草稿'));
 
 r = await run({paper,resolution:{layer:'error',authors:[],linked:[],search:{layer:'error',items:[],error:'30001'}}});
 ck('search error is not reported as 暂无讨论', r.text.includes('知乎搜索失败')&&!r.text.includes('暂无相关讨论'));
@@ -53,7 +53,7 @@ ck('search error is not reported as 暂无讨论', r.text.includes('知乎搜索
 r = await run({paper,resolution:{layer:'empty',authors:[],linked:[],search:{layer:'empty',items:[],hidden:4}}});
 ck('genuine empty says 暂无相关讨论', r.text.includes('暂无相关讨论')&&r.text.includes('已隐藏 4 条'));
 
-// The seed alias table no longer feeds 关联讨论; Zhihu's index decides what
+// The seed alias table no longer feeds 相关问题; Zhihu's index decides what
 // a paper is, and says so by matching more than one paper (409).
 r = await run({paper,resolution:{layer:'linked',authors,linked,search,conflict:true}});
 ck('ambiguous match is disclosed', r.text.includes('可能与本文无关'));
@@ -65,7 +65,7 @@ ck('fetching phase shows progress', r.text.includes('正在获取结果'));
 // results that do not exist yet.
 ck('  搜索 section waits rather than claiming empty', !r.text.includes('暂无相关讨论'));
 r = await run({paper,resolution:{authors:[],linked,search},phase:'ranking'});
-ck('ranking phase shows progress', r.text.includes('正在用知乎直答排序'));
+ck('ranking phase shows progress', r.text.includes('正在由知乎直答排序'));
 // The list is withheld until ranked, so it never reshuffles under the reader.
 ck('  no discussion listed while ranking', !r.text.includes(linked[0].title), linked[0].title);
 r = await run({paper,resolution:{authors:[],linked,search},phase:null});

@@ -198,7 +198,7 @@ function searchSection(search, pending) {
   // Nothing has been looked up yet, so 暂无相关讨论 below would be a claim
   // about results that have not been fetched.
   if (pending) {
-    const s = section('按标题检索');
+    const s = section('相关回答/文章');
     s.append(el('div', 'zdwait', '正在获取结果…'));
     return s;
   }
@@ -211,7 +211,7 @@ function searchSection(search, pending) {
     return s;
   }
   if (search.layer === 'error') {
-    const s = section('按标题检索');
+    const s = section('相关回答/文章');
     s.append(warn('!', '知乎搜索失败：' + (search.error || '未知错误')));
     const b = el('button', 'btn', '重试');
     b.addEventListener('click', refresh);
@@ -219,19 +219,19 @@ function searchSection(search, pending) {
     return s;
   }
   if (search.layer === 'no-title') {
-    const s = section('按标题检索');
+    const s = section('相关回答/文章');
     s.append(warn('!', '未能从页面提取论文标题，无法执行标题检索。'));
     return s;
   }
   if (!search.items.length) {
-    const s = section('按标题检索');
+    const s = section('相关回答/文章');
     const e = el('div', 'empty');
     e.append(el('span', 'big', '知乎上暂无相关讨论'));
     if (search.hidden) e.append(el('p', null, `已隐藏 ${search.hidden} 条低相关度结果`));
     s.append(e);
     return s;
   }
-  const s = section('按标题检索', search.items.length);
+  const s = section('相关回答/文章', search.items.length);
   s.append(warn('!', '以下为按标题检索的结果，可能与本文无关。'));
   collapsingList(s, search.items, (d) => discussionItem(d, true), 5);
   return s;
@@ -275,9 +275,9 @@ function renderInner(state) {
   // itself five seconds after the reader starts on it is worse than a wait.
   const phase = state.phase;
   if (linked.length || phase) {
-    const s = section('关联讨论', phase ? null : linked.length);
+    const s = section('相关问题', phase ? null : linked.length);
     if (resolution.conflict) s.append(warn('i', '匹配到多篇论文，以下结果可能与本文无关。'));
-    if (phase) s.append(el('div', 'zdwait', phase === 'fetching' ? '正在获取结果…' : '正在用知乎直答排序…'));
+    if (phase) s.append(el('div', 'zdwait', phase === 'fetching' ? '正在获取结果…' : '正在由知乎直答排序…'));
     else collapsingList(s, linked, questionItem, 5);
     root.append(s);
   }

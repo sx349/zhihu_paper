@@ -125,7 +125,7 @@ footer{flex:none;border-top:1px solid var(--line);background:var(--surface-2)}
 
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 
-/* 关联讨论 rows: where the question came from, and whose answer is shown. */
+/* 相关问题 rows: where the question came from, and whose answer is shown. */
 .ikind .src{margin-left:7px;padding:0 5px;border:1px solid var(--line);border-radius:3px;color:var(--muted);font-weight:600}
 .ikind .src.card{color:var(--linked);border-color:var(--linked-line);background:var(--linked-bg)}
 .ikind .byauth{margin-left:6px;padding:0 5px;border-radius:3px;color:#fff;background:var(--zhihu);font-weight:700}

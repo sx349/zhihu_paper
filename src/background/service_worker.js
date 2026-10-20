@@ -50,7 +50,7 @@ async function searchFallback(paper) {
 }
 
 /**
- * The 关联讨论 pool: questions Zhihu has linked to the paper, plus questions
+ * The 相关问题 pool: questions Zhihu has linked to the paper, plus questions
  * the title search turns up. Card rows come first so they win the dedupe and
  * keep their relevance_score.
  */

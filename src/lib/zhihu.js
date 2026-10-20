@@ -64,12 +64,12 @@ export async function searchZhihuWeb(query, count = 10) {
 }
 
 /**
- * The same search, reduced to distinct questions, for the 关联讨论 pool.
+ * The same search, reduced to distinct questions, for the 相关问题 pool.
  *
  * There is no question vertical to ask for: t=question, t=answer and
  * t=article all return zero rows, and Zhihu's own search UI has no 问题 tab,
  * so the filtering is ours to do. Answers carry their question, articles are
- * dropped here (they keep their place in 按标题检索).
+ * dropped here (they keep their place in 相关回答/文章).
  *
  * Two pages, because one is not enough and three is too many: page 1 of a
  * worked example yielded 4 questions, page 2 took it to 11 and completed

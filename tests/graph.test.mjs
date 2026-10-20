@@ -35,7 +35,7 @@ const alt = await getPaper('doi:10.9999/nope', 'arxiv:2503.01800');
 check('falls back to alt id', alt.Code === 0);
 
 // --- declared author bindings -----------------------------------------
-// The 关联讨论 pool comes from Zhihu's index now, but the author bindings
+// The 相关问题 pool comes from Zhihu's index now, but the author bindings
 // still come from here, and ORCID cannot stand in for them: an arXiv
 // preprint has no Crossref record to carry an ORCID.
 const hilbert = await getPaper('arxiv:2503.01800');
