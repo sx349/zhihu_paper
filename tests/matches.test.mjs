@@ -33,6 +33,7 @@ function covers(pattern, url) {
 const sites = [
   ['https://arxiv.org/abs/2503.01800', 'arXiv'],
   ['https://arxiv.org/pdf/2503.01800', 'arXiv'],
+  ['https://arxiv.org/html/2503.01800', 'arXiv'],
   ['https://www.sciencedirect.com/science/article/pii/S0096300316307640', 'ScienceDirect'],
   ['https://link.springer.com/article/10.1007/s11263-015-0816-y', 'Springer'],
   ['https://onlinelibrary.wiley.com/doi/10.1002/adma.202301234', 'Wiley'],

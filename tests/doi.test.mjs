@@ -5,6 +5,8 @@ const cases = [
   ['https://arxiv.org/abs/2503.01800',                                      null, '2503.01800'],
   ['https://arxiv.org/abs/1706.03762v5',                                    null, '1706.03762'],
   ['https://arxiv.org/pdf/2306.00205',                                      null, '2306.00205'],
+  ['https://arxiv.org/html/2503.01800',                                     null, '2503.01800'],
+  ['https://arxiv.org/html/2503.01800v2',                                   null, '2503.01800'],
   ['https://link.springer.com/article/10.1007/s11263-015-0816-y',            '10.1007/s11263-015-0816-y', null],
   ['https://onlinelibrary.wiley.com/doi/10.1111/j.1467-9868.2005.00503.x',   '10.1111/j.1467-9868.2005.00503.x', null],
   ['https://onlinelibrary.wiley.com/doi/full/10.1002/adma.202301234',        '10.1002/adma.202301234', null],

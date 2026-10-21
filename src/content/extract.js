@@ -10,7 +10,7 @@ var ZhihuPaper = (function () {
   'use strict';
 
   var DOI_RE = /\b(10\.\d{4,9}\/[^\s"']+)/;
-  var ARXIV_RE = /\/(?:abs|pdf)\/((?:[a-z-]+(?:\.[A-Z]{2})?\/\d{7})|(?:\d{4}\.\d{4,5}))(?:v\d+)?/;
+  var ARXIV_RE = /\/(?:abs|pdf|html)\/((?:[a-z-]+(?:\.[A-Z]{2})?\/\d{7})|(?:\d{4}\.\d{4,5}))(?:v\d+)?/;
   var ARXIV_DOI_RE = /^10\.48550\/arxiv\.(.+)$/i;
 
   // ---- meta -----------------------------------------------------------
@@ -108,17 +108,20 @@ var ZhihuPaper = (function () {
     return a ? cleanDoi((JSON.stringify(a).match(DOI_RE) || [])[1]) : '';
   }
 
-  function onArxivPdf() {
-    return location.hostname.indexOf('arxiv.org') > -1 && location.pathname.indexOf('/pdf/') === 0;
+  // The two renderings of a paper, as against its abs landing page.
+  function onArxivRendering() {
+    if (location.hostname.indexOf('arxiv.org') === -1) return false;
+    return location.pathname.indexOf('/pdf/') === 0 || location.pathname.indexOf('/html/') === 0;
   }
 
-  // A /pdf/ URL serves the PDF itself, and Chrome's viewer leaves us an empty
-  // document with no metas at all -- the id in the path is the only thing the
-  // page can give. The abs page for that id carries the full citation_* set
-  // and is same-origin, so its metas are fetched and planted into this
-  // document; every reader below then works as it does on a real abs page.
+  // Neither rendering carries citation metadata. A /pdf/ URL serves the PDF
+  // itself and Chrome's viewer leaves an empty document; /html/ is a real
+  // page but ships no meta at all, only an <h1> with typographic quotes. The
+  // id in the path is all either can give. The abs page for that id carries
+  // the full citation_* set and is same-origin, so its metas are fetched and
+  // planted here; every reader below then works as on a real abs page.
   function plantAbsMetas() {
-    var id = onArxivPdf() && arxivId();
+    var id = onArxivRendering() && arxivId();
     if (!id) return null;
     return fetch('https://arxiv.org/abs/' + id)
       .then(function (r) { return r.ok ? r.text() : ''; })
@@ -260,8 +263,8 @@ var ZhihuPaper = (function () {
     var ld = ldArticle();
     var abs = abstractFromPage();
 
-    // /pdf/ is a file rather than a landing page, so the reader gets abs.
-    var url = onArxivPdf() && arxiv ? 'https://arxiv.org/abs/' + arxiv : location.href.split('?')[0];
+    // A rendering is not the landing page, so the reader gets abs.
+    var url = onArxivRendering() && arxiv ? 'https://arxiv.org/abs/' + arxiv : location.href.split('?')[0];
 
     return {
       source: sourceName(),
