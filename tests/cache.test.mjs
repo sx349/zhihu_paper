@@ -25,7 +25,7 @@ const resolution = {
   authors: [{ url_token: 'paellahorizon', nickname: 'Yu Deng' }],
   search: { layer: 'fuzzy', items: [{ kind: 'answer', title: 'T', url: 'U', excerpt: 'x'.repeat(160),
                                       author: 'A', authorToken: 'tok', votes: 7, questionId: '9', score: 0.4 }] },
-  via: 'paper_url', ranked: true
+  via: 'paper_url', zhTitle: '希尔伯特第六问题：由玻尔兹曼动理学推导流体方程', ranked: true
 };
 
 // --- round trip -----------------------------------------------------------
@@ -37,6 +37,7 @@ ck('  keeps the author marking', got.linked[0].authorInvolved === true && got.li
 ck('  keeps the top answer', got.linked[0].top.votes === 5939);
 ck('  keeps the search items', got.search.items.length === 1 && got.search.items[0].title === 'T');
 ck('  keeps the authors', got.authors[0].nickname === 'Yu Deng');
+ck('  keeps the translated query, so a hit does not re-translate', got.zhTitle.startsWith('希尔伯特'));
 
 // --- what it drops --------------------------------------------------------
 const raw = store['cache:arxiv:2503.01800'];

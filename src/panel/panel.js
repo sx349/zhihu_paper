@@ -257,6 +257,14 @@ function collapsingList(parent, items, renderItem, shown) {
   parent.append(box, more);
 }
 
+// Only 'translating' is conditional -- it appears for a title that has to be
+// translated before it can be searched, and not at all for a Chinese one.
+const PHASE = {
+  translating: '正在翻译标题…',
+  fetching: '正在获取结果…',
+  ranking: '正在由知乎直答排序…'
+};
+
 function searchSection(search, pending) {
   // Nothing has been looked up yet, so 暂无相关讨论 below would be a claim
   // about results that have not been fetched.
@@ -340,7 +348,7 @@ function renderInner(state) {
   if (linked.length || phase) {
     const s = section('相关问题', phase ? null : linked.length);
     if (resolution.conflict) s.append(warn('i', '匹配到多篇论文，以下结果可能与本文无关。'));
-    if (phase) s.append(el('div', 'zdwait', phase === 'fetching' ? '正在获取结果…' : '正在由知乎直答排序…'));
+    if (phase) s.append(el('div', 'zdwait', PHASE[phase] || PHASE.fetching));
     else collapsingList(s, linked, questionItem, 3);
     root.append(s);
   }

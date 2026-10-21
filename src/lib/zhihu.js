@@ -36,6 +36,37 @@ const strip = (h) => String(h || '')
  * than the open platform — author url_token, question id and votes are
  * fields — but no relevance score, so order is Zhihu's own ranking.
  */
+/** A title with Han characters is already a usable query. */
+export const hasCJK = (s) => /[\u4e00-\u9fff]/.test(String(s || ''));
+
+/**
+ * An English title, translated, so the search has something to match.
+ *
+ * search_v3 truncates its query at 100 characters, and a journal title often
+ * runs well past that -- one measured at 187 lost "hygiene practices among
+ * street food vendors (machinga) in Dodoma region, Tanzania" and searched
+ * only its own boilerplate, matching unrelated posts on the word "frontier".
+ * Chinese says the same thing in a third of the length, and says it in the
+ * language the corpus is written in.
+ */
+export async function translateTitle(title) {
+  const out = await zhidaWeb('把下面的论文标题翻译成中文，只输出译文，不要输出任何其他文字。\n标题：' + title, () => {});
+  // An unrecognised prompt gets 直答's own product blurb rather than a refusal.
+  if (String(out || '').includes('我是知乎直答')) return '';
+  // 只输出译文 is not obeyed: the answer is routinely '<原标题> 的中文翻译是：'
+  // and the translation on the next line. Take the last line that is actually
+  // Chinese, rather than the first line of whatever it decided to say.
+  const line = String(out || '').split('\n').map((l) => l.trim()).filter(Boolean)
+    .reverse().find(hasCJK);
+  const t = String(line || '')
+    .replace(/^.*?的中文翻译(?:是|为)?\s*[:：]\s*/, '')
+    .replace(/^(译文|翻译)\s*[:：]\s*/, '')
+    .replace(/^["“「](.*)["”」]$/, '$1')
+    .trim();
+  // Anything past the query limit is no use as a query anyway.
+  return t && t.length <= 100 ? t : '';
+}
+
 /**
  * Zhihu's general search, mapped once and used for both panels.
  *

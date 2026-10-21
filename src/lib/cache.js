@@ -42,6 +42,9 @@ function trim(resolution) {
       }))
     },
     via: resolution.via,
+    // The translated query, kept with the search it was made for rather than
+    // with the 论文解读: a refresh re-runs the search, so it re-translates too.
+    zhTitle: resolution.zhTitle,
     conflict: resolution.conflict,
     ranked: resolution.ranked
   };

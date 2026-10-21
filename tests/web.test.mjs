@@ -33,7 +33,7 @@ globalThis.fetch = async (u) => {
   return { ok:true, status:200, json:async()=> (off === '0' ? page0 : page1) };
 };
 
-const { searchWeb, questionsFromRows, zhidaWeb } = await import(P+'/src/lib/zhihu.js');
+const { searchWeb, questionsFromRows, zhidaWeb, hasCJK, translateTitle } = await import(P+'/src/lib/zhihu.js');
 const r = await searchWeb('q');
 
 ck('both pages requested', offsets.join(',')==='0,20', offsets.join(','));
@@ -95,5 +95,46 @@ ck('<cite> goes with its contents, not just its tags', !full.includes('5000003')
 ck('  even when it straddles two deltas', full.endsWith('分钟可读完。'));
 ck('  while a real number in the prose survives', full.includes('约 7 分钟'));
 ck('onChunk called per delta', chunks.length===4, String(chunks.length));
+
+
+// --- translating the query ------------------------------------------------
+ck('a Chinese title needs no translating', hasCJK('希尔伯特第六问题'));
+ck('  an English one does', !hasCJK("Hilbert's sixth problem"));
+ck('  and a mixed one does not', hasCJK('Hilbert 第六问题'));
+
+const oneAnswer = (text) => [`data: {"event":"Answer","data":{"delta":true,"summary":${JSON.stringify(text)}}}`, ''].join('\n')+'\n';
+const enc2 = new TextEncoder();
+const reply = (text) => { globalThis.fetch = async () => ({ ok:true, status:200,
+  body:new ReadableStream({ start(c){ c.enqueue(enc2.encode(oneAnswer(text))); c.close(); } }) }); };
+
+reply('坦桑尼亚多多马地区街头食品摊贩自报卫生行为的横断面研究');
+ck('translates to the bare title', (await translateTitle('Navigating the urban food frontier')) ===
+   '坦桑尼亚多多马地区街头食品摊贩自报卫生行为的横断面研究');
+
+// Verbatim shape of a real reply: it ignores 只输出译文 and echoes the title.
+reply('navigating the urban food frontier: a cross-sectional study ... in Dodoma region, Tanzania 的中文翻译是：\n探索城市食品前沿：一项评估坦桑尼亚多多马地区街头食品摊贩自我报告卫生行为决定因素的横断面研究');
+ck('takes the translation, not the echoed English',
+   (await translateTitle('x')) === '探索城市食品前沿：一项评估坦桑尼亚多多马地区街头食品摊贩自我报告卫生行为决定因素的横断面研究');
+
+reply('标题 的中文翻译是：探索城市食品前沿');
+ck('  including when the label is on the same line', (await translateTitle('x')) === '探索城市食品前沿');
+
+reply('Navigating the urban food frontier: a cross-sectional study to evaluate the determinants of self-reported hygiene practices among street food vendors');
+ck('  and an English-only answer is refused', (await translateTitle('x')) === '');
+
+reply('译文：街头食品摊贩卫生行为研究');
+ck('strips a 译文： label', (await translateTitle('x')) === '街头食品摊贩卫生行为研究');
+
+reply('“街头食品摊贩卫生行为研究”');
+ck('strips surrounding quotes', (await translateTitle('x')) === '街头食品摊贩卫生行为研究');
+
+reply('我是知乎直答 —— 知乎官方推出的AI搜索产品，专注于提供高效、精准的知识回答。');
+ck('refuses the product blurb as a query', (await translateTitle('x')) === '');
+
+reply('这'.repeat(140));
+ck('refuses anything past the 100-char query limit', (await translateTitle('x')) === '');
+
+reply('');
+ck('an empty answer yields no query', (await translateTitle('x')) === '');
 
 console.log(`\n${pass} passed, ${fail} failed`); process.exit(fail?1:0);

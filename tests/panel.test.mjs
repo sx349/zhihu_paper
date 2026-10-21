@@ -93,6 +93,14 @@ ck('  and no 重新生成 before there is anything to regenerate', !r.text.inclu
 r = await run({paper,resolution:{layer:'fuzzy',authors:[],linked:[],search}});
 ck('missing zhida field (older worker) still renders the button', r.text.includes('生成直答解读'));
 
+// --- status line per phase ------------------------------------------------
+for (const [phase, text] of [['translating','正在翻译标题'],['fetching','正在获取结果'],['ranking','正在由知乎直答排序']]) {
+  r = await run({paper,phase,resolution:{layer:'linked',authors:[],linked:[],search:{layer:'empty',items:[]}}});
+  ck(`phase ${phase} says ${text}`, r.text.includes(text), r.text.slice(0,0));
+}
+r = await run({paper,phase:'translating',resolution:{layer:'linked',authors:[],linked:[],search:{layer:'empty',items:[]}}});
+ck('  and only that one', !r.text.includes('正在获取结果') && !r.text.includes('排序'));
+
 r = await run(null);
 ck('no paper: placeholder only', r.secs.length===0 && !r.foot);
 

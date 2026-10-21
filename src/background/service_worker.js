@@ -1,5 +1,5 @@
 import { getPaper, authorsByOrcid, mergeAuthors } from '../lib/papergraph.js';
-import { searchZhihu, searchWeb, questionsFromRows, questionAnswers, zhida, zhidaWeb, zhidaPrompt, getSecret, draftQuestionCandidates, questionBody } from '../lib/zhihu.js';
+import { searchZhihu, searchWeb, questionsFromRows, questionAnswers, hasCJK, translateTitle, zhida, zhidaWeb, zhidaPrompt, getSecret, draftQuestionCandidates, questionBody } from '../lib/zhihu.js';
 import { paperQuestions } from '../lib/paperquestions.js';
 import { rankByZhida, reorderByQid } from '../lib/rank.js';
 import { readCache, writeCache, clearCache, readZhida, writeZhida } from '../lib/cache.js';
@@ -28,17 +28,47 @@ chrome.tabs.onRemoved.addListener((tabId) => chrome.storage.session.remove(state
 // fails and a secret exists -- its rows carry no question to collapse, so
 // 相关问题 then rests on the paper index alone, exactly as it did before.
 // The web API returns no relevance score, so rows keep Zhihu's own order.
-async function search(paper) {
+// Round-robin rather than one list after the other: 相关回答/文章 is not
+// ranked, it shows the first ten as they come, so appending would hand every
+// slot to whichever query ran first -- on the papers this exists to fix, the
+// English one, whose rows are the problem.
+function interleave(a, b) {
+  const out = [];
+  const seen = new Set();
+  for (let i = 0; i < Math.max(a.length, b.length); i++) {
+    for (const r of [a[i], b[i]]) {
+      if (!r || seen.has(r.url)) continue;
+      seen.add(r.url);
+      out.push(r);
+    }
+  }
+  return out;
+}
+
+async function search(paper, onPhase) {
   const none = (layer, extra = {}) => ({ questions: [], search: { layer, items: [], ...extra } });
   if (!paper.title) return none('no-title');
-  try {
-    const rows = await searchWeb(paper.title);
+
+  // Both queries go at once: the English search costs nothing while the
+  // translation is in flight, and keeps the hits where a Chinese post does
+  // use the English terms.
+  const translating = !hasCJK(paper.title);
+  const english = searchWeb(paper.title).catch((e) => e);
+  const zh = translating ? translateTitle(paper.title).catch(() => '') : Promise.resolve('');
+  const chinese = zh.then((t) => {
+    if (translating) onPhase('fetching');
+    return t ? searchWeb(t).catch(() => []) : [];
+  });
+
+  const [en, cn, zhTitle] = await Promise.all([english, chinese, zh]);
+  if (!(en instanceof Error)) {
+    const rows = interleave(en, cn);
     const questions = questionsFromRows(rows);
-    console.log('[知乎论文助手] search: web', rows.length, 'rows ->', questions.length, 'questions');
-    return { questions, search: { layer: rows.length ? 'fuzzy' : 'empty', items: rows.slice(0, 10), via: 'web' } };
-  } catch (e) {
-    console.log('[知乎论文助手] search: web failed,', e.message);
+    console.log('[知乎论文助手] search: web', en.length, '+', cn.length, 'rows ->', questions.length, 'questions',
+                zhTitle ? '| zh: ' + zhTitle : '');
+    return { zhTitle, questions, search: { layer: rows.length ? 'fuzzy' : 'empty', items: rows.slice(0, 10), via: 'web' } };
   }
+  console.log('[知乎论文助手] search: web failed,', en.message);
   if (!(await getSecret())) return none('needs-secret');
   try {
     const items = await searchZhihu(paper.title, 10);
@@ -54,10 +84,10 @@ async function search(paper) {
  * the search turns up. Card rows come first so they win the dedupe and keep
  * their relevance_score.
  */
-async function pool(paper) {
+async function pool(paper, onPhase) {
   const [card, sr] = await Promise.all([
     paperQuestions(paper).catch((e) => ({ questions: [], paperIds: [], via: 'error', error: e })),
-    search(paper)
+    search(paper, onPhase)
   ]);
 
   const seen = new Set();
@@ -67,7 +97,7 @@ async function pool(paper) {
     seen.add(q.qid);
     items.push(q);
   }
-  return { items, search: sr.search, via: card.via, error: card.error, paperIds: card.paperIds };
+  return { items, search: sr.search, zhTitle: sr.zhTitle || '', via: card.via, error: card.error, paperIds: card.paperIds };
 }
 
 /** Top answers for every pooled question, in parallel. ~1s for a dozen. */
@@ -82,7 +112,7 @@ async function hydrate(items) {
   }));
 }
 
-async function resolve(paper) {
+async function resolve(paper, onPhase) {
   // Zhihu has no endpoint for this, so the author bindings still come from
   // the seed. ORCID alone cannot stand in: an arXiv preprint has no Crossref
   // record to carry ORCIDs, so a declared link is the only way its authors
@@ -94,7 +124,7 @@ async function resolve(paper) {
   const authors = mergeAuthors(declared, await authorsByOrcid(paper.orcids));
   const authorTokens = new Set(authors.map((a) => a.url_token).filter(Boolean));
 
-  const p = await pool(paper);
+  const p = await pool(paper, onPhase);
 
   // 直答 ranks on titles alone, so it is launched here rather than after the
   // hydration it does not need. The two then overlap, and since ranking is
@@ -127,6 +157,7 @@ async function resolve(paper) {
       linked: provisional,
       authors,
       search: p.search,
+      zhTitle: p.zhTitle,
       via: p.via,
       error: p.error?.message,
       conflict: p.error?.status === 409,
@@ -199,7 +230,8 @@ async function handlePaper(tabId, rawPaper, { fresh = false } = {}) {
     }
   }
 
-  const preliminary = { paper, resolution: null, phase: 'fetching' };
+  const preliminary = { paper, resolution: null,
+                        phase: paper.title && !hasCJK(paper.title) ? 'translating' : 'fetching' };
   await setState(tabId, preliminary);
   chrome.runtime.sendMessage({ type: 'STATE_CHANGED', tabId }).catch(() => {});
   // Deliberately not awaited. Nothing upstream can act on a failure here, and
@@ -208,8 +240,16 @@ async function handlePaper(tabId, rawPaper, { fresh = false } = {}) {
   return preliminary;
 }
 
+/** Moves the panel's status line on, unless the tab has moved to another paper. */
+async function setPhase(tabId, paperId, phase) {
+  const s = await getState(tabId);
+  if (!s || s.paper.id !== paperId || s.resolution) return;
+  await setState(tabId, { ...s, phase });
+  chrome.runtime.sendMessage({ type: 'STATE_CHANGED', tabId }).catch(() => {});
+}
+
 async function resolveInBackground(tabId, paper) {
-  const { resolution, ranking } = await resolve(paper);
+  const { resolution, ranking } = await resolve(paper, (phase) => setPhase(tabId, paper.id, phase));
   console.log('[知乎论文助手]', paper.id, '-> matched by', resolution.via,
               '| authors:', resolution.authors.length,
               '| pool:', resolution.linked.length,
