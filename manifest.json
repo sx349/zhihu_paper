@@ -10,7 +10,8 @@
       "update_url": "https://sx349.github.io/zhihu_paper/updates.json",
       "data_collection_permissions": {
         "required": [
-          "websiteContent"
+          "websiteContent",
+          "authenticationInfo"
         ]
       }
     }

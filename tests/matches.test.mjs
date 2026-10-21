@@ -90,6 +90,10 @@ const collect = manifest.browser_specific_settings.gecko.data_collection_permiss
 ck('data collection is declared', !!collect, JSON.stringify(collect));
 ck('  and not as none, since page content does leave', !collect?.required?.includes('none'));
 ck('  websiteContent, which is what leaves', collect?.required?.includes('websiteContent'));
+// The optional Access Secret is typed into the options page, kept in
+// storage.local and sent as a Bearer token. Reaching only Zhihu's own API
+// does not make it less of a credential we hold.
+ck('  authenticationInfo, for the Access Secret we store', collect?.required?.includes('authenticationInfo'));
 
 // options_page arrived in Firefox 126, so declaring 121 promised compatibility
 // the manifest did not have. options_ui predates both browsers' support.
