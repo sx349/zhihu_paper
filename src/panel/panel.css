@@ -16,8 +16,9 @@ body{margin:0;background:var(--surface);color:var(--ink);font-family:var(--sans)
   display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
 
 .chrome{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid var(--line);background:var(--surface-2);flex:none}
-.chrome .mark{width:22px;height:22px;border-radius:6px;background:var(--zhihu);flex:none;position:relative}
-.chrome .mark::after{content:"知";position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-size:14px;font-weight:700}
+/* The extension's own icon. This used to be a blue square with a CSS 知 --
+   an imitation of Zhihu's mark, drawn before there was an icon to use. */
+.chrome .mark{width:22px;height:22px;flex:none;display:block}
 .chrome .nm{font-size:15px;font-weight:600}
 .icon{background:none;border:0;color:var(--muted);font-size:28px;line-height:1;cursor:pointer;
   width:36px;height:36px;display:grid;place-items:center;border-radius:6px}
