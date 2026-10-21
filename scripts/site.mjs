@@ -36,7 +36,6 @@ body{margin:0;background:var(--surface);color:var(--ink);font-family:var(--sans)
   font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased}
 .wrap{max-width:720px;margin:0 auto;padding:40px 20px 72px}
 header{display:flex;align-items:center;gap:12px;margin-bottom:6px}
-header .repo{margin-left:auto;font-size:13px}
 header img{width:40px;height:40px}
 h1{font-size:22px;margin:0;font-weight:700}
 .sub{color:var(--muted);font-size:14px;margin:0 0 26px 52px}
@@ -88,7 +87,6 @@ ${CSS}
     <img src="icon-48.png" alt="">
     <h1>知乎论文助手</h1>
     <span class="ver">v${esc(v)}</span>
-    <a class="repo" href="${REPO}">GitHub 仓库</a>
   </header>
   <p class="sub">${esc(manifest.description)}</p>
 
@@ -135,7 +133,7 @@ ${notes}
   </section>
 
   <footer>
-    <a href="privacy.html">隐私政策</a> · 本页面根据插件源代码自动生成
+    <a href="privacy.html">隐私政策</a> · <a href="${REPO}">GitHub 仓库</a> · 本页面根据插件源代码自动生成
   </footer>
 </div>
 <script>
