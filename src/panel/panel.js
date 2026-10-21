@@ -2,6 +2,7 @@ import { renderMarkdown } from './md.js';
 import { covers } from '../lib/matchpattern.js';
 
 const root = document.getElementById('root');
+const SUPPORTED_URL = 'https://sx349.github.io/zhihu_paper';
 const foot = document.getElementById('foot');
 let current = null;
 
@@ -451,9 +452,17 @@ function renderInner(state) {
   if (signedOut) root.append(signInSection());
 
   if (!state?.paper) {
-    root.append(Object.assign(el('div', 'placeholder'), {
-      innerHTML: '<p class=\'big\'>未识别到论文</p><p>支持 arXiv、SSRN、NBER、JSTOR、IEEE、PubMed 及主要出版社平台。</p>'
-    }));
+    // The list used to be written out here and had gone stale -- six names
+    // against twenty-eight sites. It lives where it can be kept current.
+    const ph = el('div', 'placeholder');
+    ph.append(el('p', 'big', '未识别到论文'));
+    const where = el('p');
+    const a = link(SUPPORTED_URL, null);
+    a.textContent = SUPPORTED_URL.replace(/^https?:\/\//, '');
+    where.append(document.createTextNode('请前往 '), a,
+                 document.createTextNode(' 查看目前支持的期刊/出版社/预印本平台。'));
+    ph.append(where);
+    root.append(ph);
     return;
   }
 

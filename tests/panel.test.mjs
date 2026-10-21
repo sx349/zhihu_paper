@@ -233,6 +233,11 @@ ck('  and only that one', !r.text.includes('正在获取结果') && !r.text.incl
 
 r = await run(null);
 ck('no paper: placeholder only', r.secs.length===0 && !r.foot);
+// The list used to be written into this placeholder and had gone stale: six
+// names against twenty-eight sites. It points at the page instead.
+ck('  which points at the supported-sites page, not a list that rots',
+   r.text.includes('sx349.github.io/zhihu_paper') && r.text.includes('查看目前支持的'));
+ck('  and names no sites itself', !r.text.includes('SSRN') && !r.text.includes('PubMed'));
 
 // --- folding --------------------------------------------------------------
 r = await run({paper,resolution:{layer:'linked',authors,linked,search,viaAlias:false},zhida:{text:'',pending:false}});

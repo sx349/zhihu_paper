@@ -18,11 +18,8 @@ Chrome 扩展：在论文页面识别当前论文，并连接知乎上的相关�
 
 ### 当前支持站点
 
-| | |
-|---|---|
-| **预印本** | arXiv、SSRN、NBER、bioRxiv、medRxiv |
-| **出版社** | Nature、Science、Cell、PNAS、ScienceDirect、Springer、Wiley、Oxford Academic、Taylor & Francis、SAGE、University of Chicago Press、PLOS |
-| **学会与索引** | INFORMS、AEA、ACM、IEEE Xplore、JSTOR、PubMed |
+目前支持 28 个站点，完整列表见
+<https://sx349.github.io/zhihu_paper>。
 
 ---
 

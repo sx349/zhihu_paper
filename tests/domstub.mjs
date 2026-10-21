@@ -57,6 +57,8 @@ export function makeDom(){
   for(const id of ['root','foot','primary','ask','settings','refresh']) byId[id]=new El('div');
   globalThis.document={
     createElement:(t)=>new El(t),
+    // Inline text either side of a link is a text node, not an element.
+    createTextNode:(t)=>{ const n=new El('#text'); n._text=String(t); return n; },
     getElementById:(id)=>byId[id]||null,
     querySelectorAll:()=>[],
     addEventListener:()=>{}
