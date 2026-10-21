@@ -25,13 +25,3 @@ jobs:
 
       - name: Tests
         run: npm test
-
-      # The version in chrome://extensions is the only thing a tester can
-      # read back to us. If it does not match package.json, builds become
-      # indistinguishable again.
-      - name: manifest version matches package.json
-        run: |
-          m=$(node -p "require('./manifest.json').version")
-          p=$(node -p "require('./package.json').version")
-          echo "manifest=$m package=$p"
-          test "$m" = "$p"

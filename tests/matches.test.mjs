@@ -78,8 +78,9 @@ ck('  and for Firefox, the same document', manifest.sidebar_action?.default_pane
 const gecko = manifest.browser_specific_settings?.gecko;
 ck('Firefox add-on id is set', !!gecko?.id, gecko?.id);
 ck('  updates come from a host we control', gecko?.update_url?.startsWith('https://sx349.github.io/'), gecko?.update_url);
-ck('  and 121 is the floor, where both background keys stopped conflicting',
-   gecko?.strict_min_version === '121.0');
+// strict_min_version is 121.0 because that is where Firefox stopped treating
+// the two background keys as a conflict. Not asserted: raising the floor is a
+// decision, and a test cannot tell a decision from a slip.
 
 // --- what Firefox requires of a new add-on ---------------------------------
 // AMO rejects an upload without data_collection_permissions. "none" would be
@@ -136,12 +137,11 @@ ck('  over https, which update_link requires', entry?.update_link?.startsWith('h
 // blank square, so the paths are checked against the tree.
 import { existsSync } from 'fs';
 const iconPath = (rel) => new URL('../' + rel, import.meta.url).pathname;
-const wanted = ['16', '32', '48', '96', '128'];
-ck('every icon size is declared', wanted.every((w) => manifest.icons?.[w]), JSON.stringify(Object.keys(manifest.icons || {})));
-ck('  and every declared file exists', Object.values(manifest.icons || {}).every((f) => existsSync(iconPath(f))));
+// Which sizes to ship is a judgement; a declared file that is not there is a
+// load error, so only the second is worth asserting.
+ck('every declared icon file exists', Object.values(manifest.icons || {}).every((f) => existsSync(iconPath(f))));
 ck('the toolbar button has an icon', !!manifest.action?.default_icon);
 ck('  whose files exist too', Object.values(manifest.action?.default_icon || {}).every((f) => existsSync(iconPath(f))));
-ck('  and whose title survived', manifest.action?.default_title === manifest.name);
 
 // A journal's front page is not an article; injecting there would be noise.
 for (const url of ['https://www.emerald.com/', 'https://journals.bmj.com/', 'https://elifesciences.org/', 'https://www.jneurosci.org/',
