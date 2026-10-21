@@ -47,9 +47,19 @@ export function makeDom(){
     addEventListener:()=>{}
   };
   globalThis.chrome={
-    runtime:{ sendMessage:async()=>null, openOptionsPage(){}, connect:()=>({onMessage:{addListener(){}},postMessage(){}}), onMessage:{addListener(){}} },
+    runtime:{ sendMessage:async()=>null, openOptionsPage(){}, connect:()=>({onMessage:{addListener(){}},postMessage(){}}), onMessage:{addListener(){}},
+      // What the panel compares against what the browser actually granted.
+      getManifest:()=>({ host_permissions:['https://api.crossref.org/*'],
+                         content_scripts:[{ matches:['https://arxiv.org/abs/*','https://www.nature.com/articles/*'] }] }) },
     tabs:{ create(){}, onActivated:{addListener(){}}, query:async()=>[{id:1}] },
-    storage:{ local:{ get:async()=>({}), set:async()=>{} }, session:{ get:async()=>({}), set:async()=>{} } }
+    storage:{ local:{ get:async()=>({}), set:async()=>{} }, session:{ get:async()=>({}), set:async()=>{} } },
+    // Everything declared is granted, as on Chrome. Tests that care override it.
+    permissions:{
+      // Browsers answer this by pattern. getAll() is not equivalent: it lists
+      // host permissions only, never a content script's matches.
+      contains:async()=>true,
+      request:async()=>true
+    }
   };
   try{ Object.defineProperty(globalThis,"navigator",{value:{clipboard:{writeText:async()=>{}}},configurable:true}); }catch(e){}
   return byId;

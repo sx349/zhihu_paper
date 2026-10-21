@@ -348,10 +348,58 @@ function searchSection(search, pending) {
   return s;
 }
 
+// Firefox does not grant host permissions that an update adds, and says
+// nothing about it: a publisher supported in a later release simply never
+// fires, and the panel reports no paper on a page that plainly has one. The
+// manifest is the list of what we meant to have, so the gap is computable.
+// Chrome grants everything at install, so this finds nothing there.
+let ungranted = [];
+
+async function findUngranted() {
+  try {
+    const m = chrome.runtime.getManifest();
+    const declared = [...new Set([
+      ...(m.host_permissions || []),
+      ...(m.content_scripts || []).flatMap((c) => c.matches || [])
+    ])];
+    // contains(), not getAll(). getAll().origins lists host permissions only:
+    // a content script's matches are granted implicitly and never appear
+    // there, so comparing against it reports every one of them as missing
+    // for ever. contains() matches patterns against what is actually held.
+    const held = await Promise.all(
+      declared.map((o) => chrome.permissions.contains({ origins: [o] }).catch(() => true))
+    );
+    ungranted = declared.filter((o, i) => !held[i]);
+  } catch (e) {
+    ungranted = [];   // no permissions API, nothing to report
+  }
+}
+
+/** The sites we declared and did not get, and the one gesture that fixes it. */
+function permissionSection() {
+  const s = section('需要授权', ungranted.length);
+  s.append(el('div', 'zdnote', '浏览器尚未授权以下站点，扩展不会在这些站点上运行。'));
+  const list = el('div', 'zdnote', ungranted.map((o) => o.replace(/^https?:\/\/|\/\*$/g, '')).join('、'));
+  const btn = el('button', 'zdgen', '授权');
+  btn.addEventListener('click', async () => {
+    btn.disabled = true;
+    // Must be called from a click: the browser wants a live user gesture.
+    try { await chrome.permissions.request({ origins: ungranted }); } catch (e) { /* declined */ }
+    await findUngranted();
+    refresh();
+  });
+  s.append(list, btn);
+  return s;
+}
+
 function renderInner(state) {
   current = state;
   root.innerHTML = '';
   foot.hidden = true;
+
+  // Before anything else: with a site ungranted, every section below would be
+  // empty and none of them could say why.
+  if (ungranted.length) root.append(permissionSection());
 
   if (!state?.paper) {
     root.append(Object.assign(el('div', 'placeholder'), {
@@ -422,10 +470,22 @@ function render(state) {
 }
 
 async function refresh() {
-  // Resolve the tab here: the panel has a real window, the worker does not.
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  const state = await chrome.runtime.sendMessage({ type: 'GET_STATE', tabId: tab?.id });
-  render(state);
+  // render() guards what it draws; this guards getting there at all. Without
+  // it a rejection here leaves the panel blank, with the reason only in a
+  // console the reader has no easy way to open.
+  try {
+    await findUngranted();
+    // Resolve the tab here: the panel has a real window, the worker does not.
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    const state = await chrome.runtime.sendMessage({ type: 'GET_STATE', tabId: tab?.id });
+    render(state);
+  } catch (e) {
+    console.error('[知乎论文助手] refresh failed', e);
+    root.innerHTML = '';
+    if (ungranted.length) root.append(permissionSection());
+    root.append(warn('!', '面板加载失败：' + e.message));
+    foot.hidden = true;
+  }
 }
 
 document.getElementById('primary').addEventListener('click', () => {
