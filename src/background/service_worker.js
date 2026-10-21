@@ -3,6 +3,7 @@ import { searchZhihu, searchWeb, questionsFromRows, questionAnswers, hasCJK, tra
 import { paperQuestions } from '../lib/paperquestions.js';
 import { rankByZhida, reorderByQid, fallbackOrder } from '../lib/rank.js';
 import { readCache, writeCache, clearCache, readZhida, writeZhida } from '../lib/cache.js';
+import { paperFromPdfUrl } from '../lib/arxivabs.js';
 import { enrich } from '../lib/crossref.js';
 
 // Per-tab state lives in session storage, NOT a Map: MV3 kills the worker
@@ -37,6 +38,17 @@ chrome.runtime.onInstalled.addListener((details) => {
 // Firefox only: the click is the user gesture sidebarAction.toggle() needs.
 if (!CHROME_PANEL) {
   chrome.action.onClicked.addListener(() => chrome.sidebarAction.toggle());
+
+  // Firefox runs no content script on a PDF, so nothing in the page can
+  // report the paper. Nothing can be drawn there either -- no badge -- but
+  // the id is in the URL and the abs page has the rest, so the worker reads
+  // it itself. Chrome needs none of this: its content script reaches the PDF
+  // viewer, and handles /pdf/ exactly as it handles every other page.
+  chrome.tabs.onUpdated.addListener(async (tabId, info, tab) => {
+    if (info.status !== 'complete' || !tab?.url) return;
+    const paper = await paperFromPdfUrl(tab.url).catch(() => null);
+    if (paper) await handlePaper(tabId, paper);
+  });
 }
 
 chrome.tabs.onRemoved.addListener((tabId) => chrome.storage.session.remove(stateKey(tabId)));
