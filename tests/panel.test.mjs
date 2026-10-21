@@ -78,7 +78,7 @@ ck('stored 直答 renders on load without a button', r.text.includes('论文做�
 ck('stored 直答 is rendered markdown, not raw', r.text.includes('核心') && !r.text.includes('**') && !r.text.includes('## '));
 ck('stored 直答 offers 重新生成', r.text.includes('重新生成'));
 ck('  and no conversation link without a session', !r.text.includes('前往对话'));
-ck('  enabled when nothing is running', r.dom.root.querySelectorAll('zdagain')[0].disabled !== true);
+ck('  enabled when nothing is running', r.dom.root.querySelectorAll('pill')[0].disabled !== true);
 ck('  and it sits in the body, not the heading, so folding hides it',
    !(r.dom.root.querySelectorAll('zdhead')[0] || {textContent:''}).textContent.includes('重新生成'));
 r = await run({paper,resolution:{layer:'fuzzy',authors:[],linked:[],search},zhida:{text:'',pending:true}});
@@ -87,7 +87,7 @@ ck('in-flight 直答 shows placeholder, no button', r.text.includes('正在生�
 // a regeneration started elsewhere: text is stored AND pending is set
 r = await run({paper,resolution:{layer:'fuzzy',authors:[],linked:[],search},zhida:{text:'旧的解读内容',pending:true}});
 ck('regenerating shows progress, not the stale text', r.text.includes('正在生成') && !r.text.includes('旧的解读内容'));
-ck('  and 重新生成 is disabled meanwhile', r.dom.root.querySelectorAll('zdagain')[0].disabled === true);
+ck('  and 重新生成 is disabled meanwhile', r.dom.root.querySelectorAll('pill')[0].disabled === true);
 r = await run({paper,resolution:{layer:'fuzzy',authors:[],linked:[],search},zhida:{text:'',pending:false}});
 ck('no 直答 yet shows the button', r.text.includes('生成直答解读') && !r.text.includes('正在生成'));
 ck('  and no 重新生成 before there is anything to regenerate', !r.text.includes('重新生成'));
@@ -97,11 +97,59 @@ ck('missing zhida field (older worker) still renders the button', r.text.include
 // --- the conversation behind a 解读 ----------------------------------------
 r = await run({paper,resolution:{layer:'fuzzy',authors:[],linked:[],search:{layer:'empty',items:[]}},
                zhida:{text:'## 解读\n\n内容',sessionId:'3759247373158131738',pending:false}});
-const chat = r.dom.root.querySelectorAll('zdagain').find((x)=>x.textContent==='前往对话');
+const chat = r.dom.root.querySelectorAll('pill').find((x)=>x.textContent==='前往对话');
 ck('a 解读 with a session links to its conversation', !!chat);
 ck('  pointing at zhida.zhihu.com/search/<id>',
    chat && chat.href === 'https://zhida.zhihu.com/search/3759247373158131738', chat && chat.href);
 ck('  opening in a new tab', chat && chat.target === '_blank' && chat.rel === 'noopener');
+
+// --- no Zhihu session ------------------------------------------------------
+// Signed out, everything the panel does except identifying the paper fails.
+// Saying so is the difference between "logged out" and "broken".
+async function runSignedOut(state, cookie) {
+  const dom = makeDom(); lastDom = dom;
+  chrome.cookies.get = async () => cookie;
+  globalThis.chrome.runtime.sendMessage = async (m) => (m.type === 'GET_STATE' ? state : null);
+  await import(P + '/src/panel/panel.js?v=' + Math.random());
+  await new Promise((r) => setTimeout(r, 30));
+  return { secs: dom.root.sections(), text: dom.root.textContent, dom };
+}
+const ANY = {paper,resolution:{layer:'linked',authors:[],linked:[],search:{layer:'empty',items:[]}}};
+
+let o = await runSignedOut(ANY, { name: 'z_c0', value: 'x' });
+ck('signed in: no sign-in section', !o.secs.includes('需要登录知乎'), o.secs.join(' | '));
+
+o = await runSignedOut(ANY, null);
+ck('no z_c0: the panel says so', o.secs.includes('需要登录知乎'));
+ck('  rather than leaving it to be guessed', o.text.includes('未检测到知乎登录状态'));
+ck('  with a way to fix it', o.text.includes('前往登录'));
+const signin = o.dom.root.querySelectorAll('pill').find((x) => x.textContent === '前往登录');
+ck('  pointing at Zhihu sign-in', signin?.href === 'https://www.zhihu.com/signin', signin?.href);
+
+ck('  and 发起提问 is greyed out, since it drafts through 直答 too',
+   o.dom.ask.disabled === true);
+
+// Signed out, every section below the paper is about something we never
+// looked up. Rendering them empty made the panel claim Zhihu had no
+// discussion of the paper, and offer a secret as the remedy for not being
+// logged in.
+o = await runSignedOut({paper,resolution:{layer:'linked',authors,linked,
+    search:{layer:'needs-secret',items:[]}}}, null);
+ck('signed out: the paper still identifies', o.text.includes('Hilbert sixth problem'));
+ck('  but nothing claims there is no discussion', !o.text.includes('暂无相关讨论'));
+ck('  no section below the paper at all', !o.secs.includes('相关回答/文章')
+   && !o.secs.includes('相关问题') && !o.secs.includes('本文作者在知乎')
+   && !o.secs.includes('论文解读'), o.secs.join(' | '));
+ck('  and no secret offered as the remedy', !o.text.includes('前往设置'));
+
+o = await runSignedOut({paper,resolution:{layer:'fuzzy',authors:[],linked:[],
+    search:{layer:'needs-secret',items:[]}}}, { name:'z_c0', value:'x' });
+ck('signed in, a failed search still says so', o.text.includes('知乎搜索暂不可用'));
+ck('  and the sections are back', o.text.includes('论文解读'), o.text.slice(0, 50));
+ck('  without claiming a secret is required', !o.text.includes('未配置 Access Secret'));
+
+o = await runSignedOut(null, null);
+ck('shown with no paper too, since it is true either way', o.secs.includes('需要登录知乎'));
 
 // --- the site this page needs ---------------------------------------------
 // Firefox does not grant host permissions an update adds, and says nothing;

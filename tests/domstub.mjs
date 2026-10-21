@@ -72,6 +72,8 @@ export function makeDom(){
     tabs:{ create(){}, onActivated:{addListener(){}}, query:async()=>[{id:1,url:'https://arxiv.org/abs/2503.01800'}] },
     storage:{ local:{ get:async()=>({}), set:async()=>{} }, session:{ get:async()=>({}), set:async()=>{} } },
     // Everything declared is granted, as on Chrome. Tests that care override it.
+    // Signed in by default; the tests that care return null instead.
+    cookies:{ get:async()=>({ name:'z_c0', value:'x' }) },
     permissions:{
       // Browsers answer this by pattern. getAll() is not equivalent: it lists
       // host permissions only, never a content script's matches.

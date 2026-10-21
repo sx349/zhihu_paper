@@ -220,12 +220,12 @@ function zhidaSection(paper, zhida) {
   // the open platform, which holds no conversation.
   const openChat = (sessionId) => {
     if (!sessionId) return;
-    const a = link('https://zhida.zhihu.com/search/' + sessionId, 'zdagain');
+    const a = link('https://zhida.zhihu.com/search/' + sessionId, 'pill');
     a.textContent = '前往对话';
     meta.append(a);
   };
 
-  const again = el('button', 'zdagain', '重新生成');
+  const again = el('button', 'pill', '重新生成');
 
   // Streams into `placeholder`, which `from` is replaced by, and settles into
   // `out`. Shared by the first generation and by 重新生成, which is held
@@ -328,8 +328,8 @@ function searchSection(search, pending) {
   }
   if (search.layer === 'needs-secret') {
     const s = el('div', 'sec');
-    s.append(warn('!', '未配置 Access Secret，无法使用知乎搜索与直答。'));
-    const b = el('button', 'btn pri', '去设置');
+    s.append(warn('!', '知乎搜索暂不可用。'));
+    const b = el('button', 'pill', '前往设置');
     b.addEventListener('click', () => chrome.runtime.openOptionsPage());
     s.append(b);
     return s;
@@ -398,12 +398,36 @@ async function findUngranted(url) {
   }
 }
 
+// Almost everything here needs a signed-in Zhihu: search, ranking, 论文解读
+// and the author lookups all travel on the reader's own cookies. Signed out,
+// the panel used to identify the paper and then quietly fail at the rest,
+// which reads as broken rather than as logged out.
+let signedOut = false;
+
+async function checkSignedIn() {
+  try {
+    const c = await chrome.cookies.get({ url: 'https://www.zhihu.com', name: 'z_c0' });
+    signedOut = !c;
+  } catch (e) {
+    signedOut = false;   // cannot tell, so do not claim
+  }
+}
+
+function signInSection() {
+  const s = section('需要登录知乎');
+  s.append(el('div', 'zdnote', '未检测到知乎登录状态，无法获取相关问题与论文解读。'));
+  const a = link('https://www.zhihu.com/signin', 'pill');
+  a.textContent = '前往登录';
+  s.append(a);
+  return s;
+}
+
 /** The site this page needs, and the one gesture that grants it. */
 function permissionSection() {
   const hosts = [...new Set(ungranted.map(hostOf))];
   const s = section('需要授权');
   s.append(el('div', 'zdnote', '浏览器尚未授权 ' + hosts.join('、')));
-  const btn = el('button', 'zdgen', '前往授权');
+  const btn = el('button', 'pill', '前往授权');
   btn.addEventListener('click', async () => {
     btn.disabled = true;
     // Must be called from a click: the browser wants a live user gesture.
@@ -421,9 +445,10 @@ function renderInner(state) {
   root.innerHTML = '';
   foot.hidden = true;
 
-  // Before anything else: with a site ungranted, every section below would be
-  // empty and none of them could say why.
+  // Before anything else: with a site ungranted, or no Zhihu session, every
+  // section below would be empty and none of them could say why.
   if (ungranted.length) root.append(permissionSection());
+  if (signedOut) root.append(signInSection());
 
   if (!state?.paper) {
     root.append(Object.assign(el('div', 'placeholder'), {
@@ -446,6 +471,17 @@ function renderInner(state) {
   };
 
   root.append(paperHeader(paper));
+
+  // Signed out, every section below is about things we could not look up.
+  // Rendering them empty makes the panel assert that Zhihu has no discussion
+  // of this paper, when in fact it was never asked. The paper itself still
+  // identifies, which is the one thing that needs no session.
+  if (signedOut) {
+    document.getElementById('primary').disabled = true;
+    document.getElementById('ask').disabled = true;
+    foot.hidden = false;
+    return;
+  }
 
   if (resolution.authors?.length) {
     const s = section('本文作者在知乎', resolution.authors.length);
@@ -479,6 +515,9 @@ function renderInner(state) {
   // ranking is in -- otherwise it would act on the provisional order the
   // panel is deliberately not showing -- and when there is nothing to open.
   document.getElementById('primary').disabled = !!state.phase || !linked.length;
+  // 发起提问 drafts its candidates through 直答, which needs the reader's
+  // session just as much as the rest.
+  document.getElementById('ask').disabled = signedOut;
   foot.hidden = false;
 }
 
@@ -500,7 +539,7 @@ async function refresh() {
   try {
     // Resolve the tab here: the panel has a real window, the worker does not.
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    await findUngranted(tab?.url);
+    await Promise.all([findUngranted(tab?.url), checkSignedIn()]);
     const state = await chrome.runtime.sendMessage({ type: 'GET_STATE', tabId: tab?.id });
     render(state);
   } catch (e) {
