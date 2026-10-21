@@ -4,6 +4,8 @@ class El {
     this.className=''; this.id=''; this.dataset={}; this.hidden=false; this.style={}; this.attrs={}; }
   append(...n){ for(const x of n){ if(x==null) continue; x.parentElement=this; this.children.push(x);} }
   appendChild(n){ this.append(n); return n; }
+  replaceChildren(...n){ this.children=[]; this._text=''; this.append(...n); }
+  get childNodes(){ return this.children; }
   remove(){ const p=this.parentElement; if(p) p.children=p.children.filter(c=>c!==this); }
   replaceWith(n){ const p=this.parentElement; if(!p) return; n.parentElement=p; p.children=p.children.map(c=>c===this?n:c); }
   addEventListener(ev,fn){ (this._on ??= {})[ev] ??= []; this._on[ev].push(fn); }
@@ -37,6 +39,19 @@ class El {
         out.push(h?h.textContent.replace(/\d+$/,'').trim():'(sec)'); }
       walk(c);} }; walk(this); return out; }
 }
+// The panel renders 直答's markdown through DOMParser rather than innerHTML,
+// so node needs something to parse with. This reuses El's own crude parser:
+// a child per opening tag, with the tags stripped out of the text.
+globalThis.DOMParser = class {
+  parseFromString(html){
+    const body = new El('body');
+    const frag = new El('div');
+    frag.innerHTML = html;
+    body.append(frag);
+    return { body };
+  }
+};
+
 export function makeDom(){
   const byId={};
   for(const id of ['root','foot','primary','ask','settings','refresh']) byId[id]=new El('div');

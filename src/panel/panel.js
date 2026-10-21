@@ -187,6 +187,18 @@ function discussionItem(d, fuzzy) {
   return a;
 }
 
+// Renders 直答's markdown into an element without assigning innerHTML.
+//
+// md.js escapes every input before it transforms anything and emits only its
+// own tags, so the markup is safe either way -- but AMO's validator flags any
+// dynamic innerHTML as a rejection risk, and a reviewer should not have to
+// take that on trust. DOMParser builds the nodes inert: it runs no script and
+// loads nothing, which is why the same call in extract.js draws no warning.
+function setMarkdown(el, text) {
+  const doc = new DOMParser().parseFromString(renderMarkdown(text || ''), 'text/html');
+  el.replaceChildren(...doc.body.childNodes);
+}
+
 function zhidaSection(paper, zhida) {
   const s = el('div', 'sec');
   const head = el('div', 'zdhead');
@@ -233,7 +245,7 @@ function zhidaSection(paper, zhida) {
         again.disabled = false;
       }
       if (m.done) {
-        out.innerHTML = renderMarkdown(m.text || '');
+        setMarkdown(out, m.text);
         placeholder.replaceWith(out);
         again.disabled = false;
         openChat(m.sessionId);
@@ -246,7 +258,7 @@ function zhidaSection(paper, zhida) {
   // this survives a browser restart and an extension reload, not just a tab
   // switch -- and ⟳ re-resolves the pool without discarding it.
   if (zhida?.text) {
-    out.innerHTML = renderMarkdown(zhida.text);
+    setMarkdown(out, zhida.text);
     openChat(zhida.sessionId);
     again.addEventListener('click', () => generate(out));
     meta.append(again);
