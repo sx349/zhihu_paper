@@ -15,6 +15,7 @@ body{margin:0;background:var(--surface);color:var(--ink);font-family:var(--sans)
   font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased}
 .wrap{max-width:720px;margin:0 auto;padding:40px 20px 72px}
 header{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+header .repo{margin-left:auto;font-size:13px}
 header img{width:40px;height:40px}
 h1{font-size:22px;margin:0;font-weight:700}
 .sub{color:var(--muted);font-size:14px;margin:0 0 26px 52px}
@@ -28,8 +29,8 @@ nav button[aria-selected=true]{color:var(--zhihu);border-bottom-color:var(--zhih
 section[hidden]{display:none}
 h2{font-size:16px;margin:28px 0 10px}
 h2:first-child{margin-top:0}
-h3{font-size:15px;margin:0 0 10px;font-family:var(--mono)}
-h4{font-size:13px;margin:16px 0 6px;color:var(--muted);font-weight:700;letter-spacing:.06em}
+h3{font-size:16px;margin:0 0 10px;font-family:var(--mono)}
+h4{font-size:15px;margin:16px 0 6px;color:var(--ink-2);font-weight:700}
 ol,ul{margin:0 0 14px;padding-left:22px}
 li{margin:4px 0}
 code{font-family:var(--mono);font-size:13px;background:var(--surface-2);
@@ -56,6 +57,7 @@ footer{margin-top:48px;padding-top:18px;border-top:1px solid var(--line);
     <img src="icon-48.png" alt="">
     <h1>知乎论文助手</h1>
     <span class="ver">v0.5.0</span>
+    <a class="repo" href="https://github.com/sx349/zhihu_paper">GitHub 仓库</a>
   </header>
   <p class="sub">在论文页面识别当前论文，并连接知乎上的相关讨论。</p>
 
@@ -66,26 +68,31 @@ footer{margin-top:48px;padding-top:18px;border-top:1px solid var(--line);
   </nav>
 
   <section id="install">
-    <h2>Chrome / Edge</h2>
+    <h2>Chrome / Edge 开发者模式</h2>
     <ol>
       <li>从 <a href="https://github.com/sx349/zhihu_paper/releases/latest">GitHub Releases</a> 下载 <code>zhihu_paper.zip</code> 并解压</li>
       <li>打开 <code>chrome://extensions</code>，开启右上角的「开发者模式」</li>
       <li>点击「加载已解压的扩展程序」，选择解压得到的 <code>zhihu_paper</code> 文件夹</li>
     </ol>
-    <p class="soon">Chrome 应用商店：审核中，上架后此处提供链接。</p>
 
-    <h2>Firefox</h2>
-    <p class="soon">Firefox 版本正在签名中，完成后此处提供 <code>.xpi</code> 下载链接。安装后可自动更新。</p>
+    <h2>Chrome 应用商店</h2>
+    <p class="soon">即将上线……</p>
 
-    <h2>使用前</h2>
+    <h2>Firefox 附加组件</h2>
+    <p class="soon">即将上线……</p>
+
+    <h2>使用说明</h2>
     <ul>
-      <li>需在浏览器中登录知乎，扩展通过你的登录状态访问知乎</li>
-      <li>安装后请刷新已打开的论文页面</li>
+      <li>本插件通过浏览器中的知乎登录状态调用搜索与直答，使用前请确保已登录知乎</li>
+      <li>点击工具栏图标或论文页面上的浮窗按钮打开侧边栏（Firefox 仅支持工具栏图标）</li>
+      <li>知乎开放平台的 Access Secret 为备用通道，可在 <a href="https://developer.zhihu.com/profile">developer.zhihu.com/profile</a> 生成后填入设置页</li>
+      <li>安装或更新插件后，请刷新已打开的论文页面</li>
+      <li>搜索结果和直答解读均缓存在浏览器本地以避免重复调用，如有需要可手动刷新</li>
     </ul>
   </section>
 
   <section id="sites" hidden>
-    <p class="count">目前支持 28 个站点。</p>
+    <p class="count">目前支持以下期刊/出版社/预印本平台：</p>
     <ul class="sites">
       <li><b>ACM</b><span>dl.acm.org</span></li>
       <li><b>AEA</b><span>www.aeaweb.org</span></li>
@@ -185,7 +192,7 @@ footer{margin-top:48px;padding-top:18px;border-top:1px solid var(--line);
   </section>
 
   <footer>
-    <a href="https://github.com/sx349/zhihu_paper">GitHub</a> · 本页由扩展源码生成
+    本页面根据插件源代码自动生成
   </footer>
 </div>
 <script>
@@ -197,7 +204,7 @@ footer{margin-top:48px;padding-top:18px;border-top:1px solid var(--line);
         document.getElementById(p[0]).setAttribute('aria-selected', String(on));
         document.getElementById(p[1]).hidden = !on;
       });
-      location.hash = pair[1];
+      history.replaceState(null, '', '#' + pair[1]);
     });
   });
   if (location.hash) {

@@ -39,7 +39,9 @@ const escd = (t) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g,
 ck('  lists every site', sites.every((s) => html.includes(escd(s.name))),
    sites.filter((s) => !html.includes(escd(s.name))).map((s) => s.name).join(', ') || 'all present');
 ck('  escaping its names rather than injecting them', html.includes('Taylor &amp; Francis'));
-ck('  says how many', html.includes(`目前支持 ${sites.length} 个站点`));
+const cards = (html.match(/<li><b>/g) || []).length;
+ck('  one card per site, and no extras', cards === sites.length,
+   cards + ' cards vs ' + sites.length + ' sites');
 ck('  and has the three tabs', ['安装说明', '支持站点', '更新记录'].every((t) => html.includes(t)));
 ck('  defaulting to 安装说明', /id="t-install" aria-selected="true"/.test(html));
 
