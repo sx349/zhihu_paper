@@ -103,33 +103,45 @@ ck('  pointing at zhida.zhihu.com/search/<id>',
    chat && chat.href === 'https://zhida.zhihu.com/search/3759247373158131738', chat && chat.href);
 ck('  opening in a new tab', chat && chat.target === '_blank' && chat.rel === 'noopener');
 
-// --- sites the browser never granted ---------------------------------------
+// --- the site this page needs ---------------------------------------------
 // Firefox does not grant host permissions an update adds, and says nothing;
 // the panel would otherwise report no paper on a page that plainly has one.
-async function runWithGrants(state, origins) {
+// Only the page in front of the reader is reported -- a warning about some
+// other site, on a page that works, is noise.
+async function runOn(url, ungrantedOrigins, state) {
   const dom = makeDom(); lastDom = dom;
-  chrome.permissions.contains = async ({ origins: [o] }) => origins.includes(o);
+  chrome.tabs.query = async () => [{ id: 1, url }];
+  chrome.permissions.contains = async ({ origins: [o] }) => !ungrantedOrigins.includes(o);
   globalThis.chrome.runtime.sendMessage = async (m) => (m.type === 'GET_STATE' ? state : null);
   await import(P + '/src/panel/panel.js?v=' + Math.random());
   await new Promise((r) => setTimeout(r, 30));
   return { secs: dom.root.sections(), text: dom.root.textContent, dom };
 }
-const allThree = ['https://api.crossref.org/*','https://arxiv.org/abs/*','https://www.nature.com/articles/*'];
+const SOME = {paper,resolution:{layer:'linked',authors:[],linked:[],search:{layer:'empty',items:[]}}};
+const ARXIV = ['https://arxiv.org/*','https://arxiv.org/abs/*','https://arxiv.org/pdf/*','https://arxiv.org/html/*'];
 
-let g = await runWithGrants({paper,resolution:{layer:'linked',authors:[],linked:[],search:{layer:'empty',items:[]}}}, allThree);
-ck('everything granted: no permission section', !g.secs.includes('需要授权'), g.secs.join(' | '));
+let g = await runOn('https://arxiv.org/abs/2503.01800', [], SOME);
+ck('granted: no permission section', !g.secs.includes('需要授权'), g.secs.join(' | '));
 
-g = await runWithGrants({paper,resolution:{layer:'linked',authors:[],linked:[],search:{layer:'empty',items:[]}}},
-                        ['https://api.crossref.org/*']);
-ck('a site added by an update is reported', g.secs.includes('需要授权'), g.secs.join(' | '));
-ck('  and named, so it is clear what is missing', g.text.includes('arxiv.org/abs') && g.text.includes('nature.com/articles'));
-ck('  with a button to grant it', g.text.includes('授权'));
+g = await runOn('https://arxiv.org/abs/2503.01800', ARXIV, SOME);
+ck('ungranted here: reported', g.secs.includes('需要授权'));
+ck('  naming the host once, not each pattern', g.text.includes('浏览器尚未授权 arxiv.org')
+   && !g.text.includes('arxiv.org、arxiv.org'), g.text.slice(0, 60));
+ck('  with 前往授权', g.text.includes('前往授权'));
 
-// With nothing granted the panel still explains itself rather than claiming
-// there is no paper.
-g = await runWithGrants(null, []);
-ck('shown even with no paper, which is when it matters most', g.secs.includes('需要授权'));
-ck('  the no-paper placeholder is still there too', g.text.includes('未识别到论文'));
+// The same revocation, seen from a page it does not affect.
+g = await runOn('https://academic.oup.com/ismej/article/1/1/1', ARXIV, SOME);
+ck('ungranted elsewhere: silent on a page that works', !g.secs.includes('需要授权'), g.secs.join(' | '));
+
+// A wildcard pattern is named the way the browser names it.
+g = await runOn('https://bmjopen.bmj.com/content/16/10/e116242', ['https://*.bmj.com/content/*'], SOME);
+ck('a domain pattern shows as *.bmj.com, not the subdomain',
+   g.text.includes('浏览器尚未授权 *.bmj.com'), g.text.slice(0, 60));
+
+// Which is exactly when the panel would otherwise claim there is no paper.
+g = await runOn('https://arxiv.org/abs/2503.01800', ARXIV, null);
+ck('shown with no paper, which is when it matters most', g.secs.includes('需要授权'));
+ck('  alongside the placeholder', g.text.includes('未识别到论文'));
 
 // --- a long byline folds ---------------------------------------------------
 const many = Array.from({length:30},(_,i)=>'Author '+(i+1));

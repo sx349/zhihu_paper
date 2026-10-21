@@ -5,29 +5,14 @@
 // against a real article URL.
 import { readFileSync } from 'fs';
 import { at, sourceName } from './loadextract.mjs';
+// The same matcher the panel uses to tell whether the page in front of the
+// reader is one of the sites the browser has not granted.
+import { covers } from '../src/lib/matchpattern.js';
 
 const manifest = JSON.parse(readFileSync(new URL('../manifest.json', import.meta.url), 'utf8'));
 const patterns = manifest.content_scripts.flatMap((c) => c.matches);
 let pass = 0, fail = 0;
 const ck = (n, c, e = '') => { c ? pass++ : fail++; console.log(`${c ? 'ok  ' : 'FAIL'}  ${n}${e ? '  ' + e : ''}`); };
-
-// Chrome match-pattern semantics, enough for the patterns we ship:
-// '*.host' covers the bare host too, and '*' in a path is a glob.
-const esc = (s) => s.replace(/[.+?^${}()|[\]\\]/g, '\\$&');
-function covers(pattern, url) {
-  const m = pattern.match(/^(\*|https?):\/\/([^/]*)(\/.*)$/);
-  if (!m) return false;
-  const [, scheme, host, path] = m;
-  const u = new URL(url);
-  if (scheme !== '*' && u.protocol !== scheme + ':') return false;
-  if (host !== '*') {
-    if (host.startsWith('*.')) {
-      const base = host.slice(2);
-      if (u.hostname !== base && !u.hostname.endsWith('.' + base)) return false;
-    } else if (u.hostname !== host) return false;
-  }
-  return new RegExp('^' + path.split('*').map(esc).join('.*') + '$').test(u.pathname + u.search);
-}
 
 // Real article URLs. The last four were verified against the live pages.
 const sites = [

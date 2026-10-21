@@ -49,9 +49,12 @@ export function makeDom(){
   globalThis.chrome={
     runtime:{ sendMessage:async()=>null, openOptionsPage(){}, connect:()=>({onMessage:{addListener(){}},postMessage(){}}), onMessage:{addListener(){}},
       // What the panel compares against what the browser actually granted.
-      getManifest:()=>({ host_permissions:['https://api.crossref.org/*'],
-                         content_scripts:[{ matches:['https://arxiv.org/abs/*','https://www.nature.com/articles/*'] }] }) },
-    tabs:{ create(){}, onActivated:{addListener(){}}, query:async()=>[{id:1}] },
+      // A representative slice of the real manifest: a host permission the
+      // panel never runs on, exact-host matches, and one *. domain pattern.
+      getManifest:()=>({ host_permissions:['https://api.crossref.org/*','https://arxiv.org/*'],
+                         content_scripts:[{ matches:['https://arxiv.org/abs/*','https://www.nature.com/articles/*',
+                                                     'https://*.bmj.com/content/*'] }] }) },
+    tabs:{ create(){}, onActivated:{addListener(){}}, query:async()=>[{id:1,url:'https://arxiv.org/abs/2503.01800'}] },
     storage:{ local:{ get:async()=>({}), set:async()=>{} }, session:{ get:async()=>({}), set:async()=>{} } },
     // Everything declared is granted, as on Chrome. Tests that care override it.
     permissions:{
