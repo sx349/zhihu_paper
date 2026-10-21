@@ -1,4 +1,6 @@
 .DS_Store
 node_modules/
 zhihu_paper.zip
+# the 1254px artwork icons/ is generated from; not shipped, not tracked
+icon.png
 zhihu_paper_test/

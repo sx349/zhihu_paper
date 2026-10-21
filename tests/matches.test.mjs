@@ -79,6 +79,18 @@ ck('  updates come from a host we control', gecko?.update_url?.startsWith('https
 ck('  and 121 is the floor, where both background keys stopped conflicting',
    gecko?.strict_min_version === '121.0');
 
+// --- icons ----------------------------------------------------------------
+// Both stores require them, and a missing file is a load error rather than a
+// blank square, so the paths are checked against the tree.
+import { existsSync } from 'fs';
+const iconPath = (rel) => new URL('../' + rel, import.meta.url).pathname;
+const wanted = ['16', '32', '48', '96', '128'];
+ck('every icon size is declared', wanted.every((w) => manifest.icons?.[w]), JSON.stringify(Object.keys(manifest.icons || {})));
+ck('  and every declared file exists', Object.values(manifest.icons || {}).every((f) => existsSync(iconPath(f))));
+ck('the toolbar button has an icon', !!manifest.action?.default_icon);
+ck('  whose files exist too', Object.values(manifest.action?.default_icon || {}).every((f) => existsSync(iconPath(f))));
+ck('  and whose title survived', manifest.action?.default_title === manifest.name);
+
 // A journal's front page is not an article; injecting there would be noise.
 for (const url of ['https://journals.bmj.com/', 'https://elifesciences.org/', 'https://www.jneurosci.org/',
                    'https://www.thelancet.com/', 'https://www.alphaxiv.org/',
