@@ -1,0 +1,11 @@
+# Kept out of `npm run pack`. The zip is what a reader loads as an unpacked
+# extension, so it carries the manifest, src/ and data/ and the two documents
+# worth having beside them -- not the scaffolding none of that needs.
+.gitattributes  export-ignore
+.gitignore      export-ignore
+.github/        export-ignore
+tests/          export-ignore
+eslint.config.mjs export-ignore
+package.json    export-ignore
+package-lock.json export-ignore
+schema.sql      export-ignore
