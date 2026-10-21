@@ -14,12 +14,30 @@ const setState = (tabId, s) => chrome.storage.session.set({ [stateKey(tabId)]: s
 
 const zhidaPending = new Set();   // paper ids with a generation in flight
 
+// Chrome puts the panel behind sidePanel, Firefox behind sidebarAction, and
+// neither knows the other. Which one exists is also the only browser test the
+// worker needs, so it stands in for one everywhere below.
+const CHROME_PANEL = typeof chrome.sidePanel !== 'undefined';
+
+/** Open the panel for a tab. Needs a user gesture on both browsers. */
+async function openPanel(tabId) {
+  if (CHROME_PANEL) return chrome.sidePanel.open({ tabId });
+  return chrome.sidebarAction.open();   // per window, so it takes no tab
+}
+
 chrome.runtime.onInstalled.addListener((details) => {
-  chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch(() => {});
+  // Chrome can hand the toolbar button to the panel outright. Firefox has no
+  // equivalent, so the button gets a click handler instead, below.
+  if (CHROME_PANEL) chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch(() => {});
   // First install only — on 'update' this would fire at every reload during
   // development, and on 'chrome_update' for no reason at all.
   if (details.reason === 'install') chrome.runtime.openOptionsPage();
 });
+
+// Firefox only: the click is the user gesture sidebarAction.toggle() needs.
+if (!CHROME_PANEL) {
+  chrome.action.onClicked.addListener(() => chrome.sidebarAction.toggle());
+}
 
 chrome.tabs.onRemoved.addListener((tabId) => chrome.storage.session.remove(stateKey(tabId)));
 
@@ -271,7 +289,11 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
     if (msg.type === 'PAPER_FOUND') {
       await handlePaper(tabId, msg.paper);
-      sendResponse({ ok: true });
+      // Whether a click in the page can open the panel at all. Firefox wants a
+      // live user gesture for sidebarAction and does not expose it to content
+      // scripts, so the badge needs to know before it is hovered, not after
+      // it is clicked.
+      sendResponse({ ok: true, canOpenFromPage: CHROME_PANEL });
       return;
     }
 
@@ -285,7 +307,13 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     }
 
     if (msg.type === 'OPEN_PANEL') {
-      try { await chrome.sidePanel.open({ tabId }); } catch (e) { /* needs a gesture; toolbar icon still works */ }
+      // Both browsers want a user gesture here, and the click happened in the
+      // content script a message ago. Chrome accepts that; Firefox refuses --
+      // "sidebarAction.open may only be called from a user input handler" --
+      // and sidebarAction is not exposed to content scripts, so there is
+      // nowhere the call could be made with the gesture still live. The badge
+      // learns this on PAPER_FOUND and explains itself on hover.
+      try { await openPanel(tabId); } catch (e) { console.log('[知乎论文助手] open panel failed:', e.message); }
       sendResponse({ ok: true });
       return;
     }
