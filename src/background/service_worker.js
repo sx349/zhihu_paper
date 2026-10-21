@@ -1,5 +1,5 @@
 import { getPaper, authorsByOrcid, mergeAuthors } from '../lib/papergraph.js';
-import { searchZhihu, searchWeb, questionsFromRows, questionAnswers, hasCJK, translateTitle, zhida, zhidaWeb, zhidaPrompt, getSecret, draftQuestionCandidates, questionBody } from '../lib/zhihu.js';
+import { searchZhihu, searchWeb, questionsFromRows, questionAnswers, hasCJK, translateTitle, zhida, zhidaWebTurn, zhidaPrompt, getSecret, draftQuestionCandidates, questionBody } from '../lib/zhihu.js';
 import { paperQuestions } from '../lib/paperquestions.js';
 import { rankByZhida, reorderByQid, fallbackOrder } from '../lib/rank.js';
 import { readCache, writeCache, clearCache, readZhida, writeZhida } from '../lib/cache.js';
@@ -298,7 +298,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       const s = (await getState(id)) || (await pullFromTab(id));
       if (!s) { sendResponse(null); return; }
       sendResponse({ ...s, phase: s.phase || null,
-                     zhida: { text: await readZhida(s.paper.id), pending: zhidaPending.has(s.paper.id) } });
+                     zhida: { ...(await readZhida(s.paper.id)), pending: zhidaPending.has(s.paper.id) } });
       return;
     }
 
@@ -338,15 +338,18 @@ chrome.runtime.onConnect.addListener((port) => {
     try {
       const prompt = zhidaPrompt(msg.paper);
       let full;
+      let session = '';
       try {
-        full = await zhidaWeb(prompt, (delta) => port.postMessage({ delta }));
+        // Generating opens a 直答 conversation; keeping its id lets the panel
+        // link the reader to it.
+        ({ text: full, sessionId: session } = await zhidaWebTurn(prompt, (delta) => port.postMessage({ delta })));
       } catch (e) {
         console.log('[知乎论文助手] 直答: web failed,', e.message);
         if (!(await getSecret())) throw new Error('直答暂不可用');
-        full = await zhida(prompt, (delta) => port.postMessage({ delta }));
+        full = await zhida(prompt, (delta) => port.postMessage({ delta }));   // no conversation to link
       }
-      await writeZhida(id, full);
-      port.postMessage({ done: true, text: full });
+      await writeZhida(id, full, session);
+      port.postMessage({ done: true, text: full, sessionId: session });
       // The panel may have re-rendered mid-stream (tab switch); tell it to refetch.
       chrome.runtime.sendMessage({ type: 'ZHIDA_DONE', paperId: id }).catch(() => {});
     } catch (e) {

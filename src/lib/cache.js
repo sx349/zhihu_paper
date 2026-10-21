@@ -106,9 +106,14 @@ export async function clearCache(paperId) {
 // go with it.
 export async function readZhida(paperId) {
   const row = await read(Z_PREFIX, paperId, Z_TTL_MS);
-  return row ? row.text : '';
+  return { text: row?.text || '', sessionId: row?.sessionId || '' };
 }
 
-export async function writeZhida(paperId, text) {
-  await write(Z_PREFIX, paperId, Z_TTL_MS, Z_MAX_ENTRIES, { text });
+/**
+ * The session is kept beside the text so the reader can open the conversation
+ * 直答 held while generating it, at /search/<session_id>. Entries written
+ * before this, and ones generated through the open platform, have none.
+ */
+export async function writeZhida(paperId, text, sessionId = '') {
+  await write(Z_PREFIX, paperId, Z_TTL_MS, Z_MAX_ENTRIES, { text, sessionId });
 }

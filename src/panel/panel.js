@@ -202,6 +202,16 @@ function zhidaSection(paper, zhida) {
   meta.append(el('span', 'zdnote', '由知乎直答生成，仅供参考。'));
   s.append(meta);
 
+  // Generating opens a real 直答 conversation, which the reader can carry on
+  // with. Absent for a 解读 stored before this existed, or one that came from
+  // the open platform, which holds no conversation.
+  const openChat = (sessionId) => {
+    if (!sessionId) return;
+    const a = link('https://zhida.zhihu.com/search/' + sessionId, 'zdagain');
+    a.textContent = '前往对话';
+    meta.append(a);
+  };
+
   const again = el('button', 'zdagain', '重新生成');
 
   // Streams into `placeholder`, which `from` is replaced by, and settles into
@@ -225,6 +235,7 @@ function zhidaSection(paper, zhida) {
         out.innerHTML = renderMarkdown(m.text || '');
         placeholder.replaceWith(out);
         again.disabled = false;
+        openChat(m.sessionId);
       }
     });
     port.postMessage({ paper });
@@ -235,6 +246,7 @@ function zhidaSection(paper, zhida) {
   // switch -- and ⟳ re-resolves the pool without discarding it.
   if (zhida?.text) {
     out.innerHTML = renderMarkdown(zhida.text);
+    openChat(zhida.sessionId);
     again.addEventListener('click', () => generate(out));
     meta.append(again);
     // A regeneration started before this render -- the panel re-renders on

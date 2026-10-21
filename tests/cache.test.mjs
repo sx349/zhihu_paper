@@ -85,23 +85,25 @@ ck('clearCache removes just that paper', store['cache:x'] === undefined);
 // Its own prefix, week-long expiry and tighter cap: a 解读 does not go stale
 // the way a pool does, so it is evicted for space rather than for freshness.
 store = {};
-await writeZhida('arxiv:2503.01800', '## 一、论文做了什么\n\n这是…');
-ck('zhida reads back', (await readZhida('arxiv:2503.01800')).startsWith('## 一、'));
+await writeZhida('arxiv:2503.01800', '## 一、论文做了什么\n\n这是…', '3759247373158131738');
+const zr = await readZhida('arxiv:2503.01800');
+ck('zhida reads back', zr.text.startsWith('## 一、'));
+ck('  with the conversation it was generated in', zr.sessionId === '3759247373158131738');
 ck('  under its own prefix', !!store['zhida:arxiv:2503.01800'] && !store['cache:arxiv:2503.01800']);
-ck('  a paper with none reads as empty, not null', (await readZhida('nope')) === '');
+ck('  a paper with none reads as empty, not null', (await readZhida('nope')).text === '');
 
 // the two stores must not evict each other
 store = {};
 await writeCache('p', resolution);
-await writeZhida('p', 'text');
+await writeZhida('p', 'text', 'sess');
 ck('resolution and 解读 coexist for one paper', !!store['cache:p'] && !!store['zhida:p']);
 await clearCache('p');
 ck('clearing the resolution leaves the 解读', !store['cache:p'] && !!store['zhida:p']);
 
 store['zhida:old'] = { ts: Date.now() - 8 * 24 * 60 * 60 * 1000, text: 'x' };
-ck('8 days old is a miss', (await readZhida('old')) === '');
+ck('8 days old is a miss', (await readZhida('old')).text === '');
 store['zhida:recent'] = { ts: Date.now() - 6 * 24 * 60 * 60 * 1000, text: 'x' };
-ck('  6 days old is still a hit', (await readZhida('recent')) === 'x');
+ck('  6 days old is still a hit', (await readZhida('recent')).text === 'x');
 
 store = {};
 const t = Date.now();
@@ -112,6 +114,15 @@ ck('zhida capped at 50', Object.keys(store).filter((k) => k.startsWith('zhida:')
    String(Object.keys(store).filter((k) => k.startsWith('zhida:')).length));
 ck('  and the resolution cache is untouched by it',
    Object.keys(store).filter((k) => k.startsWith('cache:')).length === 300);
+
+// A 解读 written before sessions were kept, or one from the open platform,
+// simply has no conversation to offer.
+store = {};
+await writeZhida('nosess', 'text only');
+ck('a 解读 with no session reads back cleanly', (await readZhida('nosess')).sessionId === '');
+store['zhida:legacy'] = { ts: Date.now(), text: 'old entry' };
+ck('  as does a legacy entry', (await readZhida('legacy')).text === 'old entry'
+   && (await readZhida('legacy')).sessionId === '');
 
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

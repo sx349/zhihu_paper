@@ -106,7 +106,8 @@ main{flex:1;overflow-y:auto;overflow-x:hidden}
   border-radius:3px;padding:1px 5px;opacity:.85}
 .zdmeta{display:flex;align-items:center;gap:10px}
 .zdmeta .zdnote{flex:1;min-width:0}
-.zdagain{flex:none;background:var(--surface-2);border:1px solid var(--line-2);border-radius:999px;
+.zdagain{flex:none;display:inline-block;text-decoration:none;background:var(--surface-2);
+  border:1px solid var(--line-2);border-radius:999px;
   padding:3px 10px;font:inherit;font-size:11px;font-weight:600;color:var(--ink-2);cursor:pointer}
 .zdagain:hover{border-color:var(--zhihu);color:var(--zhihu)}
 .zdagain:focus-visible{outline:2px solid var(--zhihu);outline-offset:1px}
