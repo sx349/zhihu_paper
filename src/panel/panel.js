@@ -2,7 +2,7 @@ import { renderMarkdown } from './md.js';
 import { covers } from '../lib/matchpattern.js';
 
 const root = document.getElementById('root');
-const SUPPORTED_URL = 'https://sx349.github.io/zhihu_paper';
+const SUPPORTED_URL = 'https://sx349.github.io/zhihu_paper#sites';
 const foot = document.getElementById('foot');
 let current = null;
 
@@ -459,7 +459,7 @@ function renderInner(state) {
     ph.append(el('p', 'big', '未识别到论文'));
     const where = el('p');
     const a = link(SUPPORTED_URL, null);
-    a.textContent = SUPPORTED_URL.replace(/^https?:\/\//, '');
+    a.textContent = SUPPORTED_URL.replace(/^https?:\/\//, '').replace(/#.*$/, '');
     where.append(document.createTextNode('请前往 '), a,
                  document.createTextNode(' 查看目前支持的期刊/出版社/预印本平台。'));
     ph.append(where);
