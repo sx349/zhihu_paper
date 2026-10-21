@@ -1,7 +1,7 @@
 import { getPaper, authorsByOrcid, mergeAuthors } from '../lib/papergraph.js';
 import { searchZhihu, searchWeb, questionsFromRows, questionAnswers, hasCJK, translateTitle, zhida, zhidaWeb, zhidaPrompt, getSecret, draftQuestionCandidates, questionBody } from '../lib/zhihu.js';
 import { paperQuestions } from '../lib/paperquestions.js';
-import { rankByZhida, reorderByQid } from '../lib/rank.js';
+import { rankByZhida, reorderByQid, fallbackOrder } from '../lib/rank.js';
 import { readCache, writeCache, clearCache, readZhida, writeZhida } from '../lib/cache.js';
 import { enrich } from '../lib/crossref.js';
 
@@ -143,11 +143,8 @@ async function resolve(paper, onPhase) {
     return { ...q, authorInvolved: !!mine, authorAnswer: mine || null, top: q.answers[0] || null };
   });
 
-  // Something renders now; 直答 reorders it a few seconds later.
-  const provisional = [...marked].sort((a, b) =>
-    (b.authorInvolved - a.authorInvolved) ||
-    ((b.score || 0) - (a.score || 0)) ||
-    ((b.top?.votes || 0) - (a.top?.votes || 0)));
+  // What the panel shows if 直答 cannot rank; see fallbackOrder.
+  const provisional = fallbackOrder(marked);
 
   // The ranking promise is handed back rather than stored: the resolution
   // goes into session storage, which cannot hold a promise.

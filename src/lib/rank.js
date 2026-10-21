@@ -46,6 +46,25 @@ export function borda(orders, n) {
 }
 
 /**
+ * The order the panel shows when 直答 could not rank at all.
+ *
+ * It fails more often than it looks: an unrecognised prompt, or one carrying
+ * a rival product's name -- "moonshot" and "ai code" both do it -- comes back
+ * as 直答's own product blurb, which parseOrder rejects, and two rejected
+ * rounds leave nothing to aggregate.
+ *
+ * Author-involved first, then the questions Zhihu itself linked to the paper,
+ * then the rest. Ties keep the order they arrived in, which is the paper
+ * index's own and then Zhihu's search ranking -- both better priors than the
+ * vote count this used to fall back on. Votes promote whatever is popular,
+ * and on a pool that is mostly noise, the most popular rows are the noise.
+ */
+export function fallbackOrder(items) {
+  const rank = (q) => (q.authorInvolved ? 0 : 2) + (q.src === 'card' ? 0 : 1);
+  return [...items].sort((a, b) => rank(a) - rank(b));
+}
+
+/**
  * 直答 is handed the pool before it is hydrated, so the items it returns are
  * the pre-hydration objects. This reapplies that order to the hydrated list
  * by qid. Anything the order does not name keeps the tail rather than being

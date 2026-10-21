@@ -5,7 +5,7 @@ globalThis.chrome = { storage: { local: { get: async (k) => ({ [k]: store[k] }),
 let pass = 0, fail = 0;
 const ck = (n, c, e = '') => { c ? pass++ : fail++; console.log(`${c ? 'ok  ' : 'FAIL'}  ${n}${e ? '  ' + e : ''}`); };
 
-const { parseOrder, borda, rankByZhida, reorderByQid } = await import(P + '/src/lib/rank.js');
+const { parseOrder, borda, rankByZhida, reorderByQid, fallbackOrder } = await import(P + '/src/lib/rank.js');
 
 // --- parseOrder ----------------------------------------------------------
 ck('clean permutation', JSON.stringify(parseOrder('3,1,2', 3)) === JSON.stringify([3, 1, 2]));
@@ -87,6 +87,26 @@ ck('an empty order drops nothing', reorderByQid([], fat).length === 3);
 
 const unknown = reorderByQid([{ qid: 'zzz' }, thin[1]], fat);
 ck('a qid that is not in the pool is skipped', unknown.map((q) => q.qid).join(',') === 'b,a,c', unknown.map((q) => q.qid).join(','));
+
+// --- the order shown when 直答 cannot rank --------------------------------
+// Votes used to be the tiebreak, which put the most popular noise on top.
+const q = (id, src, authorInvolved, votes) => ({ qid:id, src, authorInvolved, top:{ votes } });
+const fbPool = [
+  q('a', 'card',   false, 10),
+  q('b', 'search', false, 34168),      // popular and unrelated
+  q('c', 'search', true,  5),          // the author answered this one
+  q('d', 'card',   false, 3),
+  q('e', 'search', false, 17026)
+];
+const got = fallbackOrder(fbPool).map((x) => x.qid).join(',');
+ck('author-involved first, then card, then search', got === 'c,a,d,b,e', got);
+ck('  the 34k-vote unrelated question is not promoted', got.indexOf('b') > got.indexOf('a'));
+ck('  ties keep the order they arrived in', got.indexOf('a') < got.indexOf('d') && got.indexOf('b') < got.indexOf('e'));
+ck('  nothing is dropped', fallbackOrder(fbPool).length === 5);
+ck('  the input is left alone', fbPool[0].qid === 'a' && fbPool[1].qid === 'b');
+
+const authorOnCard = fallbackOrder([q('x','search',true,1), q('y','card',true,1), q('z','card',false,1)]).map((x)=>x.qid).join(',');
+ck('an author-involved search row still outranks a plain card row', authorOnCard === 'y,x,z', authorOnCard);
 
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);
