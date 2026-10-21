@@ -22,7 +22,6 @@
     "cookies"
   ],
   "host_permissions": [
-    "https://arxiv.org/*",
     "https://*.zhihu.com/*",
     "https://developer.zhihu.com/*",
     "https://api.crossref.org/*"

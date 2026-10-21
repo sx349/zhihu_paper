@@ -386,10 +386,11 @@ async function findUngranted(url) {
     // below would be false.
     const here = declared.filter((o) => covers(o, url));
     if (!here.length) return;
-    // contains(), not getAll(). getAll().origins lists host permissions only:
-    // a content script's matches are granted implicitly and never appear
-    // there, so comparing against it reports every one of them as missing
-    // for ever. contains() matches patterns against what is actually held.
+    // contains(), not getAll(). getAll().origins reports a granted origin as
+    // the pattern that was declared, so comparing a declared pattern against
+    // that list is string equality: https://arxiv.org/abs/* is held but never
+    // listed under that spelling. contains() matches patterns against what is
+    // actually held, which is the question being asked.
     const held = await Promise.all(
       here.map((o) => chrome.permissions.contains({ origins: [o] }).catch(() => true))
     );
