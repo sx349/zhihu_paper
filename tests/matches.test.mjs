@@ -31,6 +31,8 @@ const sites = [
   ['https://www.cell.com/cell/fulltext/S0092-8674(23)00001-2', 'Cell'],
   ['https://academic.oup.com/ismej/article/18/1/wrad001/7503955', 'Oxford Academic'],
   ['https://ieeexplore.ieee.org/document/7780459/', 'IEEE Xplore'],
+  ['https://ieeexplore.ieee.org/abstract/document/917389', 'IEEE Xplore'],
+  ['https://www.emerald.com/ajb/article-abstract/41/3/117/1360601/Achieving-sustainable-performance-with-Quality-4-0?redirectedFrom=fulltext', 'Emerald'],
   ['https://www.science.org/doi/10.1126/science.adk1234', 'Science'],
   ['https://www.pnas.org/doi/10.1073/pnas.2301234120', 'PNAS'],
   ['https://dl.acm.org/doi/10.1145/3292500.3330701', 'ACM'],
@@ -138,7 +140,7 @@ ck('  whose files exist too', Object.values(manifest.action?.default_icon || {})
 ck('  and whose title survived', manifest.action?.default_title === manifest.name);
 
 // A journal's front page is not an article; injecting there would be noise.
-for (const url of ['https://journals.bmj.com/', 'https://elifesciences.org/', 'https://www.jneurosci.org/',
+for (const url of ['https://www.emerald.com/', 'https://journals.bmj.com/', 'https://elifesciences.org/', 'https://www.jneurosci.org/',
                    'https://www.thelancet.com/', 'https://www.alphaxiv.org/',
                    'https://arxiv.org/list/math.AP/recent']) {
   ck(`not injected on ${new URL(url).hostname}${new URL(url).pathname}`, !patterns.some((p) => covers(p, url)));
