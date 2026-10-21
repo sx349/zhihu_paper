@@ -246,7 +246,12 @@ export async function zhida(prompt, onChunk, model = 'zhida-fast-1p5') {
  * Empty session_id starts a session (the Init event returns one). Answer
  * events carry text deltas in `summary`, wrapped in <mark> for highlights.
  */
-export async function zhidaWeb(prompt, onChunk) {
+/**
+ * One turn. Returns the session too, because a second turn needs it: 直答
+ * classifies only the final user message, so a list it refuses to touch can
+ * be put in history and asked about afterwards. See CANNED in rank.js.
+ */
+export async function zhidaWebTurn(prompt, onChunk, sessionId = '') {
   const res = await fetch('https://zhida.zhihu.com/ai_ingress/stream/completion', {
     method: 'POST',
     credentials: 'include',
@@ -254,7 +259,7 @@ export async function zhidaWeb(prompt, onChunk) {
     body: JSON.stringify({
       knowledge_ids: ['KBT_GLOBAL', 'KBT_ZHIHU', 'KBT_PAPER'],
       quiz_type: 'QT_CHAT', attachments: [], message_source_type: 'text',
-      session_id: '', zhida_source: 'zhida', chat_mode: 'FAST',
+      session_id: sessionId, zhida_source: 'zhida', chat_mode: 'FAST',
       // What the site itself sends. Measured against 'ai_search_general' it is
       // no faster -- chat_model is in fact ignored outright, a garbage value
       // returns 200 and a usable answer -- but matching the site keeps us off
@@ -269,6 +274,7 @@ export async function zhidaWeb(prompt, onChunk) {
   const decoder = new TextDecoder();
   let buf = '';
   let full = '';
+  let session = sessionId;
   while (true) {
     const { done, value } = await reader.read();
     if (done) break;
@@ -279,6 +285,8 @@ export async function zhidaWeb(prompt, onChunk) {
       if (!line.startsWith('data:')) continue;
       let obj;
       try { obj = JSON.parse(line.slice(5).trim()); } catch (e) { continue; }
+      // An empty session_id opens one; the Init event names it.
+      if (obj.event === 'Init' && obj.data?.session_id) session = obj.data.session_id;
       if (obj.event !== 'Answer') continue;
       // Accumulated raw and stripped at the end: an element split across two
       // deltas is only removable once both halves are in hand. onChunk still
@@ -287,7 +295,12 @@ export async function zhidaWeb(prompt, onChunk) {
       if (delta) { full += delta; onChunk(strip(delta)); }
     }
   }
-  return strip(full);
+  return { text: strip(full), sessionId: session };
+}
+
+/** The common case: one turn, text only. */
+export async function zhidaWeb(prompt, onChunk) {
+  return (await zhidaWebTurn(prompt, onChunk)).text;
 }
 
 // Zhihu's own editorial prompt for turning a paper into a public question.

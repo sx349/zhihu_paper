@@ -6,9 +6,16 @@
 // reliably, but a single round is unstable once the pool passes ~15 items —
 // three rounds and a positional aggregate hold the top of the list steady.
 
-import { zhidaWeb, zhida, getSecret } from './zhihu.js';
+import { zhidaWebTurn, zhida, getSecret } from './zhihu.js';
 
 const ROUNDS = 3;
+
+// 直答 answers with its own product blurb instead of the task when it does
+// not want to engage with the message. It is a 200 with a body, not an error,
+// so nothing upstream notices -- parseOrder simply rejects it.
+const CANNED = '我是知乎直答';
+
+const ASK = '请判断每个问题与这篇论文本身内容的相关程度，按相关度从高到低排序。不相关的排在最后。只输出序号，用英文逗号分隔，不要输出任何其他文字。例如：3,1,5,2';
 
 function prompt(paper, pool) {
   return `下面是一篇论文，以及知乎上若干个可能与它相关的问题。
@@ -19,7 +26,7 @@ function prompt(paper, pool) {
 问题列表：
 ${pool.map((p, i) => `${i + 1}. ${p.title}`).join('\n')}
 
-请判断每个问题与这篇论文本身内容的相关程度，按相关度从高到低排序。不相关的排在最后。只输出序号，用英文逗号分隔，不要输出任何其他文字。例如：3,1,5,2`;
+${ASK}`;
 }
 
 /**
@@ -89,9 +96,17 @@ export async function rankByZhida(paper, pool) {
   if (pool.length < 2) return null;
   const p = prompt(paper, pool);
 
+  // What 直答 refuses is decided by the final user message alone, and the
+  // trigger is cumulative rather than any one item -- a pool of 18 can pass
+  // where one of 9 fails, and no single question explains it. A refusal still
+  // leaves the list in that session's history, where it is not classified, so
+  // asking again with nothing but the instruction gets a real answer. Costs
+  // one extra request, and only on a round that was refused.
   const once = async () => {
     try {
-      return await zhidaWeb(p, () => {});
+      const { text, sessionId } = await zhidaWebTurn(p, () => {});
+      if (!text.includes(CANNED) || !sessionId) return text;
+      return (await zhidaWebTurn('上面问题列表中，' + ASK, () => {}, sessionId)).text;
     } catch (e) {
       if (!(await getSecret())) throw e;
       return await zhida(p, () => {});

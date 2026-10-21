@@ -108,5 +108,51 @@ ck('  the input is left alone', fbPool[0].qid === 'a' && fbPool[1].qid === 'b');
 const authorOnCard = fallbackOrder([q('x','search',true,1), q('y','card',true,1), q('z','card',false,1)]).map((x)=>x.qid).join(',');
 ck('an author-involved search row still outranks a plain card row', authorOnCard === 'y,x,z', authorOnCard);
 
+// --- the two-turn retry ---------------------------------------------------
+// 直答 answers with its product blurb rather than the task when the final user
+// message trips its guard. It is a 200, so only the content gives it away.
+const BLURB = '我是知乎直答 —— 知乎官方推出的AI搜索产品，专注于提供高效、精准的知识回答。';
+const sse2 = (text, sessionId) => {
+  const ev = [];
+  if (sessionId) ev.push({ event: 'Init', data: { session_id: sessionId } });
+  ev.push({ event: 'Answer', data: { summary: text } });
+  const bytes = new TextEncoder().encode(ev.map((e) => `data: ${JSON.stringify(e)}\n\n`).join(''));
+  let sent = false;
+  return { ok: true, status: 200, body: { getReader: () => ({ read: async () =>
+    sent ? { done: true } : (sent = true, { done: false, value: bytes }) }) } };
+};
+
+let sent = [];
+globalThis.fetch = async (u, o) => {
+  const b = JSON.parse(o.body);
+  sent.push({ session: b.session_id, content: b.message_content });
+  if (!b.session_id) return sse2(BLURB, 'sess-1');       // turn 1 is refused
+  return sse2('3,1,2', b.session_id);                    // turn 2 ranks
+};
+out = await rankByZhida({ title: 'p', abstract: '' }, pool);
+ck('a refused round is retried across two turns', out !== null && out.length === 3,
+   out ? out.map((x) => x.title).join(',') : 'null');
+ck('  the blurb never reaches parseOrder', out && out[0].title === 'c');
+// The three rounds run in parallel, so the turns interleave; key on the session.
+const firsts = sent.filter((x) => x.session === '');
+const seconds = sent.filter((x) => x.session === 'sess-1');
+ck('  turn 1 is the ordinary prompt, list and all', firsts[0].content.includes('问题列表') && firsts[0].content.includes('1. a'));
+ck('  one extra request per refused round, not two', firsts.length === 3 && seconds.length === 3,
+   firsts.length + ' first, ' + seconds.length + ' second');
+ck('  turn 2 reuses the session from turn 1', seconds.every((x) => x.session === 'sess-1'));
+ck('  and turn 2 carries no list, only the ask',
+   seconds.every((x) => !x.content.includes('1. a') && x.content.includes('只输出序号')));
+
+// A pool 直答 is willing to rank must not pay for the retry.
+sent = [];
+globalThis.fetch = async (u, o) => { sent.push(JSON.parse(o.body)); return sse2('2,1,3', 'sess-x'); };
+out = await rankByZhida({ title: 'p', abstract: '' }, pool);
+ck('an accepted round stays one turn', sent.length === 3 && out !== null, String(sent.length) + ' calls');
+
+// If the retry is refused too, the round is simply lost.
+globalThis.fetch = async () => sse2(BLURB, 'sess-2');
+ck('a retry that is also refused yields no ranking',
+   (await rankByZhida({ title: 'p', abstract: '' }, pool)) === null);
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);
