@@ -9,3 +9,5 @@ eslint.config.mjs export-ignore
 package.json    export-ignore
 package-lock.json export-ignore
 schema.sql      export-ignore
+scripts/        export-ignore
+docs/           export-ignore

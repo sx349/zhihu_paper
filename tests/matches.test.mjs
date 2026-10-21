@@ -79,6 +79,20 @@ ck('  updates come from a host we control', gecko?.update_url?.startsWith('https
 ck('  and 121 is the floor, where both background keys stopped conflicting',
    gecko?.strict_min_version === '121.0');
 
+// --- the update manifest Firefox polls ------------------------------------
+// It is generated from manifest.json, but a stale checked-in copy would be
+// invisible: the poll finds a version it already has and nobody updates, with
+// no error anywhere. So the two are compared.
+const updates = JSON.parse(readFileSync(new URL('../docs/updates.json', import.meta.url), 'utf8'));
+const geckoId = manifest.browser_specific_settings.gecko.id;
+const entry = updates.addons?.[geckoId]?.updates?.[0];
+ck('updates.json is keyed by the add-on id', !!entry, Object.keys(updates.addons || {}).join(','));
+ck('  and offers the version in the manifest', entry?.version === manifest.version,
+   entry?.version + ' vs ' + manifest.version);
+ck('  linking to that version\'s asset', entry?.update_link?.includes('/v' + manifest.version + '/')
+   && entry?.update_link?.endsWith(manifest.version + '.xpi'), entry?.update_link);
+ck('  over https, which update_link requires', entry?.update_link?.startsWith('https://'));
+
 // --- icons ----------------------------------------------------------------
 // Both stores require them, and a missing file is a load error rather than a
 // blank square, so the paths are checked against the tree.

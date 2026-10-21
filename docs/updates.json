@@ -1,0 +1,12 @@
+{
+  "addons": {
+    "zhihu-paper@sx349.github.io": {
+      "updates": [
+        {
+          "version": "0.4.0",
+          "update_link": "https://github.com/sx349/zhihu_paper/releases/download/v0.4.0/zhihu_paper-0.4.0.xpi"
+        }
+      ]
+    }
+  }
+}
