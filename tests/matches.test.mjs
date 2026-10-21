@@ -55,6 +55,8 @@ const sites = [
   ['https://www.biorxiv.org/content/10.1101/2023.01.01.522000v1', 'bioRxiv'],
   ['https://www.medrxiv.org/content/10.1101/2023.01.01.23284000v1', 'medRxiv'],
   ['https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0289123', 'PLOS'],
+  ['https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(20)30183-5/fulltext', 'The Lancet'],
+  ['https://www.alphaxiv.org/abs/2503.01800', 'alphaXiv'],
   ['https://www.bmj.com/content/372/bmj.n71', 'BMJ'],
   ['https://bmjopen.bmj.com/content/16/10/e116242', 'BMJ'],
   ['https://elifesciences.org/articles/00065', 'eLife'],
@@ -75,6 +77,7 @@ for (const [url, label] of sites) {
 
 // A journal's front page is not an article; injecting there would be noise.
 for (const url of ['https://journals.bmj.com/', 'https://elifesciences.org/', 'https://www.jneurosci.org/',
+                   'https://www.thelancet.com/', 'https://www.alphaxiv.org/',
                    'https://arxiv.org/list/math.AP/recent']) {
   ck(`not injected on ${new URL(url).hostname}${new URL(url).pathname}`, !patterns.some((p) => covers(p, url)));
 }

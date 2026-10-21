@@ -58,6 +58,8 @@
         "https://www.cell.com/*/fulltext/*",
         "https://www.biorxiv.org/content/*",
         "https://www.medrxiv.org/content/*",
+        "https://www.alphaxiv.org/abs/*",
+        "https://www.thelancet.com/journals/*/article/*",
         "https://*.bmj.com/content/*",
         "https://elifesciences.org/articles/*",
         "https://elifesciences.org/reviewed-preprints/*",

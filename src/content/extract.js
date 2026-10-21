@@ -225,7 +225,8 @@ var ZhihuPaper = (function () {
     ['sagepub', 'SAGE'], ['tandfonline', 'Taylor & Francis'], ['pubmed', 'PubMed'],
     ['nature.com', 'Nature'], ['cell.com', 'Cell'], ['biorxiv', 'bioRxiv'], ['medrxiv', 'medRxiv'],
     ['plos.org', 'PLOS'], ['bmj.com', 'BMJ'], ['elifesciences', 'eLife'],
-    ['jneurosci', 'Journal of Neuroscience']
+    ['jneurosci', 'Journal of Neuroscience'], ['thelancet', 'The Lancet'],
+    ['alphaxiv', 'alphaXiv']
   ];
   function sourceName() {
     var h = location.hostname;
