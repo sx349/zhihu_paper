@@ -56,7 +56,7 @@ footer{margin-top:48px;padding-top:18px;border-top:1px solid var(--line);
   <header>
     <img src="icon-48.png" alt="">
     <h1>知乎论文助手</h1>
-    <span class="ver">v0.5.0</span>
+    <span class="ver">v0.5.1</span>
     <a class="repo" href="https://github.com/sx349/zhihu_paper">GitHub 仓库</a>
   </header>
   <p class="sub">在论文页面识别当前论文，并连接知乎上的相关讨论。</p>
@@ -126,6 +126,39 @@ footer{margin-top:48px;padding-top:18px;border-top:1px solid var(--line);
   </section>
 
   <section id="notes" hidden>
+    <section class="rel">
+      <h3>0.5.1 — 2026-10-21</h3>
+      <h4>更新</h4>
+      <ul>
+        <li>准备将插件发布至 Chrome 应用商店及 Firefox 附加组件平台</li>
+      </ul>
+      <h4>修复</h4>
+      <ul>
+        <li>未登录知乎时，面板提示登录状态，不再显示无效内容</li>
+        <li>「未识别到论文」提示中的支持站点列表改为指向项目主页</li>
+      </ul>
+    </section>
+    <section class="rel">
+      <h3>0.5.0 — 2026-10-21</h3>
+      <h4>更新</h4>
+      <ul>
+        <li>新增 Firefox 支持
+          <ul><li>点击工具栏图标开启/关闭侧边栏</li><li>支持 Firefox 内置 PDF 阅读器中的 arXiv 论文</li><li>更新支持网站后，面板将显示「浏览器尚未授权某某网站」并提示「前往授权」</li></ul></li>
+        <li>新增项目主页 sx349.github.io/zhihu_paper，提供安装说明、支持站点与更新记录</li>
+        <li>更新插件图标</li>
+      </ul>
+      <h4>修复</h4>
+      <ul>
+        <li>修复「复制草稿」实际未写入剪贴板的问题</li>
+        <li>切换到非论文页面后，面板将不再显示先前论文</li>
+      </ul>
+      <h4>其他</h4>
+      <ul>
+        <li>「论文解读」改用更安全的 Markdown 渲染方式</li>
+        <li>移除未使用的站点权限</li>
+        <li>发布包不再包含测试与构建脚本</li>
+      </ul>
+    </section>
     <section class="rel">
       <h3>0.4.0 — 2026-10-21</h3>
       <h4>更新</h4>
