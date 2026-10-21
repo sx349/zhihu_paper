@@ -58,6 +58,10 @@
         "https://www.cell.com/*/fulltext/*",
         "https://www.biorxiv.org/content/*",
         "https://www.medrxiv.org/content/*",
+        "https://*.bmj.com/content/*",
+        "https://elifesciences.org/articles/*",
+        "https://elifesciences.org/reviewed-preprints/*",
+        "https://www.jneurosci.org/content/*",
         "https://journals.plos.org/*/article*"
       ],
       "js": [

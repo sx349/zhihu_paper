@@ -221,7 +221,8 @@ var ZhihuPaper = (function () {
     ['science.org', 'Science'], ['pnas', 'PNAS'], ['acm.org', 'ACM'], ['uchicago', 'UChicago Press'],
     ['sagepub', 'SAGE'], ['tandfonline', 'Taylor & Francis'], ['pubmed', 'PubMed'],
     ['nature.com', 'Nature'], ['cell.com', 'Cell'], ['biorxiv', 'bioRxiv'], ['medrxiv', 'medRxiv'],
-    ['plos.org', 'PLOS']
+    ['plos.org', 'PLOS'], ['bmj.com', 'BMJ'], ['elifesciences', 'eLife'],
+    ['jneurosci', 'Journal of Neuroscience']
   ];
   function sourceName() {
     var h = location.hostname;
@@ -318,7 +319,8 @@ var ZhihuPaper = (function () {
       cleanDoi: cleanDoi,
       doiFromUrl: doiFromUrl,
       doiFromSsrn: doiFromSsrn,
-      arxivId: arxivId
+      arxivId: arxivId,
+      sourceName: sourceName
     }
   };
 })();

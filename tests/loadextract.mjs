@@ -11,7 +11,7 @@ globalThis.document = { querySelectorAll: () => [] };
 globalThis.window = { addEventListener() {} };
 globalThis.history = { pushState() {} };
 
-export const { ARXIV_DOI_RE, cleanDoi, doiFromUrl, doiFromSsrn, arxivId } =
+export const { ARXIV_DOI_RE, cleanDoi, doiFromUrl, doiFromSsrn, arxivId, sourceName } =
   new Function(src + '\nreturn ZhihuPaper;')().identifier;
 
 // Put the extractor on a page, the way a real navigation would.
