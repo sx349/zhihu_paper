@@ -53,6 +53,23 @@ if (!CHROME_PANEL) {
 
 chrome.tabs.onRemoved.addListener((tabId) => chrome.storage.session.remove(stateKey(tabId)));
 
+// A tab that navigates has left its paper behind. Until 0.4.0 nothing cleared
+// this, deliberately: leaving a paper meant losing its results, so the panel
+// held the last one while the reader went to Google Scholar and back. Caching
+// made that untrue -- returning re-renders from the cache at once -- and the
+// stickiness had become a way to show the previous paper's discussion against
+// the current page, which is what happens on any page the content script does
+// not run on. info.url is set only when the URL actually changed, and loading
+// precedes the script's document_idle, so a real paper still overwrites this.
+chrome.tabs.onUpdated.addListener(async (tabId, info) => {
+  if (info.status !== 'loading' || !info.url) return;
+  await chrome.storage.session.remove(stateKey(tabId));
+  // And say so. Navigating within a tab fires neither onActivated nor any
+  // other refresh the panel listens for, so clearing the state alone leaves
+  // the previous render on screen against nothing.
+  chrome.runtime.sendMessage({ type: 'STATE_CHANGED', tabId }).catch(() => {});
+});
+
 // One search feeds both panels. Zhihu's web API with the user's cookies
 // first (no secret needed, richer rows); the open platform only if that
 // fails and a secret exists -- its rows carry no question to collapse, so
