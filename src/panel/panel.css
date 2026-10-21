@@ -39,6 +39,12 @@ main{flex:1;overflow-y:auto;overflow-x:hidden}
 .src b{color:var(--zhihu)}
 .ptitle{font-family:var(--serif);font-size:16px;font-weight:600;line-height:1.34;margin:0;text-wrap:balance}
 .pauth{font-size:12.5px;color:var(--ink-2);margin:0}
+.pauth .prest{display:none}
+.pauth.open .prest{display:inline}
+.pmore{background:none;border:0;padding:0;margin-left:6px;font:inherit;font-size:11.5px;
+  color:var(--zhihu);cursor:pointer;white-space:nowrap}
+.pmore:hover{text-decoration:underline}
+.pmore:focus-visible{outline:2px solid var(--zhihu);outline-offset:2px;border-radius:3px}
 .pid{font-family:var(--mono);font-size:11.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:5px 10px}
 
 .sec{padding:13px 14px 15px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:10px}

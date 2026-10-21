@@ -18,13 +18,41 @@ const link = (href, cls) => {
   return a;
 };
 
+// Medical and collaboration papers run to dozens of names, which pushes the
+// identifiers and everything under them off the top of a narrow panel. Six or
+// fewer are left alone -- collapsing them would cost a line and save none.
+const SHOWN_AUTHORS = 5;
+
+function authorLine(authors) {
+  const line = el('p', 'pauth');
+  if (authors.length <= SHOWN_AUTHORS + 1) {
+    line.textContent = authors.join(' · ');
+    return line;
+  }
+
+  const label = `等 ${authors.length} 人`;
+  const more = el('button', 'pmore', label);
+  more.addEventListener('click', () => {
+    const open = line.classList.contains('open');
+    line.classList.toggle('open', !open);
+    more.textContent = open ? label : '收起';
+  });
+
+  line.append(
+    el('span', null, authors.slice(0, SHOWN_AUTHORS).join(' · ')),
+    el('span', 'prest', ' · ' + authors.slice(SHOWN_AUTHORS).join(' · ')),
+    more
+  );
+  return line;
+}
+
 function paperHeader(p) {
   const box = el('div', 'paper');
   const src = el('span', 'src');
   src.innerHTML = '当前页面 · <b></b>';
   src.querySelector('b').textContent = p.source;
   box.append(src, el('p', 'ptitle', p.title || '(无标题)'));
-  if (p.authors?.length) box.append(el('p', 'pauth', p.authors.join(' · ')));
+  if (p.authors?.length) box.append(authorLine(p.authors));
   const id = el('div', 'pid');
   if (p.arxivId) id.append(el('span', null, 'arXiv:' + p.arxivId));
   if (p.doi) id.append(el('span', null, p.doi));

@@ -93,6 +93,23 @@ ck('  and no 重新生成 before there is anything to regenerate', !r.text.inclu
 r = await run({paper,resolution:{layer:'fuzzy',authors:[],linked:[],search}});
 ck('missing zhida field (older worker) still renders the button', r.text.includes('生成直答解读'));
 
+// --- a long byline folds ---------------------------------------------------
+const many = Array.from({length:30},(_,i)=>'Author '+(i+1));
+r = await run({paper:{...paper,authors:many},resolution:{layer:'linked',authors:[],linked:[],search:{layer:'empty',items:[]}}});
+const line = r.dom.root.querySelectorAll('pauth')[0];
+const btn = r.dom.root.querySelectorAll('pmore')[0];
+ck('a 30-author byline offers to fold', !!btn && btn.textContent === '等 30 人', btn && btn.textContent);
+ck('  every name is still in the DOM', line.textContent.includes('Author 30'));
+ck('  but the tail is behind a class the CSS hides', !line.classList.contains('open'));
+btn.fire('click');
+ck('expanding opens the line', line.classList.contains('open') && btn.textContent === '收起');
+btn.fire('click');
+ck('  and collapsing restores the count', !line.classList.contains('open') && btn.textContent === '等 30 人');
+
+r = await run({paper:{...paper,authors:['A','B','C','D','E','F']},resolution:{layer:'linked',authors:[],linked:[],search:{layer:'empty',items:[]}}});
+ck('six or fewer are left alone', r.dom.root.querySelectorAll('pmore').length === 0);
+ck('  and still all shown', r.dom.root.querySelectorAll('pauth')[0].textContent === 'A · B · C · D · E · F');
+
 // --- the 标题检索 caveat on 相关问题 ---------------------------------------
 const mk = (src) => ({kind:'question',title:'Q-'+src,url:'https://z/q/'+src,src,
   answers:[{author:'a',votes:1}],top:{author:'a',votes:1}});
