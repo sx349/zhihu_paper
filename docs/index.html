@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>知乎论文助手</title>
+<link rel="icon" href="icon-48.png">
+<style>
+:root{--ink:#111721;--ink-2:#3D4757;--muted:#667385;--line:#DCE1E9;--line-2:#C8D0DB;
+  --surface:#fff;--surface-2:#F6F8FB;--zhihu:#0084FF;
+  --sans:"IBM Plex Sans","Noto Sans SC",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,monospace;color-scheme:light}
+*{box-sizing:border-box}
+body{margin:0;background:var(--surface);color:var(--ink);font-family:var(--sans);
+  font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased}
+.wrap{max-width:720px;margin:0 auto;padding:40px 20px 72px}
+header{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+header img{width:40px;height:40px}
+h1{font-size:22px;margin:0;font-weight:700}
+.sub{color:var(--muted);font-size:14px;margin:0 0 26px 52px}
+.ver{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid var(--line);
+  border-radius:999px;padding:2px 9px}
+nav{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:28px}
+nav button{appearance:none;background:none;border:0;border-bottom:2px solid transparent;
+  padding:9px 14px;font:inherit;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer}
+nav button:hover{color:var(--ink)}
+nav button[aria-selected=true]{color:var(--zhihu);border-bottom-color:var(--zhihu)}
+section[hidden]{display:none}
+h2{font-size:16px;margin:28px 0 10px}
+h2:first-child{margin-top:0}
+h3{font-size:15px;margin:0 0 10px;font-family:var(--mono)}
+h4{font-size:13px;margin:16px 0 6px;color:var(--muted);font-weight:700;letter-spacing:.06em}
+ol,ul{margin:0 0 14px;padding-left:22px}
+li{margin:4px 0}
+code{font-family:var(--mono);font-size:13px;background:var(--surface-2);
+  border:1px solid var(--line);border-radius:4px;padding:1px 5px}
+a{color:var(--zhihu)}
+.soon{border:1px dashed var(--line-2);border-radius:8px;padding:14px 16px;color:var(--muted);
+  background:var(--surface-2);font-size:14px}
+.sites{list-style:none;padding:0;display:grid;gap:8px;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+.sites li{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:8px;
+  padding:9px 12px;margin:0}
+.sites b{font-size:14px}
+.sites span{font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+.count{color:var(--muted);font-size:14px;margin:0 0 16px}
+.rel{border-top:1px solid var(--line);padding-top:18px;margin-top:22px}
+.rel:first-of-type{border-top:0;padding-top:0;margin-top:0}
+footer{margin-top:48px;padding-top:18px;border-top:1px solid var(--line);
+  color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <img src="icon-48.png" alt="">
+    <h1>知乎论文助手</h1>
+    <span class="ver">v0.5.0</span>
+  </header>
+  <p class="sub">在论文页面识别当前论文，并连接知乎上的相关讨论。</p>
+
+  <nav>
+    <button id="t-install" aria-selected="true" aria-controls="install">安装说明</button>
+    <button id="t-sites" aria-selected="false" aria-controls="sites">支持站点</button>
+    <button id="t-notes" aria-selected="false" aria-controls="notes">更新记录</button>
+  </nav>
+
+  <section id="install">
+    <h2>Chrome / Edge</h2>
+    <ol>
+      <li>从 <a href="https://github.com/sx349/zhihu_paper/releases/latest">GitHub Releases</a> 下载 <code>zhihu_paper.zip</code> 并解压</li>
+      <li>打开 <code>chrome://extensions</code>，开启右上角的「开发者模式」</li>
+      <li>点击「加载已解压的扩展程序」，选择解压得到的 <code>zhihu_paper</code> 文件夹</li>
+    </ol>
+    <p class="soon">Chrome 应用商店：审核中，上架后此处提供链接。</p>
+
+    <h2>Firefox</h2>
+    <p class="soon">Firefox 版本正在签名中，完成后此处提供 <code>.xpi</code> 下载链接。安装后可自动更新。</p>
+
+    <h2>使用前</h2>
+    <ul>
+      <li>需在浏览器中登录知乎，扩展通过你的登录状态访问知乎</li>
+      <li>安装后请刷新已打开的论文页面</li>
+    </ul>
+  </section>
+
+  <section id="sites" hidden>
+    <p class="count">目前支持 28 个站点。</p>
+    <ul class="sites">
+      <li><b>ACM</b><span>dl.acm.org</span></li>
+      <li><b>AEA</b><span>www.aeaweb.org</span></li>
+      <li><b>alphaXiv</b><span>www.alphaxiv.org</span></li>
+      <li><b>arXiv</b><span>arxiv.org</span></li>
+      <li><b>bioRxiv</b><span>www.biorxiv.org</span></li>
+      <li><b>BMJ</b><span>bmj.com</span></li>
+      <li><b>Cell</b><span>www.cell.com</span></li>
+      <li><b>eLife</b><span>elifesciences.org</span></li>
+      <li><b>IEEE Xplore</b><span>ieeexplore.ieee.org</span></li>
+      <li><b>INFORMS</b><span>pubsonline.informs.org</span></li>
+      <li><b>Journal of Neuroscience</b><span>www.jneurosci.org</span></li>
+      <li><b>JSTOR</b><span>www.jstor.org</span></li>
+      <li><b>medRxiv</b><span>www.medrxiv.org</span></li>
+      <li><b>Nature</b><span>www.nature.com</span></li>
+      <li><b>NBER</b><span>www.nber.org</span></li>
+      <li><b>Oxford Academic</b><span>academic.oup.com</span></li>
+      <li><b>PLOS</b><span>journals.plos.org</span></li>
+      <li><b>PNAS</b><span>www.pnas.org</span></li>
+      <li><b>PubMed</b><span>pubmed.ncbi.nlm.nih.gov</span></li>
+      <li><b>SAGE</b><span>journals.sagepub.com</span></li>
+      <li><b>Science</b><span>www.science.org</span></li>
+      <li><b>ScienceDirect</b><span>www.sciencedirect.com</span></li>
+      <li><b>Springer</b><span>link.springer.com</span></li>
+      <li><b>SSRN</b><span>papers.ssrn.com</span></li>
+      <li><b>Taylor &amp; Francis</b><span>www.tandfonline.com</span></li>
+      <li><b>The Lancet</b><span>www.thelancet.com</span></li>
+      <li><b>UChicago Press</b><span>www.journals.uchicago.edu</span></li>
+      <li><b>Wiley</b><span>onlinelibrary.wiley.com</span></li>
+    </ul>
+  </section>
+
+  <section id="notes" hidden>
+    <section class="rel">
+      <h3>0.4.0 — 2026-10-21</h3>
+      <h4>更新</h4>
+      <ul>
+        <li>新增支持 BMJ 、The Lancet、eLife、Journal of Neuroscience、alphaXiv 等期刊/网站</li>
+        <li>支持 arXiv 网站的 PDF 和 HTML 页面模式</li>
+        <li>查询结果缓存功能
+          <ul><li>「相关问题」和「相关回答/文章」缓存 24 小时，可通过顶部刷新按钮手动更新</li><li>「论文解读」缓存一周，可通过「重新生成」按钮手动更新</li></ul></li>
+        <li>「论文解读」新增「前往对话」功能，跳转至相应知乎直答对话页面</li>
+        <li>「相关问题」和「相关回答/文章」默认显示数量由五条减少至三条，支持展开/收起</li>
+        <li>所有板块均支持通过点击板块标题进行折叠/展开</li>
+        <li>作者较多时，默认只显示前五位，支持展开/收起</li>
+        <li>英文论文「按标题搜索」时，标题将通过知乎直答翻译为中文，并同时进行搜索</li>
+      </ul>
+      <h4>修复</h4>
+      <ul>
+        <li>移除「论文解读」中混入的来源编号</li>
+        <li>移除论文标题和摘要中混入的 HTML 标记</li>
+        <li>知乎直答在提示语包含特定内容时会拒绝排序，可通过再次提问修复</li>
+        <li>若直答未返回排序结果，备选方案为「论文卡片优先、作者参与置顶」</li>
+      </ul>
+      <h4>其他</h4>
+      <ul>
+        <li>移除深色模式</li>
+        <li>放大顶部图标（刷新/设置）</li>
+      </ul>
+    </section>
+    <section class="rel">
+      <h3>0.3.0 — 2026-10-20</h3>
+      <h4>更新</h4>
+      <ul>
+        <li>「相关问题」改为使用知乎官方论文关联问题接口及标题检索结果
+          <ul><li>由知乎直答排序，保留前十名并默认显示前五名</li><li>由作者「亲自答」的问题将默认置顶</li></ul></li>
+        <li>同时提供「参与讨论」和「发起提问」两个选项
+          <ul><li>「参与讨论」按钮将指向「相关问题」中排名第一的问题</li><li>「发起提问」将跳转知乎首页并发起提问（并提供参考标题和补充说明）</li></ul></li>
+        <li>暂时移除反馈功能</li>
+      </ul>
+      <h4>修复</h4>
+      <ul>
+        <li>回答顺序错误，现与知乎问题页一致</li>
+        <li>排序完成前「参与讨论」按钮不可点击</li>
+        <li>查询完成前不再显示「暂无相关讨论」</li>
+      </ul>
+    </section>
+    <section class="rel">
+      <h3>0.2.0 — 2026-10-20</h3>
+      <h4>修复</h4>
+      <ul>
+        <li>侧边栏在后台状态丢失后可重新识别论文</li>
+      </ul>
+      <h4>其他</h4>
+      <ul>
+        <li>加入 ESLint 和 GitHub Actions</li>
+        <li>测试不再依赖本机路径</li>
+        <li>CI 检查 manifest 与 package 版本号一致</li>
+      </ul>
+    </section>
+    <section class="rel">
+      <h3>0.1.0</h3>
+      <ul>
+        <li>支持 arXiv、SSRN、NBER、JSTOR、IEEE、PubMed 及主要出版社平台共 23 个站点</li>
+      </ul>
+    </section>
+  </section>
+
+  <footer>
+    <a href="https://github.com/sx349/zhihu_paper">GitHub</a> · 本页由扩展源码生成
+  </footer>
+</div>
+<script>
+  var tabs = [['t-install','install'],['t-sites','sites'],['t-notes','notes']];
+  tabs.forEach(function (pair) {
+    document.getElementById(pair[0]).addEventListener('click', function () {
+      tabs.forEach(function (p) {
+        var on = p[0] === pair[0];
+        document.getElementById(p[0]).setAttribute('aria-selected', String(on));
+        document.getElementById(p[1]).hidden = !on;
+      });
+      location.hash = pair[1];
+    });
+  });
+  if (location.hash) {
+    var t = tabs.find(function (p) { return '#' + p[1] === location.hash; });
+    if (t) document.getElementById(t[0]).click();
+  }
+</script>
+</body>
+</html>
