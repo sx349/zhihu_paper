@@ -434,3 +434,28 @@ export function questionBody(paper) {
   if (paper.abstract) lines.push('', '摘要：' + paper.abstract);
   return lines.join('\n');
 }
+
+// The API hands back _xl, 200px, where the panel draws a 32px circle -- four
+// times the bytes for Yu Deng's avatar, 81KB against 20KB. The ?source= token
+// varies by size and between responses, so leaving it on would store the same
+// image several times over. _xll exists too, at 250px.
+const thumb = (u) => String(u || '').split('?')[0].replace(/_xl{1,2}\.(jpg|jpeg|png)$/i, '_l.$1');
+
+/**
+ * Live name, headline and avatar for Zhihu accounts. The seed carries copies
+ * of the first two that nothing ever refreshes, so a rename or a new signature
+ * never showed. Needs the reader's session: signed out the endpoint answers
+ * 403 need_login, and a token that fails simply keeps whatever the seed had.
+ */
+export async function members(tokens) {
+  const one = async (t) => {
+    const url = new URL('https://www.zhihu.com/api/v4/members/' + encodeURIComponent(t));
+    url.searchParams.set('include', 'name,headline,avatar_url');
+    const res = await fetch(url, { credentials: 'include' });
+    if (!res.ok) throw new Error('members HTTP ' + res.status);
+    const d = await res.json();
+    return [t, { name: strip(d.name), headline: strip(d.headline), avatar: thumb(d.avatar_url) }];
+  };
+  const settled = await Promise.allSettled([...new Set(tokens)].filter(Boolean).map(one));
+  return new Map(settled.filter((s) => s.status === 'fulfilled').map((s) => s.value));
+}

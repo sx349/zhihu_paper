@@ -1,5 +1,5 @@
 import { getPaper, authorsByOrcid, mergeAuthors } from '../lib/papergraph.js';
-import { searchZhihu, searchWeb, questionsFromRows, questionAnswers, hasCJK, translateTitle, zhida, zhidaWebTurn, zhidaPrompt, getSecret, draftQuestionCandidates, questionBody } from '../lib/zhihu.js';
+import { searchZhihu, searchWeb, questionsFromRows, questionAnswers, hasCJK, translateTitle, zhida, zhidaWebTurn, zhidaPrompt, getSecret, draftQuestionCandidates, questionBody, members } from '../lib/zhihu.js';
 import { paperQuestions } from '../lib/paperquestions.js';
 import { rankByZhida, reorderByQid, fallbackOrder } from '../lib/rank.js';
 import { readCache, writeCache, clearCache, readZhida, writeZhida } from '../lib/cache.js';
@@ -168,8 +168,13 @@ async function resolve(paper, onPhase) {
   if (paper.doi && paper.arxivId) alt.push('arxiv:' + paper.arxivId);
   const hit = await getPaper(paper.id, alt);
   const declared = hit.Code === 0 ? hit.Data.authors : [];
-  const authors = mergeAuthors(declared, await authorsByOrcid(paper.orcids));
-  const authorTokens = new Set(authors.map((a) => a.url_token).filter(Boolean));
+  const seeded = mergeAuthors(declared, await authorsByOrcid(paper.orcids));
+  const authorTokens = new Set(seeded.map((a) => a.url_token).filter(Boolean));
+
+  // Launched, not awaited: the panel needs this only at the end, and pool()
+  // is much the slower of the two, so the round trip costs nothing in wall
+  // time. Awaiting it here would add one to every page load.
+  const live = members([...authorTokens]).catch(() => new Map());
 
   const p = await pool(paper, onPhase);
 
@@ -192,6 +197,17 @@ async function resolve(paper, onPhase) {
 
   // What the panel shows if 直答 cannot rank; see fallbackOrder.
   const provisional = fallbackOrder(marked);
+
+  // Live values win where Zhihu returned one; the seed is the fallback, so a
+  // failed lookup or a signed-out reader sees exactly what they saw before.
+  const fresh = await live;
+  const authors = seeded.map((a) => {
+    const m = fresh.get(a.url_token);
+    return m ? { ...a,
+      nickname: m.name || a.nickname,
+      label: m.headline || a.label,
+      avatar: m.avatar || '' } : a;
+  });
 
   // The ranking promise is handed back rather than stored: the resolution
   // goes into session storage, which cannot hold a promise.

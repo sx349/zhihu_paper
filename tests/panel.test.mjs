@@ -37,7 +37,18 @@ ck('linked: no 标题搜索 tag', !r.text.includes('标题搜索'));
 ck('author card shows nickname, not real name', r.text.includes('不等式爱好者') && !r.text.includes('Xiao Ma'));
 ck('author card shows Zhihu label + token', r.text.includes('学数学，做数学') && r.text.includes('@ma-xiao-42-34'));
 r = await run({paper,resolution:{layer:'linked',authors:[{url_token:'x',nickname:'X'}],linked,search}});
-ck('empty label falls back to 优秀答主', r.text.includes('优秀答主'));
+ck('no signature invents no standing', !r.text.includes('优秀答主'));
+ck('  and the card still names the account', r.text.includes('X') && r.text.includes('@x'));
+
+// Live values arrive from the member endpoint; the initial is only for when
+// no avatar is known.
+r = await run({paper,resolution:{layer:'linked',linked,search,
+  authors:[{url_token:'y',nickname:'Y',label:'签名',avatar:'https://picx.zhimg.com/abc_l.jpg'}]}});
+const avImg = r.dom.root.querySelector('img');
+ck('an avatar renders as an image', !!avImg && avImg.src === 'https://picx.zhimg.com/abc_l.jpg',
+   avImg ? avImg.src : 'no img');
+ck('  so the initial is not drawn as well', r.dom.root.querySelector('av')?.textContent === '',
+   JSON.stringify(r.dom.root.querySelector('av')?.textContent));
 
 // the regression: an older service worker shape must not blank the panel
 r = await run({paper,resolution:{layer:'linked',authors,items:linked}});

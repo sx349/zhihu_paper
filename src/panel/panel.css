@@ -68,7 +68,8 @@ main{flex:1;overflow-y:auto;overflow-x:hidden}
 .auth{display:flex;gap:10px;align-items:flex-start;padding:10px;border-radius:8px;background:var(--linked-bg);border:1px solid var(--linked-line);
   text-decoration:none;color:inherit}
 .auth:hover{border-color:var(--linked)}
-.av{width:32px;height:32px;border-radius:50%;flex:none;display:grid;place-items:center;color:#fff;font-weight:600;font-size:12px;background:var(--zhihu)}
+.av{width:32px;height:32px;border-radius:6px;flex:none;display:grid;place-items:center;color:#fff;font-weight:600;font-size:12px;background:var(--zhihu);overflow:hidden}
+.av img{width:100%;height:100%;object-fit:cover;display:block}
 .ainfo{min-width:0;display:flex;flex-direction:column;gap:2px}
 .aname{font-size:13px;font-weight:600}
 .ahead,.atok{font-size:11.5px;color:var(--muted)}

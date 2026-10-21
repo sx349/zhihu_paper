@@ -113,10 +113,23 @@ function section(title, count) {
 function authorCard(a) {
   const nick = a.nickname || a.name || a.url_token;
   const card = link('https://www.zhihu.com/people/' + a.url_token, 'auth');
-  card.append(el('div', 'av', nick.trim()[0]));
+  // The initial stands in only until the real avatar is known. It never
+  // pretended to be one.
+  const av = el('div', 'av');
+  if (a.avatar) {
+    const img = el('img');
+    img.src = a.avatar;
+    img.alt = '';
+    av.append(img);
+  } else {
+    av.textContent = nick.trim()[0];
+  }
+  card.append(av);
   const info = el('div', 'ainfo');
   info.append(el('span', 'aname', nick));
-  info.append(el('span', 'ahead', a.label || '优秀答主'));
+  // No fallback: 优秀答主 used to fill this line, which asserted a standing
+  // Zhihu had not given the person. An absent signature is left absent.
+  if (a.label) info.append(el('span', 'ahead', a.label));
   info.append(el('span', 'atok', '@' + a.url_token));
   card.append(info);
   return card;

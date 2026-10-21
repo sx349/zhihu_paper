@@ -33,7 +33,7 @@ globalThis.fetch = async (u) => {
   return { ok:true, status:200, json:async()=> (off === '0' ? page0 : page1) };
 };
 
-const { searchWeb, questionsFromRows, zhidaWeb, hasCJK, translateTitle } = await import(P+'/src/lib/zhihu.js');
+const { searchWeb, questionsFromRows, zhidaWeb, hasCJK, translateTitle, members } = await import(P+'/src/lib/zhihu.js');
 const r = await searchWeb('q');
 
 ck('both pages requested', offsets.join(',')==='0,20', offsets.join(','));
@@ -136,5 +136,47 @@ ck('refuses anything past the 100-char query limit', (await translateTitle('x'))
 
 reply('');
 ck('an empty answer yields no query', (await translateTitle('x')) === '');
+
+// --- live author info ------------------------------------------------------
+// The seed's nickname and signature are copies nothing refreshes. These come
+// from /api/v4/members, which needs the reader's Zhihu session.
+const MEMBER = { 'paellahorizon': { name:'Yu Deng', headline:'愿世界和平，愿龙怜结婚。',
+    avatar_url:'https://picx.zhimg.com/fecdefe08c23d32e854187eef850b527_xl.jpg?source=32738c0c&needBackground=1' },
+  'ma-xiao-42-34': { name:'不等式爱好者', headline:'学数学，做数学', avatar_url:'' } };
+let asked = [], lastUrl = '';
+globalThis.fetch = async (u) => {
+  lastUrl = String(u);
+  const t = decodeURIComponent(new URL(u).pathname.split('/').pop());
+  asked.push(t);
+  if (!MEMBER[t]) return { ok:false, status:404 };
+  return { ok:true, status:200, json:async()=>MEMBER[t] };
+};
+
+let m = await members(['paellahorizon', 'ma-xiao-42-34']);
+ck('one entry per account', m.size===2, String(m.size));
+ck('  carries the live name and signature',
+   m.get('paellahorizon').name==='Yu Deng' && m.get('paellahorizon').headline==='愿世界和平，愿龙怜结婚。');
+// _xl is 200px and the panel draws 32px; _l is 100px, a quarter of the bytes.
+ck('  asks the CDN for _l, not the _xl it was handed',
+   m.get('paellahorizon').avatar==='https://picx.zhimg.com/fecdefe08c23d32e854187eef850b527_l.jpg',
+   m.get('paellahorizon').avatar);
+// ?source= differs per size and per response, so leaving it on would cache
+// the same image several times over.
+ck('  with no ?source= token', !m.get('paellahorizon').avatar.includes('?'));
+ck('  an account with no avatar yields none', m.get('ma-xiao-42-34').avatar==='');
+// The endpoint returns none of these unless they are asked for by name.
+ck('  include= names every field used',
+   ['name', 'headline', 'avatar_url'].every((f) => new URL(lastUrl).searchParams.get('include').includes(f)),
+   new URL(lastUrl).searchParams.get('include'));
+
+asked = [];
+m = await members(['paellahorizon', 'paellahorizon', '', null]);
+ck('each account asked once, blanks skipped', asked.join(',')==='paellahorizon', asked.join(','));
+
+m = await members(['paellahorizon', 'nobody']);
+ck('a failed account drops out rather than throwing', m.size===1 && m.has('paellahorizon'), String(m.size));
+
+globalThis.fetch = async () => { throw new Error('offline'); };
+ck('all failing yields an empty map, not a rejection', (await members(['x'])).size===0);
 
 console.log(`\n${pass} passed, ${fail} failed`); process.exit(fail?1:0);
