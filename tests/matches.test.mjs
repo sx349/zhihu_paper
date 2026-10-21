@@ -79,6 +79,22 @@ ck('  updates come from a host we control', gecko?.update_url?.startsWith('https
 ck('  and 121 is the floor, where both background keys stopped conflicting',
    gecko?.strict_min_version === '121.0');
 
+// --- what Firefox requires of a new add-on ---------------------------------
+// AMO rejects an upload without data_collection_permissions. "none" would be
+// untrue here: resolving a paper sends its title to Zhihu's search, its title
+// and abstract to 直答, and its DOI to Crossref -- page content, to third
+// parties. Under-declaring is the failure that gets an add-on pulled.
+const collect = manifest.browser_specific_settings.gecko.data_collection_permissions;
+ck('data collection is declared', !!collect, JSON.stringify(collect));
+ck('  and not as none, since page content does leave', !collect?.required?.includes('none'));
+ck('  websiteContent, which is what leaves', collect?.required?.includes('websiteContent'));
+
+// options_page arrived in Firefox 126, so declaring 121 promised compatibility
+// the manifest did not have. options_ui predates both browsers' support.
+ck('options use options_ui, not options_page', !!manifest.options_ui && !manifest.options_page);
+ck('  pointing at the real file',
+   existsSync(new URL('../' + manifest.options_ui.page, import.meta.url).pathname));
+
 // --- host permissions ------------------------------------------------------
 // A content script's matches cover the page it runs on, so host_permissions
 // are for the worker's own fetches and nothing else. Four publishers were

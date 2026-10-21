@@ -7,7 +7,12 @@
     "gecko": {
       "id": "zhihu-paper@sx349.github.io",
       "strict_min_version": "121.0",
-      "update_url": "https://sx349.github.io/zhihu_paper/updates.json"
+      "update_url": "https://sx349.github.io/zhihu_paper/updates.json",
+      "data_collection_permissions": {
+        "required": [
+          "websiteContent"
+        ]
+      }
     }
   },
   "permissions": [
@@ -51,7 +56,10 @@
       "48": "icons/icon-48.png"
     }
   },
-  "options_page": "src/options/options.html",
+  "options_ui": {
+    "page": "src/options/options.html",
+    "open_in_tab": true
+  },
   "content_scripts": [
     {
       "matches": [
