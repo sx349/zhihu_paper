@@ -99,7 +99,7 @@ ${CSS}
   </nav>
 
   <section id="install">
-    <h2>Chrome / Edge 开发者模式</h2>
+    <h2>Chrome 开发者模式</h2>
     <ol>
       <li>从 <a href="${REPO}/releases/latest">GitHub Releases</a> 下载 <code>zhihu_paper.zip</code> 并解压</li>
       <li>打开 <code>chrome://extensions</code>，开启右上角的「开发者模式」</li>
