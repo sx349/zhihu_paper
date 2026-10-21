@@ -178,6 +178,9 @@ var ZhihuPaper = (function () {
 
   function cleanAbstract(t) {
     return String(t || '')
+      // citation_abstract is markup on structured-abstract publishers --
+      // BMJ ships <h3>Objective</h3><p>… -- and this text goes into prompts.
+      .replace(/<[^>]+>/g, ' ')
       .replace(/^\s*(abstract|summary|摘要)\s*[:：]?\s*/i, '')
       .replace(/\s+/g, ' ')
       .trim();
@@ -320,7 +323,8 @@ var ZhihuPaper = (function () {
       doiFromUrl: doiFromUrl,
       doiFromSsrn: doiFromSsrn,
       arxivId: arxivId,
-      sourceName: sourceName
+      sourceName: sourceName,
+      abstractFromPage: abstractFromPage
     }
   };
 })();

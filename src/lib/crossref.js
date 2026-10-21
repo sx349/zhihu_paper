@@ -12,6 +12,12 @@ const BASE = 'https://api.crossref.org/works/';
 const CACHE_KEY = 'crossrefCache';
 const MAX_CACHE = 200;
 
+// What shape() produces. Entries are stored already shaped, so a change here
+// would otherwise be invisible on every DOI already cached -- stripping JATS
+// from titles fixed nothing until this was bumped. Raise it whenever shape()
+// changes; older entries are ignored and refetched.
+const SHAPE = 2;
+
 function stripJats(s) {
   return s ? s.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim() : '';
 }
@@ -23,10 +29,13 @@ function shape(m) {
   })).filter((a) => a.name);
 
   return {
-    title: (m.title || [])[0] || '',
+    // JATS is not confined to the abstract: BMJ's titles carry <i> and the
+    // newline-indentation around it, and enrich() overwrites the page's own
+    // clean title with this one.
+    title: stripJats((m.title || [])[0]),
     authors: authors.map((a) => a.name),
     orcids: authors.filter((a) => a.orcid).map((a) => ({ name: a.name, orcid: a.orcid })),
-    journal: (m['container-title'] || [])[0] || '',
+    journal: stripJats((m['container-title'] || [])[0]),
     year: String(m.issued?.['date-parts']?.[0]?.[0] || ''),
     volume: m.volume || '',
     type: m.type || '',
@@ -36,13 +45,15 @@ function shape(m) {
 
 async function readCache(doi) {
   const store = await chrome.storage.local.get(CACHE_KEY);
-  return (store[CACHE_KEY] || {})[doi] || null;
+  const hit = (store[CACHE_KEY] || {})[doi];
+  return hit && hit.v === SHAPE ? hit.data : null;
 }
 
 async function writeCache(doi, value) {
   const store = await chrome.storage.local.get(CACHE_KEY);
   const cache = store[CACHE_KEY] || {};
-  cache[doi] = value;
+  for (const k of Object.keys(cache)) if (cache[k]?.v !== SHAPE) delete cache[k];
+  cache[doi] = { v: SHAPE, data: value };
   const keys = Object.keys(cache);
   if (keys.length > MAX_CACHE) delete cache[keys[0]];
   await chrome.storage.local.set({ [CACHE_KEY]: cache });
