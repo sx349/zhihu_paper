@@ -50,6 +50,25 @@ ck('an avatar renders as an image', !!avImg && avImg.src === 'https://picx.zhimg
 ck('  so the initial is not drawn as well', r.dom.root.querySelector('av')?.textContent === '',
    JSON.stringify(r.dom.root.querySelector('av')?.textContent));
 
+// --- nothing asked of Zhihu yet -------------------------------------------
+// The worker leaves a paper idle until ⟳, so an hour of browsing costs Zhihu
+// nothing. The panel must say so rather than render empty sections, which
+// would read as "no discussion found" for a search never run.
+r = await run({paper, resolution:null, phase:null, idle:true});
+ck('idle: the paper still identifies', r.text.includes(paper.title.slice(0, 20)));
+// The name must match the button's own tooltip, which is 刷新.
+ck('  and names the control that starts the search', r.text.includes('请点击上方「刷新」按钮搜索知乎相关讨论'));
+ck('  with no sections at all', r.secs.length===0, r.secs.join(' | '));
+ck('  so it never claims there is no discussion', !r.text.includes('暂无相关讨论'));
+ck('  参与讨论 disabled: nothing to open', dom_disabled(r)===true);
+ck('  发起提问 still live: it drafts from the paper', r.dom.ask.disabled!==true);
+
+// A cache hit is the one thing that renders by itself -- the requests were
+// already spent, so withholding the results would help nobody.
+r = await run({paper, resolution:{layer:'linked',authors,linked,search}, phase:null});
+ck('cached: renders without waiting for ⟳', r.secs.includes('相关问题'), r.secs.join(' | '));
+ck('  and shows no prompt', !r.text.includes('请点击上方「刷新」按钮'));
+
 // the regression: an older service worker shape must not blank the panel
 r = await run({paper,resolution:{layer:'linked',authors,items:linked}});
 ck('stale SW shape still renders every section', r.secs.length>=3, r.secs.join(' | '));

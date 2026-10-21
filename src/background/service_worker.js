@@ -290,6 +290,18 @@ async function handlePaper(tabId, rawPaper, { fresh = false } = {}) {
     }
   }
 
+  // Recognising the paper is free; searching for it is not. An hour on
+  // Scholar or Research Rabbit is easily a hundred papers, and each one used
+  // to cost Zhihu a dozen requests whether or not the panel was ever opened.
+  // So the first search waits for ⟳, and only a cache hit renders by itself.
+  if (!fresh) {
+    const idle = { paper, resolution: null, phase: null, idle: true };
+    await setState(tabId, idle);
+    chrome.runtime.sendMessage({ type: 'STATE_CHANGED', tabId }).catch(() => {});
+    console.log('[知乎论文助手]', paper.id, '-> idle, waiting for ⟳');
+    return idle;
+  }
+
   const preliminary = { paper, resolution: null,
                         phase: paper.title && !hasCJK(paper.title) ? 'translating' : 'fetching' };
   await setState(tabId, preliminary);

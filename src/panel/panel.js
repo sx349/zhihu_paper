@@ -495,6 +495,19 @@ function renderInner(state) {
 
   root.append(paperHeader(paper));
 
+  // Nothing has been asked of Zhihu for this paper yet, by design -- see the
+  // gate in handlePaper. Say so and name the control that starts it, rather
+  // than render sections that would all read as "no discussion found".
+  if (state.idle) {
+    const ph = el('div', 'placeholder');
+    ph.append(el('p', 'big', '请点击上方「刷新」按钮搜索知乎相关讨论。'));
+    root.append(ph);
+    // 参与讨论 opens the top-ranked question, and there is no pool to rank.
+    // 发起提问 drafts from the paper itself, so it still works.
+    document.getElementById('primary').disabled = true;
+    return;
+  }
+
   // Signed out, every section below is about things we could not look up.
   // Rendering them empty makes the panel assert that Zhihu has no discussion
   // of this paper, when in fact it was never asked. The paper itself still
