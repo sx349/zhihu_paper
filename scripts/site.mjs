@@ -27,15 +27,7 @@ const notes = changelog().map((rel) => {
   return `    <section class="rel">\n      <h3>${esc(rel.title)}</h3>\n${groups}\n    </section>`;
 }).join('\n');
 
-const html = `<!doctype html>
-<html lang="zh-CN">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>知乎论文助手</title>
-<link rel="icon" href="icon-48.png">
-<style>
-:root{--ink:#111721;--ink-2:#3D4757;--muted:#667385;--line:#DCE1E9;--line-2:#C8D0DB;
+const CSS = `:root{--ink:#111721;--ink-2:#3D4757;--muted:#667385;--line:#DCE1E9;--line-2:#C8D0DB;
   --surface:#fff;--surface-2:#F6F8FB;--zhihu:#0084FF;
   --sans:"IBM Plex Sans","Noto Sans SC",system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:ui-monospace,SFMono-Regular,Menlo,monospace;color-scheme:light}
@@ -77,7 +69,17 @@ a{color:var(--zhihu)}
 .rel{border-top:1px solid var(--line);padding-top:18px;margin-top:22px}
 .rel:first-of-type{border-top:0;padding-top:0;margin-top:0}
 footer{margin-top:48px;padding-top:18px;border-top:1px solid var(--line);
-  color:var(--muted);font-size:13px}
+  color:var(--muted);font-size:13px}`;
+
+const html = `<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>知乎论文助手</title>
+<link rel="icon" href="icon-48.png">
+<style>
+${CSS}
 </style>
 </head>
 <body>
@@ -132,7 +134,7 @@ ${notes}
   </section>
 
   <footer>
-    本页面根据插件源代码自动生成
+    <a href="privacy.html">隐私政策</a> · 本页面根据插件源代码自动生成
   </footer>
 </div>
 <script>
@@ -156,5 +158,63 @@ ${notes}
 </html>
 `;
 
+const privacy = `<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>知乎论文助手 · 隐私政策</title>
+<link rel="icon" href="icon-48.png">
+<style>
+${CSS}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <img src="icon-48.png" alt="">
+    <h1>隐私政策</h1>
+  </header>
+  <p class="sub">知乎论文助手</p>
+
+  <p>本插件不设服务器，不收集账号信息，不含统计或追踪代码。</p>
+
+  <h2>发送的内容</h2>
+  <ul>
+    <li>论文标题发送至知乎搜索，用于查找相关问题与回答</li>
+    <li>英文论文的标题发送至知乎直答，用于翻译为中文后再次搜索</li>
+    <li>论文标题、摘要、作者与链接发送至知乎直答，用于排序、生成论文解读与提问草稿</li>
+    <li>论文 DOI 发送至 Crossref（api.crossref.org），用于补全标题、作者、期刊与摘要</li>
+    <li>知乎开放平台的 Access Secret 为备用通道，填入设置页后，相同内容经 developer.zhihu.com 发送</li>
+  </ul>
+  <p>以上请求均由浏览器直接发出，不经过任何第三方服务器。</p>
+
+  <h2>读取的内容</h2>
+  <ul>
+    <li>当前标签页网址，用于识别论文页面</li>
+    <li>论文页面已公开的引用信息（citation_title、citation_doi 等 meta 标签）</li>
+    <li>知乎的 z_c0 Cookie，仅用于判断是否已登录，不作其他用途，也不会发送至任何位置</li>
+  </ul>
+
+  <h2>本地保存的内容</h2>
+  <ul>
+    <li>设置项，包括 Access Secret</li>
+    <li>搜索结果与直答解读缓存</li>
+    <li>Crossref 元数据缓存</li>
+    <li>「发起提问」生成的提问草稿，填入知乎后清除</li>
+  </ul>
+  <p>以上内容仅保存在浏览器本地，移除插件即一并删除。</p>
+
+  <footer>
+    <a href="./">返回首页</a>
+  </footer>
+</div>
+</body>
+</html>
+`;
+
+writeFileSync(new URL('../docs/privacy.html', import.meta.url), privacy);
+
 writeFileSync(new URL('../docs/index.html', import.meta.url), html);
+console.log(`docs/privacy.html`);
 console.log(`docs/index.html -> v${v}, ${supportedSites().length} sites, ${changelog().length} releases`);
