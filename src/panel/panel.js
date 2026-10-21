@@ -328,7 +328,7 @@ function searchSection(search, pending) {
     return s;
   }
   if (search.layer === 'needs-secret') {
-    const s = el('div', 'sec');
+    const s = section('相关回答/文章');
     s.append(warn('!', '知乎搜索暂不可用。'));
     const b = el('button', 'pill', '前往设置');
     b.addEventListener('click', () => chrome.runtime.openOptionsPage());

@@ -7,18 +7,15 @@ const { getPaper } = await import(P+'/src/lib/papergraph.js');
 let pass=0,fail=0;
 const ck=(n,c,e='')=>{c?pass++:fail++;console.log(`${c?'ok  ':'FAIL'}  ${n}${e?'  '+e:''}`);};
 
-// old-style arXiv id resolves and carries real discussion
+// old-style arXiv id resolves
 const per = await getPaper('arxiv:math/0211159');
 ck('old-style arXiv id resolves', per.Code===0);
-ck('  3 discussions', per.Data?.discussions.length===3);
-ck('  top article 830 votes', per.Data?.discussions.some(d=>d.votes===830));
 
-// arXiv DOI alias -> same paper, full discussion
+// arXiv DOI alias -> same paper, same authors
 const viaArxivDoi = await getPaper('doi:10.48550/arXiv.2503.01800');
 ck('arXiv DOI resolves via alias', viaArxivDoi.Code===0);
 ck('  flagged ViaAlias', viaArxivDoi.ViaAlias===true);
 ck('  matched canonical id', viaArxivDoi.MatchedId==='arxiv:2503.01800', viaArxivDoi.MatchedId);
-ck('  keeps all 5 discussions', viaArxivDoi.Data?.discussions.length===5);
 ck('  keeps both authors', viaArxivDoi.Data?.authors.length===2);
 
 // preprint DOI -> published paper (the version-mismatch case)
@@ -26,7 +23,6 @@ const viaPreprint = await getPaper('doi:10.1101/2024.09.01.610707');
 ck('bioRxiv preprint DOI -> published paper', viaPreprint.Code===0);
 ck('  resolves to PLOS DOI', viaPreprint.MatchedId==='doi:10.1371/journal.pone.0310348', viaPreprint.MatchedId);
 ck('  ViaAlias true', viaPreprint.ViaAlias===true);
-ck('  honestly has no discussion', viaPreprint.Data?.discussions.length===0);
 
 // altIds path, as the content script supplies it
 const viaAlt = await getPaper('doi:10.99999/unknown', ['doi:10.48550/arXiv.2503.01800']);

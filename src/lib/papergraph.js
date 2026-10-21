@@ -18,13 +18,7 @@ async function load() {
       paper: p,
       authors: raw.user_paper_link
         .filter((l) => l.paper_id === p.id)
-        .map((l) => ({ ...raw.zhihu_user.find((u) => u.url_token === l.url_token), relation: l.relation })),
-      discussions: rankDiscussions(
-        raw.paper_card.filter((c) => c.paper_id === p.id).map((c) => resolveCard(raw, c)).filter(Boolean),
-        new Set(
-          raw.user_paper_link.filter((l) => l.paper_id === p.id).map((l) => l.url_token)
-        )
-      )
+        .map((l) => ({ ...raw.zhihu_user.find((u) => u.url_token === l.url_token), relation: l.relation }))
     });
   }
   // Alias -> canonical id, both directions. A preprint and its published
@@ -39,47 +33,6 @@ async function load() {
 
   cache = { raw, byId, alias };
   return cache;
-}
-
-function resolveCard(raw, card) {
-  if (card.attached_type === 'question') {
-    const q = raw.question.find((x) => x.qid === card.attached_id);
-    if (!q) return null;
-    return {
-      kind: 'question',
-      title: q.title,
-      url: q.url,
-      answers: raw.answer
-        .filter((a) => a.qid === q.qid)
-        .sort((a, b) => b.vote_count - a.vote_count)
-        .map((a) => ({ author: a.author_name, url: a.url, votes: a.vote_count, urlToken: a.url_token }))
-    };
-  }
-  const art = raw.article.find((x) => x.pid === card.attached_id);
-  if (!art) return null;
-  return { kind: 'article', title: art.title, url: art.url, author: art.author_name, votes: art.vote_count, urlToken: art.url_token };
-}
-
-/**
- * Rank discussions attached to one paper.
- *   1. anything a bound author of the paper took part in
- *   2. everything else by vote weight — a question scores as its top answer,
- *      an answer or article as its own votes, so the two kinds interleave
- * Zhihu would replace the vote proxy with internal ranking signals.
- */
-function rankDiscussions(items, authorTokens) {
-  const weight = (d) =>
-    d.kind === 'question'
-      ? Math.max(0, ...(d.answers || []).map((a) => a.votes || 0))
-      : d.votes || 0;
-  const involved = (d) =>
-    d.kind === 'question'
-      ? (d.answers || []).some((a) => a.urlToken && authorTokens.has(a.urlToken))
-      : !!(d.urlToken && authorTokens.has(d.urlToken));
-
-  return items
-    .map((d) => ({ ...d, authorInvolved: involved(d), weight: weight(d) }))
-    .sort((a, b) => (b.authorInvolved - a.authorInvolved) || (b.weight - a.weight));
 }
 
 function envelope(data) { return { Code: 0, Message: 'success', Data: data }; }

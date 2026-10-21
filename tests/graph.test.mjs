@@ -16,15 +16,6 @@ check('seeded arXiv id resolves', hit.Code === 0);
 check('envelope shape {Code,Message,Data}', 'Code' in hit && 'Message' in hit && 'Data' in hit);
 check('two bound authors', hit.Data.authors.length === 2, hit.Data.authors.map(a=>a.name).join(', '));
 check('author carries url_token', hit.Data.authors[0].url_token === 'paellahorizon');
-check('five discussions resolved', hit.Data.discussions.length === 5);
-
-const q = hit.Data.discussions.find(d => d.kind === 'question' && d.answers.length === 4);
-check('question resolves its answers', !!q);
-check('Yu Deng answer first, by paellahorizon', q.answers[0].urlToken==='paellahorizon');
-check('answers sorted by votes desc', q.answers[0].votes === 5917 && q.answers[1].votes === 5779 && q.answers[3].votes === 12,
-      q.answers.map(a=>a.votes).join(' > '));
-const art = hit.Data.discussions.find(d => d.kind === 'article');
-check('article resolves author + votes', art.author === '大老李' && art.votes === 150);
 
 // --- L2 miss: a paper deliberately not in the index
 const miss = await getPaper('arxiv:2306.00205');
