@@ -14,8 +14,7 @@
     "storage",
     "sidePanel",
     "tabs",
-    "cookies",
-    "clipboardWrite"
+    "cookies"
   ],
   "host_permissions": [
     "https://arxiv.org/*",

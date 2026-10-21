@@ -130,17 +130,49 @@
     return 'ok';
   }
 
-  function toast(text, ok) {
+  /** Returns the element, so a caller can add to it and keep it on screen. */
+  function toast(text, ok, sticky) {
     const t = document.createElement('div');
-    t.textContent = text;
     t.style.cssText = [
       'position:fixed;left:50%;top:24px;transform:translateX(-50%);z-index:2147483000',
       'background:' + (ok ? '#0B7A5A' : '#A9391A') + ';color:#fff;padding:10px 16px',
       'border-radius:8px;font:500 13px/1.4 -apple-system,BlinkMacSystemFont,"Noto Sans SC",sans-serif',
-      'box-shadow:0 6px 24px rgba(0,0,0,.22);max-width:min(420px,86vw)'
+      'box-shadow:0 6px 24px rgba(0,0,0,.22);max-width:min(420px,86vw)',
+      'display:flex;align-items:center;gap:10px'
     ].join(';');
+    t.appendChild(document.createTextNode(text));
     document.body.appendChild(t);
-    setTimeout(() => t.remove(), 5200);
+    // A toast carrying a button must not vanish mid-reach.
+    if (!sticky) setTimeout(() => t.remove(), 5200);
+    return t;
+  }
+
+  /** The draft as the reader would paste it: title, blank line, body. */
+  const asText = (draft) => [draft.title, draft.body].filter(Boolean).join('\n\n');
+
+  async function copy(text) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch (e) {
+      return false;   // no user gesture, or the document is not focused
+    }
+  }
+
+  function copyButton(t, text) {
+    const b = document.createElement('button');
+    b.textContent = '复制草稿';
+    b.style.cssText = [
+      'flex:none;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.45)',
+      'color:#fff;border-radius:999px;padding:3px 10px;font:600 12px/1 inherit;cursor:pointer'
+    ].join(';');
+    b.addEventListener('click', async () => {
+      // The click is the user gesture writeText wants, which is why this
+      // works where the attempt on load did not.
+      b.disabled = true;
+      b.textContent = (await copy(text)) ? '已复制' : '复制失败';
+    });
+    t.appendChild(b);
   }
 
   (async function run() {
@@ -158,9 +190,19 @@
     const result = await fill(draft);
     if (result === 'ok') {
       toast('已填入论文信息', true);
-    } else {
-      // Draft is already on the clipboard — say so rather than failing silently.
+      return;
+    }
+
+    // Filling failed, so the draft is all the reader has left -- and it has
+    // already been removed from storage, one-shot, so this copy is the only
+    // place it still exists. Try the clipboard outright: there is no user
+    // gesture here, so the browser will usually refuse, and then the button
+    // supplies one.
+    const text = asText(draft);
+    if (await copy(text)) {
       toast('自动填入失败（' + result + '），草稿已复制到剪贴板', false);
+    } else {
+      copyButton(toast('自动填入失败（' + result + '）', false, true), text);
     }
   })();
 })();
