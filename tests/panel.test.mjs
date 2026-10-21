@@ -93,6 +93,21 @@ ck('  and no 重新生成 before there is anything to regenerate', !r.text.inclu
 r = await run({paper,resolution:{layer:'fuzzy',authors:[],linked:[],search}});
 ck('missing zhida field (older worker) still renders the button', r.text.includes('生成直答解读'));
 
+// --- the 标题检索 caveat on 相关问题 ---------------------------------------
+const mk = (src) => ({kind:'question',title:'Q-'+src,url:'https://z/q/'+src,src,
+  answers:[{author:'a',votes:1}],top:{author:'a',votes:1}});
+const note = '以下部分为按标题检索的结果';
+const empty = {layer:'empty',items:[]};
+
+r = await run({paper,resolution:{layer:'linked',authors:[],linked:[mk('card'),mk('search')],search:empty}});
+ck('mixed pool carries the caveat', r.text.includes(note));
+r = await run({paper,resolution:{layer:'linked',authors:[],linked:[mk('card'),mk('card')],search:empty}});
+ck('  not when every row came from the paper card', !r.text.includes(note));
+r = await run({paper,resolution:{layer:'linked',authors:[],linked:[mk('search')],search:empty}});
+ck('  and shown when every row came from search', r.text.includes(note));
+r = await run({paper,phase:'ranking',resolution:{layer:'linked',authors:[],linked:[mk('search')],search:empty}});
+ck('  withheld while still ranking, since nothing is listed yet', !r.text.includes(note));
+
 // --- status line per phase ------------------------------------------------
 for (const [phase, text] of [['translating','正在翻译标题'],['fetching','正在获取结果'],['ranking','正在由知乎直答排序']]) {
   r = await run({paper,phase,resolution:{layer:'linked',authors:[],linked:[],search:{layer:'empty',items:[]}}});

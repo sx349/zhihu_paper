@@ -348,6 +348,13 @@ function renderInner(state) {
   if (linked.length || phase) {
     const s = section('相关问题', phase ? null : linked.length);
     if (resolution.conflict) s.append(warn('i', '匹配到多篇论文，以下结果可能与本文无关。'));
+    // 部分, not 以下: this list mixes 论文卡片 rows, which Zhihu linked to the
+    // paper itself, with 标题检索 ones that may have nothing to do with it.
+    // Dropped entirely when every row came from the card, where the caveat
+    // would be false.
+    if (!phase && linked.some((d) => d.src !== 'card')) {
+      s.append(warn('!', '以下部分为按标题检索的结果，可能与本文无关。'));
+    }
     if (phase) s.append(el('div', 'zdwait', PHASE[phase] || PHASE.fetching));
     else collapsingList(s, linked, questionItem, 3);
     root.append(s);
