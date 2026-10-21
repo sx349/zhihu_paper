@@ -3,6 +3,13 @@
   "name": "知乎论文助手",
   "version": "0.4.0",
   "description": "在论文页面识别当前论文，并连接知乎上的相关讨论。",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "zhihu-paper@sx349.github.io",
+      "strict_min_version": "121.0",
+      "update_url": "https://sx349.github.io/zhihu_paper/updates.json"
+    }
+  },
   "permissions": [
     "storage",
     "sidePanel",
@@ -22,10 +29,17 @@
   ],
   "background": {
     "service_worker": "src/background/service_worker.js",
+    "scripts": [
+      "src/background/service_worker.js"
+    ],
     "type": "module"
   },
   "side_panel": {
     "default_path": "src/panel/panel.html"
+  },
+  "sidebar_action": {
+    "default_panel": "src/panel/panel.html",
+    "default_title": "知乎论文助手"
   },
   "action": {
     "default_title": "知乎论文助手"

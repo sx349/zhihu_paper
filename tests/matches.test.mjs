@@ -76,6 +76,24 @@ for (const [url, label] of sites) {
   console.log(`${ok ? 'ok  ' : 'FAIL'}  ${host.padEnd(28)} script=${matched ? 'yes' : 'NO '} label=${got}`);
 }
 
+// --- one manifest, two browsers -------------------------------------------
+// Chrome runs the background as a service worker and the panel through
+// side_panel; Firefox has neither, and runs the same files as an event page
+// and a sidebar. Dropping either half silently halves the supported browsers.
+const bg = manifest.background;
+ck('background declared for Chrome', bg.service_worker === 'src/background/service_worker.js');
+ck('  and for Firefox, from the same file', JSON.stringify(bg.scripts) === JSON.stringify([bg.service_worker]));
+ck('  as a module either way', bg.type === 'module');
+
+ck('panel declared for Chrome', manifest.side_panel?.default_path === 'src/panel/panel.html');
+ck('  and for Firefox, the same document', manifest.sidebar_action?.default_panel === manifest.side_panel.default_path);
+
+const gecko = manifest.browser_specific_settings?.gecko;
+ck('Firefox add-on id is set', !!gecko?.id, gecko?.id);
+ck('  updates come from a host we control', gecko?.update_url?.startsWith('https://sx349.github.io/'), gecko?.update_url);
+ck('  and 121 is the floor, where both background keys stopped conflicting',
+   gecko?.strict_min_version === '121.0');
+
 // A journal's front page is not an article; injecting there would be noise.
 for (const url of ['https://journals.bmj.com/', 'https://elifesciences.org/', 'https://www.jneurosci.org/',
                    'https://www.thelancet.com/', 'https://www.alphaxiv.org/',
