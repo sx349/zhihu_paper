@@ -17,7 +17,7 @@ const cases=[
  ['Lancet paren DOI',      'https://x.org/doi/10.1016/S0140-6736(20)30183-5','doi','10.1016/S0140-6736(20)30183-5'],
  ['Springer',              'https://link.springer.com/article/10.1007/s11263-015-0816-y','doi','10.1007/s11263-015-0816-y'],
  ['INFORMS + query',       'https://pubsonline.informs.org/doi/abs/10.1287/mnsc.2022.4522?journalCode=mnsc','doi','10.1287/mnsc.2022.4522'],
- ['Wiley epdf',            'https://onlinelibrary.wiley.com/doi/epdf/10.1002/adma.202301234','doi','10.1002/adma.202301234'],
+ ['Wiley epdf',            'https://onlinelibrary.wiley.com/doi/epdf/10.1002/adma.201102306','doi','10.1002/adma.201102306'],
  ['ScienceDirect (PII)',   'https://www.sciencedirect.com/science/article/pii/S0096300316307640','none',''],
  ['SSRN abstract_id',      'https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5238498','doi','10.2139/ssrn.5238498'],
 ];

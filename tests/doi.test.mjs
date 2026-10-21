@@ -9,8 +9,8 @@ const cases = [
   ['https://arxiv.org/html/2503.01800v2',                                   null, '2503.01800'],
   ['https://link.springer.com/article/10.1007/s11263-015-0816-y',            '10.1007/s11263-015-0816-y', null],
   ['https://onlinelibrary.wiley.com/doi/10.1111/j.1467-9868.2005.00503.x',   '10.1111/j.1467-9868.2005.00503.x', null],
-  ['https://onlinelibrary.wiley.com/doi/full/10.1002/adma.202301234',        '10.1002/adma.202301234', null],
-  ['https://onlinelibrary.wiley.com/doi/epdf/10.1002/adma.202301234',        '10.1002/adma.202301234', null],
+  ['https://onlinelibrary.wiley.com/doi/full/10.1002/adma.201102306',        '10.1002/adma.201102306', null],
+  ['https://onlinelibrary.wiley.com/doi/epdf/10.1002/adma.201102306',        '10.1002/adma.201102306', null],
   ['https://pubsonline.informs.org/doi/10.1287/mnsc.2022.4522',              '10.1287/mnsc.2022.4522', null],
   ['https://pubsonline.informs.org/doi/abs/10.1287/mnsc.2022.4522?journalCode=mnsc', '10.1287/mnsc.2022.4522', null],
   ['https://www.sciencedirect.com/science/article/pii/S0096300316307640',    '', null],  // PII only -> meta path

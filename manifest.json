@@ -18,10 +18,6 @@
   ],
   "host_permissions": [
     "https://arxiv.org/*",
-    "https://www.sciencedirect.com/*",
-    "https://link.springer.com/*",
-    "https://onlinelibrary.wiley.com/*",
-    "https://pubsonline.informs.org/*",
     "https://*.zhihu.com/*",
     "https://developer.zhihu.com/*",
     "https://api.crossref.org/*"

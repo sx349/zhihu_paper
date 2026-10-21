@@ -21,7 +21,7 @@ const sites = [
   ['https://arxiv.org/html/2503.01800', 'arXiv'],
   ['https://www.sciencedirect.com/science/article/pii/S0096300316307640', 'ScienceDirect'],
   ['https://link.springer.com/article/10.1007/s11263-015-0816-y', 'Springer'],
-  ['https://onlinelibrary.wiley.com/doi/10.1002/adma.202301234', 'Wiley'],
+  ['https://onlinelibrary.wiley.com/doi/10.1002/adma.201102306', 'Wiley'],
   ['https://pubsonline.informs.org/doi/10.1287/mnsc.2022.4522', 'INFORMS'],
   ['https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3457189', 'SSRN'],
   ['https://www.nber.org/papers/w31122', 'NBER'],
@@ -78,6 +78,22 @@ ck('Firefox add-on id is set', !!gecko?.id, gecko?.id);
 ck('  updates come from a host we control', gecko?.update_url?.startsWith('https://sx349.github.io/'), gecko?.update_url);
 ck('  and 121 is the floor, where both background keys stopped conflicting',
    gecko?.strict_min_version === '121.0');
+
+// --- host permissions ------------------------------------------------------
+// A content script's matches cover the page it runs on, so host_permissions
+// are for the worker's own fetches and nothing else. Four publishers were
+// declared here and never contacted -- dead grants, and exactly what both
+// stores ask you to justify.
+import { readdirSync } from 'fs';
+const workerSrc = ['src/lib', 'src/background']
+  .flatMap((d) => readdirSync(new URL('../' + d, import.meta.url))
+    .filter((f) => f.endsWith('.js'))
+    .map((f) => readFileSync(new URL(`../${d}/${f}`, import.meta.url), 'utf8')))
+  .join('\n');
+for (const h of manifest.host_permissions) {
+  const host = h.replace(/^https?:\/\//, '').replace(/^\*\./, '').replace(/\/\*$/, '');
+  ck(`host permission ${host} is one the worker actually fetches`, workerSrc.includes(host));
+}
 
 // --- the update manifest Firefox polls ------------------------------------
 // It is generated from manifest.json, but a stale checked-in copy would be
