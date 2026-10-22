@@ -126,10 +126,15 @@ const updates = JSON.parse(readFileSync(new URL('../docs/updates.json', import.m
 const geckoId = manifest.browser_specific_settings.gecko.id;
 const entry = updates.addons?.[geckoId]?.updates?.[0];
 ck('updates.json is keyed by the add-on id', !!entry, Object.keys(updates.addons || {}).join(','));
-ck('  and offers the version in the manifest', entry?.version === manifest.version,
-   entry?.version + ' vs ' + manifest.version);
-ck('  linking to that version\'s asset', entry?.update_link?.includes('/v' + manifest.version + '/')
-   && entry?.update_link?.endsWith(manifest.version + '.xpi'), entry?.update_link);
+// Not equal to the manifest: review can take a month, and through it the
+// manifest describes what is under review while this file must keep
+// describing what people can download. Ahead of the manifest is the error --
+// it would advertise a version no release can serve.
+const cmp = (a, b) => a.split('.').map(Number).reduce((r, n, i) => r || n - Number(b.split('.')[i]), 0);
+ck('  never advertises a version past the manifest', cmp(entry?.version || '0.0.0', manifest.version) <= 0,
+   entry?.version + ' vs manifest ' + manifest.version);
+ck('  links to the tag it names', entry?.update_link?.includes('/v' + entry?.version + '/'), entry?.update_link);
+ck('  at the stable asset name the install page gives', entry?.update_link?.endsWith('/zhihu_paper.xpi'));
 ck('  over https, which update_link requires', entry?.update_link?.startsWith('https://'));
 
 // --- icons ----------------------------------------------------------------

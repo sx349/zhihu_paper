@@ -8,7 +8,7 @@
     "lint": "eslint .",
     "site": "node scripts/site.mjs",
     "pack": "git archive --format=zip --prefix=zhihu_paper/ -o zhihu_paper.zip HEAD",
-    "pack:firefox": "git archive --format=zip -o zhihu_paper-firefox.zip HEAD && node scripts/updates-json.mjs && node scripts/site.mjs"
+    "pack:firefox": "git archive --format=zip -o zhihu_paper-firefox.zip HEAD && node scripts/site.mjs"
   },
   "devDependencies": {
     "eslint": "^9.39.0"

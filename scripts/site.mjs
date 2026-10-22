@@ -109,7 +109,7 @@ ${CSS}
 
     <h2>Firefox 附加组件</h2>
     <ol>
-      <li>从 <a href="${REPO}/releases/latest">GitHub Releases</a> 下载 <code>zhihu_paper-${esc(v)}.xpi</code></li>
+      <li>从 <a href="${REPO}/releases/latest">GitHub Releases</a> 下载 <code>zhihu_paper.xpi</code></li>
       <li>将文件拖入 Firefox 窗口，或打开 <code>about:addons</code>，点击齿轮图标 →「从文件安装附加组件」</li>
       <li>已通过 Mozilla 签名，安装后可自动更新</li>
     </ol>
